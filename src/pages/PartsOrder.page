@@ -1,0 +1,24 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Incorporate parts order flow in visualforce page 
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+08/02/2018      Mani Sundaresan       Initial Creation (US-0003968)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Order" recordSetVar="orders" showHeader="false" sidebar="false">
+    
+    <style>
+    .FlowText {
+        font-weight: normal;
+    }
+    .labelCol {
+        text-align:left !important;
+    }
+    </style>
+
+    <apex:stylesheet value="{!URLFOR($Resource.s1flow,'s1flow.css')}" />     
+    <apex:includeScript value="{!URLFOR($Resource.s1flow,'datehandler.js')}" />
+    <flow:interview name="Parts_Order" buttonLocation="bottom"  />
+    
+</apex:page>

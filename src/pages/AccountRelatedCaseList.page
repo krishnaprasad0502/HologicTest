@@ -1,0 +1,273 @@
+<!------------------------------------------------------------
+Author:			Denise Bacher
+Company:		Salesforce.com
+Description:	Displays a list of filterable Cases related to the current Account
+
+History:
+<Date>			<Authors Name>		<Brief Description of Change>
+03/31/2016		Denise Bacher		Initial Creation (US477)
+04/08/2016		Denise Bacher		Removed svg4everybody, and replaced sort svg arrows with unicode chars (DE57)
+------------------------------------------------------------>
+<apex:page standardController="Account" extensions="AccountRelatedCaseList_ControllerX" tabStyle="Account"
+		docType="html-5.0" standardStylesheets="false" showHeader="true" sidebar="false">
+		
+	<apex:includeScript value="/support/console/37.0/integration.js"/>
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-2.2.2.min.js')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system.min.css')}"/>
+	
+	<!--
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.min.js')}"/> 
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.min')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.structure.min.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.theme.min.css')}"/> 
+	-->
+
+	<style>
+		.slds .slds-button-group {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+		}
+		
+		.slds .slds-button-group .slds-button:first-of-type {
+			border-radius: 4px 0 0 4px;
+			border-left: 1px solid #d8dde6;
+		}
+	</style>
+	
+	<script>
+		$j = jQuery.noConflict();
+		$j(document).ready(function() {
+			actionComplete();
+			$j('input[name=myCases]:radio')[0].checked = '{!selectedMyCases}';
+			$j('input[name=myCases]:radio')[1].checked = '{! !selectedMyCases}';
+		});
+		
+		function actionComplete(){
+			initActions();
+		}
+		
+		function initActions(){
+			// case links
+			$j('.caseLink').click(function(event){
+				event.preventDefault();
+				var url = "/" + $j(this).data('objid');
+				var tabLabel = $j(this).data('label');
+				
+				if(sforce.console.isInConsole()){
+					sforce.console.getEnclosingPrimaryTabId(function(result) { 
+						sforce.console.openSubtab(result.id, url, true, tabLabel, null); 
+					}); 
+				}
+				else{
+					parent.location.href = url; 
+				} 
+			});
+			
+			// sort buttons
+			$j('.caseSortBtn').click(function(event){
+				event.preventDefault();
+			});
+			
+			$j('thead tr.slds-text-heading--label th.slds-is-sortable').click(function(event){
+				var colLabel = $j(this).find('.caseSortBtn').data('columnlabel');
+				sort(colLabel);
+			});
+			
+			// radio buttons
+			$j('input[name=myCases]:radio').change(function(event){
+				filterMyCases($j(this).val());
+			});
+			
+			// date picker
+			/*$j( "#startDate" ).datepicker({
+				defaultDate: "+1w",
+				changeMonth: true,
+				numberOfMonths: 1,
+				changeYear: true,
+				onClose: function( selectedDate ) {
+					$j( "#endDate" ).datepicker( "option", "minDate", selectedDate );
+				}
+			});
+			$j( "#endDate" ).datepicker({
+				defaultDate: "+1w",
+				changeMonth: true,
+				numberOfMonths: 1,
+				changeYear: true,
+				onClose: function( selectedDate ) {
+					$j( "#startDate" ).datepicker( "option", "maxDate", selectedDate );
+				}
+			});*/
+		}
+	</script>
+	
+	<c:LoadingScreen />
+	
+	<apex:form >
+	
+		<apex:actionFunction name="sort" action="{!sortCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();">
+			<apex:param name="sortField" value="" assignTo="{!cases.sortField}"/>
+		</apex:actionFunction>
+		
+		<apex:actionFunction name="filterMyCases" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();">
+			<apex:param name="myCases" value="" assignTo="{!selectedMyCases}"/>
+		</apex:actionFunction>
+		
+		<!-- <apex:actionFunction name="filterDates" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();">
+			<apex:param name="startDate" value="" assignTo="{!selectedStartDate}"/>
+			<apex:param name="endDate" value="" assignTo="{!selectedEndDate}"/>
+		</apex:actionFunction> -->
+	
+		<div class="slds">
+			
+			<apex:messages id="messages" styleClass="slds-notify slds-notify--alert slds-theme--error slds-theme--alert-texture" />	
+			
+			<!-- FILTER BLOCK -->
+			<div class="slds-form--inline">
+				<fieldset class="slds-form-element">
+					<div class="slds-form-element__control">
+						<label class="slds-radio">
+							<input type="radio" name="myCases" value="true"></input>
+							<span class="slds-radio--faux"></span>
+							<span class="slds-form-element__label">{!$Label.lbl_MyCases}</span>
+						</label>
+						<label class="slds-radio">
+							<input type="radio" name="myCases" value="false"></input>
+							<span class="slds-radio--faux"></span>
+							<span class="slds-form-element__label">{!$Label.lbl_AllCases}</span>
+						</label>
+					</div>
+				</fieldset>
+				
+				<div class="slds-form-element">
+					<label class="slds-form-element__label">{!$ObjectType.RecordType.Label}: </label>
+					<div class="slds-form-element__control">
+						<div class="slds-select_container">
+							<apex:selectList value="{!selectedRecordTypeOption}" size="1" styleClass="slds-select">
+								<apex:selectOptions value="{!recordTypeOptions}"/>
+								<apex:actionSupport event="onchange" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"/>
+							</apex:selectList>
+						</div>
+					</div>
+				</div>
+				
+				<div class="slds-form-element">
+					<label class="slds-form-element__label">{!$ObjectType.Case.Fields.Type.Label}: </label>
+					<div class="slds-form-element__control">
+						<div class="slds-select_container">
+							<apex:selectList value="{!selectedTypeOption}" size="1" styleClass="slds-select">
+								<apex:selectOptions value="{!typeOptions}"/>
+								<apex:actionSupport event="onchange" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"/>
+							</apex:selectList>
+						</div>
+					</div>
+				</div>
+				
+				<div class="slds-form-element">
+					<label class="slds-form-element__label">{!$ObjectType.Case.Fields.Status.Label}: </label>
+					<div class="slds-form-element__control">
+						<div class="slds-select_container">
+							<apex:selectList value="{!selectedStatusOption}" size="1" styleClass="slds-select">
+								<apex:selectOptions value="{!statusOptions}"/>
+								<apex:actionSupport event="onchange" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"/>
+							</apex:selectList>
+						</div>
+					</div>
+				</div>
+				
+				<div class="slds-form-element">
+					<label class="slds-form-element__label">{!$ObjectType.Case.Fields.Priority.Label}: </label>
+					<div class="slds-form-element__control">
+						<div class="slds-select_container">
+							<apex:selectList value="{!selectedPriorityOption}" size="1" styleClass="slds-select">
+								<apex:selectOptions value="{!priorityOptions}"/>
+								<apex:actionSupport event="onchange" action="{!populateCaseTable}" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"/>
+							</apex:selectList>
+						</div>
+					</div>
+				</div>
+				
+				<!-- <div class="form-element__group">
+					<div class="slds-form-element__row">
+						<div class="slds-form-element ">
+							<label class="slds-form-element__label" for="startDate">Created from</label>
+							<div class="slds-form-element__control">
+								<input id="startDate" class="slds-input aljs-Date" type="text" placeholder="Start Date" label="Start Date"></input>
+							</div>
+						</div>
+						
+						<div class="slds-form-element ">
+							<label class="slds-form-element__label" for="endDate">to</label>
+							<div class="slds-form-element__control">
+								<input id="endDate" class="slds-input aljs-Date" type="text" placeholder="End Date" label="End Date"></input>
+							</div>
+						</div>
+					</div>
+				</div> -->
+				
+			</div> <!-- .slds-form--inline -->
+			
+			<!-- TABLE BLOCK -->
+			<apex:outputPanel layout="block" id="caseTable" rendered="{! cases != null}">
+				<div class="slds-scrollable--x">
+					<table class="slds-table slds-table--bordered">
+						<thead>
+							<tr class="slds-text-heading--label">
+								<apex:repeat value="{!cases.columns}" var="column">
+									<th class="slds-cell-shrink {!IF(column.allowSort, 'slds-is-sortable', '')}" scope="col">
+										<div class="slds-truncate">
+											{!column.label}
+											<button class="caseSortBtn slds-button slds-button--icon-bare" data-columnlabel="{!column.field}" >
+												{! IF(column.order == 'sort_up', '▲'
+													, IF(column.order == 'sort_down', '▼', '') )}
+												<span class="slds-assistive-text">Sort {!column.label}</span>
+											</button>
+										</div>
+									</th>
+								</apex:repeat>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<apex:repeat value="{!cases.rows}" var="row">
+								<tr class="slds-hint-parent">
+									<apex:repeat value="{!row.fields}" var="field">
+										<td class="slds-cell-shrink slds-truncate" data-label="{!field.label}">
+											<apex:outputPanel rendered="{!field.name == row.fields[0].name}">
+												<a class="caseLink" data-objid="{!row.id}" data-label="{!field.value}" href="#" target="_top">{!field.value}</a>
+											</apex:outputPanel>
+											<apex:outputPanel rendered="{!field.name != row.fields[0].name}">
+												{!field.value}
+											</apex:outputPanel>
+										</td>
+									</apex:repeat>
+								</tr>
+							</apex:repeat>
+						</tbody>
+					</table>
+				</div>
+			</apex:outputPanel>
+				
+			<!-- PAGINATION BLOCK -->
+			<apex:outputPanel layout="block" id="paginationBlock" styleClass="slds-text-align--center" rendered="{!cases != null}">
+				<div class="slds-button-group" role="group">
+					<apex:commandButton styleClass="slds-button slds-button--neutral" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"
+						value="|<" action="{!cases.firstPage}" disabled="{! !cases.hasPrevious}" title="First Page"/>
+					
+					<apex:commandButton styleClass="slds-button slds-button--neutral" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();" 
+						value="<" action="{!cases.previousPage}" disabled="{! !cases.hasPrevious}" title="Previous Page"/>
+					
+					<apex:commandButton styleClass="slds-button slds-button--neutral" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"
+						value=">" action="{!cases.nextPage}" disabled="{! !cases.hasNext}" title="Next Page"/>
+					
+					<apex:commandButton styleClass="slds-button slds-button--neutral" status="loading" rerender="caseTable, paginationBlock, messages" onComplete="actionComplete();"
+						value=">|" action="{!cases.lastPage}" disabled="{! !cases.hasNext}" title="Last Page"/>
+				</div>
+				<span class="slds-p-horizontal--small">{!cases.pageXofN}</span>
+			</apex:outputPanel>
+			
+		</div> <!-- .slds -->
+		
+	</apex:form>
+</apex:page>

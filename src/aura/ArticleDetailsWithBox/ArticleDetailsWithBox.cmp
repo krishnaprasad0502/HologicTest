@@ -1,0 +1,38 @@
+<!--
+*********************************************************************************************************
+	Author       : Niraj Wani
+	Company      : Hexaware Technologies
+	Created Date : 9/12/2018
+	Description  : This lightning component is used to display articles details with box. 
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	9/12/2018			Niraj Wani				Initial Creation 					US-0005634
+*********************************************************************************************************
+-->
+<aura:component controller="ArticleWithBoxController"  implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+    <!-- Attribute Declaration-->
+    <aura:attribute name="link" type="String"/>
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="summary" type="String"/>
+    <aura:attribute name="htmlFields" type="Object"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="test-id__section-header-title">
+        {!v.title}
+    </div>
+    
+    <aura:iteration var="article" items="{!v.htmlFields}">
+        <div class="slds-border_bottom slds-p-top_small slds-p-bottom_small HO_ArticleDetailFieldTitle">
+            {! article.label } 
+        </div> 
+        <div style="padding-top:10px" class="uiOutputText"><aura:unescapedHtml  value="{!article.value}"></aura:unescapedHtml> 
+        </div>   
+    </aura:iteration>
+    
+    <div style="padding-top:10px">
+        <iframe  src="{! v.link }" width="1170" height="400" frameborder="0" allowfullscreen="allowfullscreen"/>
+    </div>
+</aura:component>

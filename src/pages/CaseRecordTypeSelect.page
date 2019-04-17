@@ -1,0 +1,32 @@
+<!------------------------------------------------------------
+Author:         Amarendra Nagireddy
+Company:        Apps Associates
+Description:    Creating the case based on the selection case recordtype.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+04/18/2017      Amarendra Nagireddy       Initial Creation(US-0002765)
+05/23/2017      Amarendra Nagireddy       Changed method name from "Goback" to cancel
+------------------------------------------------------------>
+<apex:page controller="CaseRecordTypeController">
+    <apex:form >
+            <apex:pageBlock title="Select Case Record Type" mode="edit">
+            
+                <apex:pageBlockButtons location="bottom">
+                   <apex:commandButton value="Continue" action="{!continueredirect}"/>
+                   <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                   
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockSection >
+                
+                     <apex:outputText >Record Type of new record</apex:outputText>
+                   <apex:selectList id="rt" size="1" required="true" value="{!selectedrecordtype}">
+                       <apex:selectOptions value="{!caserecordtypes}" />
+                    </apex:selectList>
+                    
+                </apex:pageBlockSection>
+                
+            </apex:pageBlock>
+    </apex:form>
+</apex:page>

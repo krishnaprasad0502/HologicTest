@@ -1,0 +1,5 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="QuoteExtController"  action="{!onPreview}">
+<apex:pageMessages />
+<p><apex:outputLink value="/{!SBQQ__Quote__c.id}" id="backLink">Return to Quote</apex:outputLink></p>
+<sbaa:approvalPreview approvals="{!approvals}"/>
+</apex:page>

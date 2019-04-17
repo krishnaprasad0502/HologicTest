@@ -1,0 +1,10 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="AccountsAndSitesClassMobile" action="{!redirectToVf}">
+    
+    <input id="hiddenElement" type="hidden" />
+    
+     
+   <apex:outputPanel id="sf1ReloadPanel" rendered="{!$User.UIThemeDisplayed == 'Theme4t'}">
+ <c:AccountsAndSitesComponentMobile />
+</apex:outputPanel>
+   
+</apex:page>

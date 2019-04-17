@@ -1,0 +1,31 @@
+.THIS .header1{
+    font-size:22px;
+    font-family: 'ProximaNova-Bold',sans-serif ;
+    font-weight: bold;
+    color: #131f6b
+}
+.THIS .header2{
+    font-size:18px;
+    font-family: 'ProximaNova-Semibold',sans-serif ;
+    font-weight: 600;
+    color: #131f6b;
+    padding-bottom: 8px;    
+    line-height:22px;
+}
+.THIS .content-text{
+    font-size:14px;
+    font-family: 'ProximaNova-rg',sans-serif ;
+    color: #131f6b;
+    line-height:20px;
+    font-weight: 300;
+}
+@media screen and (min-width: 768px){
+    .THIS .right-panel{
+        padding-left:60px;
+    }
+}
+@media screen and (max-width: 480px){
+    .THIS .right-panel{
+        padding-left:20px;
+    }
+}

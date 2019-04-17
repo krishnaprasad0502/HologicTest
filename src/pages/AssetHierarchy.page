@@ -1,0 +1,53 @@
+<!------------------------------------------------------------
+Author:			Denise Bacher
+Company:		Salesforce.com
+Description:	Displays asset hierarchy for a specific asset
+
+History:
+<Date>			<Authors Name>		<Brief Description of Change>
+03/31/2015		Denise Bacher		Initial Creation (US539)
+05/10/2016		Denise Bacher		Update popover to provide more detail (US958)
+------------------------------------------------------------>
+<apex:page standardController="Asset" extensions="AssetHierarchy_ControllerX" tabStyle="Account" 
+		docType="html-5.0" standardStylesheets="false" showHeader="true" sidebar="false">
+		
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-2.2.2.min.js')}"/>
+	<apex:includeScript value="{!$Resource.svg4everybody}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system.min.css')}"/>
+	
+	<style>
+		body {
+			margin: 0px !important;
+		}
+	</style>
+	
+	<script>
+		$j = jQuery.noConflict();
+		$j(document).ready(function() {
+			svg4everybody();
+		});
+	</script>
+	
+	<div class="slds">
+		<div class="slds-page-header">
+			<div class="slds-grid">
+				<div class="slds-col slds-has-flexi-truncate">
+					<p class="slds-text-heading--label">Asset Hierarchy</p>
+				</div>
+			</div>
+		</div>
+		
+		<apex:messages id="messages" styleClass="slds-notify slds-notify--alert slds-theme--error slds-theme--alert-texture" />
+		
+		<div id="notifications" class="slds-notify_container">
+		</div>
+		
+		<c:ObjectNodeHierarchy objNodes="{!jsonAssetHierarchy}" customPopover="true"/>
+		
+		<apex:repeat value="{!assets}" var="asset">
+			<c:AssetPopover asset="{!asset}" fields="{!popoverFields}"/>
+		</apex:repeat>
+		
+	</div>
+</apex:page>

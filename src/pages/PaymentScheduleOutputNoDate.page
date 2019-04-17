@@ -1,0 +1,41 @@
+<apex:page showHeader="false" sidebar="false" cache="false" contentType="text/xml" controller="PaymentScheduleController">
+    <block>
+    <table table-layout="fixed" width="100%" border-color="#000000" border-width="1px" border-style="solid">
+            <table-column column-width="20%"/>
+            <table-column column-width="20%"/>
+            <table-column column-width="20%"/>
+            <table-column column-width="40%"/>
+
+        <table-header>
+            <table-row font-weight="bold" font-size="0.7em" text-align="left" color="#000000" >
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt"><block>Payment Frequency</block></table-cell>
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt"><block># of Payments</block></table-cell>
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt"><block>Payment Amount</block></table-cell>
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt"><block>Payment Notes</block></table-cell>
+            </table-row>
+        </table-header>
+
+        <table-body>
+        <apex:repeat var="p" value="{!payments}">
+            <table-row font-size="0.7em">
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="left" >
+                    <block>{!p.Payment_Frequency__c}</block>
+                </table-cell>
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="left" >
+                    <block>{!p.Number_of_Payments__c}</block>
+                </table-cell>
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="right" >
+                    <block><apex:outputText value="{0, Number, Currency}" >
+                                <apex:param value="{!p.Payment_Amount__c}" />
+                                </apex:outputText>
+                    </block>
+                </table-cell>
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="left" >
+                    <block>{!p.Payment_Notes__c}</block>
+                </table-cell>
+            </table-row>
+        </apex:repeat>
+        </table-body>
+    </table>
+    </block>
+</apex:page>

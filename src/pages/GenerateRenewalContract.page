@@ -1,0 +1,12 @@
+<apex:page standardController="Opportunity" showHeader="true" sidebar="true" extensions="Ext_GenerateRenewalContract" action="{!RunThat}">
+	<apex:form >
+		<apex:pageMessages ></apex:pageMessages>
+		<apex:pageBlock >
+		<apex:outputText value="{!Opportunity.SBQQ__PrimaryQuote__c}{!Opportunity.Renew_Contract_Option__c}{!Opportunity.Renewal_Quote_Creation__c}{!Opportunity.SBQQ__RenewedContract__c}" rendered="false"/>
+		<apex:pageBlockButtons location="bottom">
+			<apex:commandButton action="{!returnToPrevious}" value="Return to Opportunity"/>
+			<apex:commandButton action="{!gotoQuote}" value="Go To Quote" rendered="{!showButton}"/>
+		</apex:pageBlockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

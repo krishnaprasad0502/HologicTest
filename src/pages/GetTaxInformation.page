@@ -1,0 +1,49 @@
+<apex:page standardController="SBQQ__Quote__c" showHeader="true" sidebar="true" extensions="GetTaxInformationController" action="{!invokeAsynchronousTaxService}">
+
+<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system.min.css')}"/>
+
+    <style>
+        .slds .slds-button-group {
+            display: -webkit-inline-flex;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+        }
+        
+        .slds .slds-button-group .slds-button:first-of-type {
+            border-radius: 4px 0 0 4px;
+            border-left: 1px solid #d8dde6;
+        }
+    </style>
+    
+    <!-- Main canvas -->    
+    <div class="slds">
+        <!--apex:pageMessages ></apex:pageMessages-->
+        
+        <apex:messages />
+        <apex:form >
+            <div class="slds-form-element">
+            <apex:pageBlock >
+                <h1>
+                    <apex:outputText id="quoteNumber" value="Generating tax for Quote : {!SBQQ__Quote__c.Name}" rendered="true"/>
+                </h1>
+            </apex:pageBlock>
+            </div>
+            <apex:outputLabel for="response" value="Tax Calculation Response"/>
+            <apex:pageBlock id="response">
+                <apex:outputPanel id="taxInformationStatus">
+                    <apex:outputText value="{!taxInformationStatus}"/>
+                </apex:outputPanel>
+                <apex:outputText id="quoteId" value="{!SBQQ__Quote__c.Id}" rendered="false"/>
+                <apex:outputText id="OpptyRecordType" value="{!SBQQ__Quote__c.Opportunity_Record_Type__c}" rendered="false"/>
+                <apex:outputText id="approvalStatus" value="{!SBQQ__Quote__c.ApprovalStatus__c}" rendered="false"/>
+                <!--apex:pageBlockButtons location="bottom">
+                    <apex:commandButton action="{!invokeTaxCalculation}" value="Generate Tax" reRender="taxInformationStatus"/>
+                </apex:pageBlockButtons-->
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton styleClass="slds-button slds-button--neutral" action="{!backToQuote}" value="Back to Quote"/>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+        </apex:form>                       
+    </div> 
+</apex:page>

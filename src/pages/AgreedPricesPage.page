@@ -1,0 +1,42 @@
+<!--------------------------------------------------------------------------------------------------------------------
+Author:     Gerald Ricciardi
+Company:    Apps Associates
+Description:  Custom controller to get Agreed Prices for an Account
+Test Class:    Test_AgreedPricesController
+
+History:
+<Date>      <Authors Name>    <Brief Description of Change>
+07/27/2017   Gerald Ricciardi    Initial Creation (US-0003129)
+
+---------------------------------------------------------------------------------------------------------------------->
+
+<apex:page >
+    <apex:includeLightning />
+    <apex:slds />
+    
+    <apex:variable var="c" value="{!$CurrentPage.parameters.id}" />
+    <body class="slds-scope">
+        <div class="slds-page-header">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contract" title="Agreed Prices">
+                        <svg class="slds-icon" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#contract"></use>
+                        </svg>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="title goes here">AGREED PRICES</h1>
+                    <p class="slds-text-body_small slds-line-height_reset"><a href="{!'/one/one.app?#/sObject/'+ $CurrentPage.parameters.Id + '/view'}">{!$CurrentPage.parameters.name}</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="viewAgreedPrices" />
+        <script>
+        $Lightning.use("c:ViewAgreedPrices", function() {
+            $Lightning.createComponent("c:AgreedPricesForAccount", { "accountId" : "{!$CurrentPage.parameters.id}"}, "viewAgreedPrices", function(cmp){});
+        });
+        </script>
+    </body>  
+</apex:page>

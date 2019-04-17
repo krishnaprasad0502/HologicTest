@@ -1,0 +1,15 @@
+.THIS .search-container{
+    width: 53%;
+    margin: auto !important ;
+}
+
+.THIS .slds-grid .hero-div{
+    width:50% !important ;
+    margin: auto !important ;
+    padding-top:180px !important ;
+}
+.THIS .slds-grid .hero-sub-div{
+    
+    width:30% !important ;
+    margin: auto !important ;
+}

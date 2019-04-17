@@ -1,0 +1,7 @@
+<aura:documentation>
+    <aura:description><p>
+        This lightning component is used to show the asset list view based on the product community product description
+        </p>
+    </aura:description>
+    
+</aura:documentation>

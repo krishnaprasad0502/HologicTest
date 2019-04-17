@@ -1,0 +1,7 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+        	This component is used to show the action buttons on asset detail page.
+        </p>
+    </aura:description>
+</aura:documentation>

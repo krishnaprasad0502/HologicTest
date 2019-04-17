@@ -1,0 +1,586 @@
+<!--***************************************************************************
+Author:Vrushabh Kataria
+Company:Hexaware Technologies
+Description: This component is used fetch/display/update current logged in User details
+
+History:
+<Date>              <Author Name>        <Brief description of change>      	<Copa.do US#>
+03/01/2018          Vrushabh Kataria     Initial creation                   		US-0006454
+08/01/2019			YogithaMalireddy	 Made changes for the aligment of the page  US-0006454
+****************************************************************************-->
+<aura:component controller="UserProfileDetailController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+    <aura:attribute name="userInfo" type="User" default="{ sobjectType: 'User' }"/>	
+    <aura:attribute name="editable" type="Boolean" default="false"/>
+    <aura:attribute name="PhoneValidationPassed" type="Boolean" default="false"/>
+    <aura:attribute name="PhoneErrorMessage" type="string" default=""/>   
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+        <div class="slds-form slds-form_stacked " role="list" style="margin:auto;">
+            <div class="slds-grid slds-gutters_small">
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">First Name</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.FirstName}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">Last Name</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.LastName}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            
+            <div class="slds-grid slds-gutters_small">
+                <fieldset class="slds-form-element slds-form_compound">
+                    <div class="slds-form-element slds-size_2-of-6">
+                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Company</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static form-style">{!v.userInfo.CompanyName}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">Job Title</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.Title}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>        
+            <div class="slds-grid slds-gutters_small">
+                <div class="slds-form-element slds-size_1-of-6">
+                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters_small">
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_3-of-6">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">Email</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.Email}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<div class="slds-form-element slds-size_1-of-3">
+                                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                </div>
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-3">
+                                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                </div>
+                            </div>-->
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="slds-form-element slds-form_compound">
+                    <div class="slds-form-element slds-size_1-of-3">
+                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                            <aura:if isTrue="{!!(v.editable)}">
+                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                    <span class="slds-form-element__label">Mobile Phone</span>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__static form-style">{!v.userInfo.MobilePhone}</div>
+                                    </div>
+                                </div>
+                                <aura:set Attribute="else">
+                                    <div class="slds-form-element slds-is-editing">
+                                        <!--<label class="slds-form-element__label" for="form-element-id-03">Mobile Phone</label>-->
+                                        <div class="slds-form-element__control form-style">
+                                            <!--<input type="String" id="form-element-id-03" class="slds-input" value="{!v.userInfo.MobilePhone}" />-->
+                                            <lightning:input name="input3" label="Mobile Phone" value="{!v.userInfo.MobilePhone}" />
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="slds-grid slds-gutters_small">
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">City</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.City}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">State</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.State}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-3">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                            <span class="slds-form-element__label">Zip</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static form-style">{!v.userInfo.PostalCode}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                
+                <fieldset class="slds-form-element slds-form_compound">
+                    <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size_2-of-6">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <aura:if isTrue="{!!(v.editable)}">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Office Phone</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.Phone}</div>
+                                                </div>
+                                            </div>
+                                            <aura:set Attribute="else">
+                                                <div class="slds-form-element slds-is-editing">
+                                                    <!--<label class="slds-form-element__label" for="form-element-id-01">Office Phone</label>-->
+                                                    
+                                                    <div class="slds-form-element__control form-style">
+                                                        <lightning:input name="input1" label="Office Phone" value="{!v.userInfo.Phone}" />
+                                                        <p class="TextErrorMessage">{!v.PhoneErrorMessage}</p>
+                                                        <!--<input name="input1" id="form-element-id-01" class="slds-input" value="{!v.userInfo.Phone}" />-->
+                                                    </div>
+                                                </div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-6">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                        <aura:if isTrue="{!!(v.editable)}">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Ext.</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.Extension}</div>
+                                                </div>
+                                            </div>
+                                            <aura:set Attribute="else">
+                                                <div class="slds-form-element slds-is-editing">
+                                                    <!--<label class="slds-form-element__label" for="form-element-id-02">Ext.</label>-->
+                                                    <div class="slds-form-element__control form-style">
+                                                        <!--<input name="input2" type="String" id="form-element-id-02" class="slds-input" value="{!v.userInfo.Extension}" />-->
+                                                        <lightning:input name="input2" label="Ext." placeholder="None" value="{!v.userInfo.Extension}" />
+                                                    </div>
+                                                </div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-form slds-form_stacked " role="list" style="margin:auto;">
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">First Name</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.FirstName}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Last Name</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.LastName}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <div class="slds-form-element slds-size_1-of-1">
+                            <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__static form-style">{!v.userInfo.CompanyName}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                </div>  
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Job Title</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.Title}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                
+                <div class="slds-grid slds-gutters_small">
+                    <div class="slds-form-element slds-size_1-of-6">
+                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Email</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.Email}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <div class="slds-form-element slds-size_1-of-1">
+                            <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                <aura:if isTrue="{!!(v.editable)}">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                        <span class="slds-form-element__label">Mobile Phone</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static form-style">{!v.userInfo.MobilePhone}</div>
+                                        </div>
+                                    </div>
+                                    <aura:set Attribute="else">
+                                        <div class="slds-form-element slds-is-editing">
+                                            <!--<label class="slds-form-element__label" for="form-element-id-03">Mobile Phone</label>-->
+                                            <div class="slds-form-element__control form-style">
+                                                <!--<input type="String" id="form-element-id-03" class="slds-input" value="{!v.userInfo.MobilePhone}" />-->
+                                                <lightning:input name="input3" label="Mobile Phone" value="{!v.userInfo.MobilePhone}" />
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">City</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.City}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">State</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.State}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                <span class="slds-form-element__label">Zip</span>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-form-element__static form-style">{!v.userInfo.PostalCode}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <aura:if isTrue="{!!(v.editable)}">
+                                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                    <span class="slds-form-element__label">Office Phone</span>
+                                                    <div class="slds-form-element__control">
+                                                        <div class="slds-form-element__static form-style">{!v.userInfo.Phone}</div>
+                                                    </div>
+                                                </div>
+                                                <aura:set Attribute="else">
+                                                    <div class="slds-form-element slds-is-editing">
+                                                        <!--<label class="slds-form-element__label" for="form-element-id-01">Office Phone</label>-->
+                                                        
+                                                        <div class="slds-form-element__control form-style">
+                                                            <lightning:input name="input1" label="Office Phone" value="{!v.userInfo.Phone}" />
+                                                            <p class="TextErrorMessage">{!v.PhoneErrorMessage}</p>
+                                                            <!--<input name="input1" id="form-element-id-01" class="slds-input" value="{!v.userInfo.Phone}" />-->
+                                                        </div>
+                                                    </div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="slds-grid slds-gutters_small">
+                    <fieldset class="slds-form-element slds-form_compound">
+                        <legend class="slds-form-element__legend slds-form-element__label"></legend>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-1">
+                                        <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                                            <aura:if isTrue="{!!(v.editable)}">
+                                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                                    <span class="slds-form-element__label">Ext.</span>
+                                                    <div class="slds-form-element__control">
+                                                        <div class="slds-form-element__static form-style">{!v.userInfo.Extension}</div>
+                                                    </div>
+                                                </div>
+                                                <aura:set Attribute="else">
+                                                    <div class="slds-form-element slds-is-editing">
+                                                        <!--<label class="slds-form-element__label" for="form-element-id-02">Ext.</label>-->
+                                                        <div class="slds-form-element__control form-style">
+                                                            <!--<input name="input2" type="String" id="form-element-id-02" class="slds-input" value="{!v.userInfo.Extension}" />-->
+                                                            <lightning:input name="input2" label="Ext." placeholder="None" value="{!v.userInfo.Extension}" />
+                                                        </div>
+                                                    </div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+    <br/><br/>
+    <aura:if isTrue="{!!(v.editable)}">
+        <div>
+            <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+                <div style="width:10%;display:inline-block;">
+                    <lightning:button label="EDIT PHONE" title="Edit Phone" onclick="{!c.EditPhone}" />
+                </div>
+                <div style="width:25%;display:inline-block;">
+                    <lightning:button label="UPDATE MY COMPANY AFFILIATION" title="Update My Company Affiliation" onclick="{!c.SubmitCase}"/>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-1" >
+                            <lightning:button label="EDIT PHONE" title="Edit Phone" onclick="{!c.EditPhone}" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning:button label="UPDATE MY COMPANY AFFILIATION" title="Update My Company Affiliation" onclick="{!c.SubmitCase}"/>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+        <aura:set Attribute="else">
+            <div>
+                <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+                    <div style="width:10%;display:inline-block;">
+                        <lightning:button label="SAVE" title="Save" onclick="{!c.AmendUserDetail}" />
+                    </div>
+                    <div style="width:10%;display:inline-block;">
+                        <lightning:button label="CANCEL" title="Cancel" onclick="{!c.Cancel}"/>
+                    </div>
+                    <aura:set attribute="else">
+                        <div style="padding-left:20px;float:left">
+                            <lightning:button label="SAVE" title="Save" onclick="{!c.AmendUserDetail}" />
+                        </div>
+                        <div style="padding-right:20px;float:right">
+                            <lightning:button label="CANCEL" title="Cancel" onclick="{!c.Cancel}"/>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </aura:set>
+    </aura:if>
+    <br/><br/>
+</aura:component>

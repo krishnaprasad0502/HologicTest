@@ -1,0 +1,118 @@
+<!--
+****************************************************************************************************
+    Author       : Nikhil Mutyam
+    Company      : Hexaware Technologies
+    Description  : List of Actions to be displayed on Case List View
+	Created Date : 9/14/2018 7:13 AM
+
+    History:
+    <Date>          <Author Name>			<Brief Description of Change>			<Copa.do US#>
+	9/14/2018		Nikhil Mutyam			Initial Creation									US-0005701 
+	02/11/2018		Nomita Walke			Added Site URL to all navigation.
+	04/12/2018	    Nikhil Mutyam			Code changes to to display a larger 
+											Modal whencase deflection is switched 
+											on     												US-0006257
+	31/12/2018		Vrushabh Katariya		Default the Priority for Submit an Issue to 'Sev 2'	US-0006454
+ 	23/01/2019		Yogitha Malireddy		Added Submit Disposable Issues button				US-0006553
+ 	06/02/2019		Vrushabh Katariya		Fields misalignment resolved						US-0006703
+****************************************************************************************************  
+-->
+<aura:component controller = "CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes" access="global">
+	
+    <!-- Attribute Declaration -->
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="comp" type="Aura.Component"/>
+    <aura:attribute name="Type2" type="string"/>
+    <aura:attribute name="SubType2" type="string"/>
+    <aura:attribute name="Priority2" type="string"/>
+    <aura:attribute name="Subject" type="string"/>
+    <aura:attribute name="isListViewAction" type="boolean" default="false"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <!-- Added CaseTitle for Priority default to Sev 2 for Submit an Issue US-0006454 -->
+	<aura:attribute name="CaseTitle" type="string"/>   
+    
+    <!-- List of Buttons to be displayed on Listview -->
+	<div class="slds-grid slds-wrap slds-gutters slds-align_absolute-center">
+        
+        <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+            <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-12"></div>-->
+            <div class="slds-col slds-align_absolute-center">
+                <lightning:button label="Submit an Issue" title="Submit an Issue" onclick="{!c.SubmitAnIssue}" class="ButtonStyle"/>
+            </div>
+            <div class="slds-col slds-align_absolute-center">
+                <lightning:button label="Submit Disposable Issues" title="Submit Disposable Issues" onclick="{!c.SubmitDisposableIssues}" class="ButtonStyle"/>
+            </div>
+            <div class="slds-col slds-align_absolute-center">
+                <lightning:button label="General Inquiry" title="General Inquiry" onclick="{!c.GeneralInquiry}" class="ButtonStyle"/>
+            </div>
+            <div class="slds-col slds-align_absolute-center">
+                <lightning:button label="Schedule Preventive Maintenance" title="Schedule Preventive Maintenance" onclick="{!c.SchedulePreventiveMaintenance}" class="ButtonStyle"/>
+            </div>
+            <div class="slds-col slds-align_absolute-center">
+                <lightning:button label="View Service Appointments" title="View Service Appointments" onclick="{!c.ViewServiceAppointment}" class="ButtonStyle"/>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <lightning:button label="Submit an Issue" title="Submit an Issue" onclick="{!c.SubmitAnIssue}" class="ButtonStyle"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <lightning:button label="Submit Disposable Issues" title="Submit Disposable Issues" onclick="{!c.SubmitDisposableIssues}" class="ButtonStyle"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <lightning:button label="General Inquiry" title="General Inquiry" onclick="{!c.GeneralInquiry}" class="ButtonStyle"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <lightning:button label="Schedule Preventive Maintenance" title="Schedule Preventive Maintenance" onclick="{!c.SchedulePreventiveMaintenance}" class="ButtonStyle"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <lightning:button label="View Service Appointments" title="View Service Appointments" onclick="{!c.ViewServiceAppointment}" class="ButtonStyle"/>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+
+    
+    <!--Case creation popup-->
+    <aura:if isTrue="{!v.isOpen}">
+        <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+           
+			<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1"
+			class="{! $Label.c.Community_Show_Deflection == 'Yes' ? 'slds-modal slds-fade-in-open slds-modal_large' : 'slds-modal slds-fade-in-open'}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{!c.closeModel}"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        {!v.comp}
+                    </div>
+                </div>    
+            </section>
+            
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <aura:set attribute="else">
+                
+                <div class="PHONE comm-panels-container uiContainerManager siteforcePanelsContainer" data-aura-rendered-by="45:0" data-aura-class="uiContainerManager siteforcePanelsContainer">
+					<div aria-labelledby="title_26:1314;a" tabindex="-1" role="dialog" data-aura-rendered-by="30:1314;a" class="uiPanel--medium uiPanel forceMobileOverlay open active" data-aura-class="uiPanel--medium uiPanel forceMobileOverlay" aria-hidden="false" style="opacity: 1; z-index: 2; visibility: visible;">
+						<div class="container">
+                            <div class="panel-header">
+                                <h2 class="title slds-truncate" id="title_26:1314;a" data-aura-rendered-by="1:1321;a">New Case: Support</h2>
+                                <lightning:button label="Close" title="Close" onclick="{!c.closeModel}"/>
+                            </div> 
+                            <div class="panel-content scrollable">
+                            	{!v.comp}
+                            </div>
+                            <div class="panel-header">
+                                &nbsp;
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                
+            </aura:set>    
+        </aura:if>        	
+    </aura:if>
+</aura:component>

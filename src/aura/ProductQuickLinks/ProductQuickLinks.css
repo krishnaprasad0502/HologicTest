@@ -1,0 +1,19 @@
+.THIS .quick-link-header{
+    font-weight: normal;
+    Font-size:22px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight:bold;
+    color:#131f6b;
+}
+.THIS .menu-header{
+    font-weight: normal;
+    Font-size:14px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight:normal;
+    color:#008aad!important;
+    cursor: pointer;
+}
+
+.THIS .siteforceContentArea {
+    margin-bottom: 10px;
+}

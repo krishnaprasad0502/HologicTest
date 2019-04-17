@@ -1,0 +1,122 @@
+<!--
+*****************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : Helptext component on Login Form
+
+    History:
+    <Date>         <Author Name>             <Brief Description of Change>     <Copa.do US#> 
+    05/09/2018	   Sunil Kumar Sharma	     Initial Creation				   US-0005630 
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+*****************************************************************************************
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <div class="slds-grid slds-wrap" style="padding-top:50px;" >
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small" 
+             style="padding-left:20px;border-right:solid 1px lightgrey;">
+            
+            <div class="slds-grid slds-wrap" style="max-width:80%">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--medium">
+                	<header>
+                    	<h1 class= "header2">Knowledgebase</h1>
+                    </header>
+                    <p style ="" class="content-text">Access the knowledgebase to search for technical tips, frequently asked questions.</p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px;max-width:80% ">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2">Manuals</h1>
+                    </header>
+                    <p class="content-text">Access and download Hologic product manuals such as User Guides, Service manuals, and QC manuals</p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px;max-width:80%">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Service Requests</h1>
+                    </header>     
+                    <p class="content-text">Submit and track the progress of your support cases. Schedule preventive maintenance and get updates on your service appointments.</p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px;max-width:80%">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Systems</h1>
+                    </header>   
+                    <p class="content-text">View system details and entitlement information for your Hologic systems.</p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px;max-width:80%">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Reports</h1>
+                    </header>   
+                    <p class="content-text">Download Field Service Reports and Customer Service Reports for your resolved cases and access analytical data for your systems.</p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px;max-width:80%">
+                <div  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Training and Professional Services</h1>
+                    </header>   
+                    <p class="content-text">Request clinical training as well as workflow and connectivity professional services.</p>
+                </div>               
+            </div>
+        </div>
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-3 slds-p-bottom--small right-panel" style="background: #FFFFFF;">
+            <div class="slds-grid slds-wrap" >
+                <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+                	<header>
+                    	<h1 class= "header2" >Hologic Service and Support is the Sure Choice</h1>
+                    </header>
+                    <p class="content-text slds-p-bottom_small">Protect your high-performance Hologic system with the best service and support team in the industry. </p>
+                	
+                    <p class="content-text">
+                        Hologic Service and Support delivers proven expertise to improve your business results and most importantly, patient outcomes. 
+                        Experience expert services that have made us the most highly ranked provider in the industry, and the clear choice as your 
+                        healthcare partner.
+                    </p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px; ">
+                <div style="max-width:100%;" class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Exceptional Service. “It’s what we do.”</h1>
+                    </header>
+                    <p class="content-text">
+                        Achieving consistently high performance takes dedication, focus, and talent. It’s a crucial part of what makes our systems 
+                        great and it’s how we distinguish ourselves as the industry’s high performance service leader in mammography.
+                    </p>
+                    <br/>
+                    <p class="content-text">
+                    	Our decision to focus exclusively on providing service and support for Hologic systems proves our point: The sharper 
+                        our focus, the better your results.
+                    </p>
+                    <br/>
+                    <p class="content-text">
+                    	For you, this means higher system uptime resulting in fewer scheduling disruptions, increased staff productivity and 
+                        greater patient flowthrough.
+                    </p>
+                </div>               
+            </div>
+            <div class="slds-grid slds-wrap" style="margin-top:10px; ">
+                <div style="max-width:100%;" class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--medium">
+              		<header>
+                    	<h1 class= "header2" >Hologic Connectivity and Workflow Services</h1>
+                    </header>
+                    <p class="content-text">
+                        Maximizing uptime and efficiency with our image workflow. 
+                    </p>
+                    <p class="content-text">
+                    	Hologic has the connectivity experts who can provide timely and effective services to your business before and after installation
+                        of your Hologic system. Our team of experts will work directly with imaging center staff to plan, configure, diagnose and recommend 
+                        solutions that improve and optimize imaging workflow.
+                    </p>
+                      
+                </div>               
+            </div>
+    	</div>
+    </div>    
+</aura:component>

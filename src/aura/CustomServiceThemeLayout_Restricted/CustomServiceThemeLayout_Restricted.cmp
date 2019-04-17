@@ -1,0 +1,130 @@
+<!--
+*********************************************************************************************************
+	Author       : Nomita Walke
+	Company      : Hexaware Technologies
+	Created Date : 01/02/2019
+	Description: Used as theme layout for community home page for Third party users.
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	01/02/2019			Nomita Walke			Initial Creation 					US-0006345
+ 	
+*********************************************************************************************************
+-->
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes,forceCommunity:themeLayout" access="global" >
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    <!-- Attribute Declaration-->
+    <aura:attribute name="Column1" type="Aura.Component[]"/>
+    <aura:attribute name="Column2" type="Aura.Component[]"/>
+    <aura:attribute name="Column3" type="Aura.Component[]"/>
+    <aura:attribute name="Column4" type="Aura.Component[]"/>
+    <aura:attribute name="Column5" type="Aura.Component[]"/>
+    <aura:attribute name="Column6" type="Aura.Component[]"/>
+    <aura:attribute name="Column7" type="Aura.Component[]"/>
+    <aura:attribute name="Column8" type="Aura.Component[]"/>
+    <aura:attribute name="Column9" type="Aura.Component[]"/>
+    <aura:attribute name="Column10" type="Aura.Component[]"/>  
+    <aura:attribute name="height" type="String"/>  
+    <aura:attribute name="search" type="Aura.Component[]"/>
+    <aura:attribute name="backGroundStyle" type="String"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="heroImageUrl" type="String"/>
+
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    
+	<div class="slds-grid" >
+        <div class="slds-col slds-size--1-of-1">
+    		{!v.Column1}
+    	</div>
+    </div> 
+    <div class = "hero-grid" style="{!'background: url('+v.heroImageUrl+') top center /cover;'+v.height+'background-repeat:no-repeat;background-size:cover;background-position:center;'}" >
+        <aura:if isTrue="{!!($Browser.isPhone)}">
+            <div class="slds-grid "  >
+                <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-div">
+                    <label style="font-family: ProximaNova-Semibold,sans-serif;font-size:55px;
+                                  color:#131F6B !important;line-height: 55px;"> 
+                        HOLOGIC SUPPORT 
+                    </label>
+                </div>
+            </div>
+            <div class="slds-grid ">
+                <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-sub-div">
+                    <label style="font-family: ProximaNova-rg,sans-serif;font-size:18px;font-weight:300;
+                                  color:#131F6B !important; "> 
+                        Personalized support when you need it 
+                    </label>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-grid "  >
+                    <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-div-mobile">
+                        <label style="font-family: ProximaNova-Semibold,sans-serif;font-size:35px;
+                                      color:#131F6B !important;line-height: 55px;"> 
+                            HOLOGIC SUPPORT 
+                        </label>
+                    </div>
+                </div>
+                <div class="slds-grid "  >
+                    <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-sub-div">
+                        <label style="font-family: ProximaNova-rg,sans-serif;font-size:18px;font-weight:300;
+                                      color:#131F6B !important; "> 
+                            Personalized support when you need it 
+                        </label>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        <aura:if isTrue="{!!($Browser.isPhone)}">
+            <div class="slds-grid "  >
+                <div class="slds-col slds-size--1-of-1 slds-p-bottom--small" style="width:45% !important;margin:auto !important;padding-top:15px;">
+                    <c:CustomSearch placeHolderText="{!$Label.c.Community_Search_Placeholder_Text}" searchType="Global"/>
+                </div>
+            </div>
+            <aura:set attribute="else">
+            	<div class="slds-grid "  >
+                    <div class="slds-col slds-size--1-of-1 slds-p-bottom--small" style="padding-top:10px;">
+                        <c:CustomSearch placeHolderText="{!$Label.c.Community_Search_Placeholder_Text}" searchType="Global"/>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+    <div style="background: #F5F5F5;">
+        <div class="slds-grid slds-wrap" style="max-width: 1170px;margin: auto;padding-top:20px;"> 
+            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+                {!v.Column8}
+            </div>
+            <div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+                {!v.Column9}
+            </div>
+            <div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+                {!v.Column10}
+            </div>
+        </div>  
+    </div>
+    <div class="slds-grid slds-wrap" style="max-width: 1170px;margin: auto;padding-top:30px;"> 
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+    		{!v.Column2}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" style="border-left: solid 1px #eeeeee;">
+    		{!v.Column3}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" style="border-left: solid 1px #eeeeee;">
+    		{!v.Column4}
+    	</div>
+    </div>
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small">
+    		{!v.Column6}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-3 slds-p-bottom--small">
+    		{!v.Column7}
+    	</div>
+    </div>
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-col slds-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column5}
+    	</div>
+    </div>
+</aura:component>

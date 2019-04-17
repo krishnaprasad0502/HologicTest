@@ -1,0 +1,133 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 09/21/2018
+	Description  : Service Offering Page 
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >   		<Copa.do US#>
+	8/22/2018			Sunil Kumar Sharma		Initial Creation 						US-0005633
+*********************************************************************************************************
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <h1 class= "header1">
+                    <label>Service Offerings</label>
+    			</h1>
+            </header>
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <p class="content-text">
+                    <label class= "form-label">
+                        Protect your high-performance Hologic system with the best 
+                    	service and support team in the industry.
+                    </label>
+                </p>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        The value our service and support team brings is more than just “fixing a system.” We take a holistic 
+                        approach to helping you get the most from your system—from expert clinical applications training to 
+                        software upgrades to insightful planned maintenance. We work with you as partners, to optimize your 
+                        workflow, increase your productivity and maximize system uptime.
+                    </label>
+                </p>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        Hologic Service and Support delivers proven expertise to improve your business results and most importantly,
+                        patient outcomes. Experience expert services that have made us the most highly ranked provider in the industry, 
+                        and the clear choice as your healthcare partner.  
+                    </label>
+                </p>
+            </header>
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <h1 class= "header1">
+                    <label>Connectivity and Workflow Experts</label>
+    			</h1>
+                <p class="content-text">
+                    <label class= "form-label">
+                        Hologic connectivity experts take a holistic view of your entire environment to solve issues and 
+                        optimize image workflow. Our technical team has a deep understanding of how Hologic solutions, 
+                        third-party DICOM devices, your network and PACS work together. Because our connectivity experts
+                        have a dedicated focus with connected Hologic systems, they are uniquely qualified to solve problems
+                        fast and proactively improve workflow.
+                    </label>
+                </p>
+            </header>
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <h1 class= "header1">
+                    <label>Exceptional service and support </label>
+    			</h1>
+                <p class="content-text">
+                    <label class= "form-label">
+                        A dedicated focus on mammography is one of the reasons why Hologic service is ranked #1. 
+                        Customers surveyed by ServiceTrak highlight distinct advantages of Hologic Service over 
+                        other imaging manufacturers who provide multi-vendor service.  Hologic Service scored higher
+                        in overall service per¬formance, service engineer effectiveness, response time, follow-up, 
+                        competence of install team and overall satisfaction.
+                    </label>
+                </p>
+            </header>
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <h1 class= "header1">
+                    <label>Hologic Mammography Clinical Applications</label>
+    			</h1>
+                <p class="content-text">
+                    <label class= "form-label">
+                        Hologic, the leader in mammography, offers expert-led applications courses and services targeting 
+                        your organization’s unique education and workflow needs. These courses and services are designed 
+                        to improve skills, quality control and workflow, so your team can deliver the best imaging results, 
+                        patient experience, and operational efficiency.
+                    </label>
+                </p>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        All courses and services are led by Hologic’s Clinical Applications Specialists who are subject matter
+                        experts on getting the most from your Hologic systems.
+                    </label>
+                </p>
+            </header>
+        </div>
+    </div>
+    <div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	<header>
+                <h1 class= "header1">
+                    <label>Exceptional Service. “It’s what we do.”</label>
+    			</h1>
+                <p class="content-text">
+                    <label class= "form-label">
+                    	Achieving consistently high performance takes dedication, focus, and talent. 
+                    </label>
+                </p>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        Our decision to focus exclusively on providing service and support for Hologic systems proves our 
+                        point: The sharper our focus, the better your results.
+                    </label>
+                </p>
+            </header>
+        </div>
+    </div>
+</aura:component>

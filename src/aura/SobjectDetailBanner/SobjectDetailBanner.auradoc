@@ -1,0 +1,5 @@
+<aura:documentation>
+	<aura:description>
+    	The component is created to show customized header on object detail page.
+    </aura:description>
+</aura:documentation>

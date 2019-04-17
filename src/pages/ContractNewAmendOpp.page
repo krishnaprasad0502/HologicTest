@@ -1,0 +1,13 @@
+<apex:page standardController="Contract" showHeader="true" sidebar="true" extensions="Ext_ContractNewAnR" action="{!RunThat}">
+	<apex:form >
+		
+		<apex:pageMessages ></apex:pageMessages>
+		<apex:pageBlock >
+		<apex:pageBlockButtons location="bottom">
+			<apex:commandButton action="{!returnToPrevious}" value="Return to Contract"/>
+			<apex:commandButton action="{!gotoQuote}" value="Go To Quote" rendered="{!showButtonQuote}"/>
+			<apex:commandButton action="{!gotoOpp}" value="Go To Opportunity" rendered="{!showButtonOpp}"/>
+		</apex:pageBlockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

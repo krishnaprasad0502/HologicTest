@@ -1,0 +1,55 @@
+<apex:page standardController="Account" extensions="addScheduleToAccount" id="page1">
+    <apex:form id="form1">
+
+        <apex:pageBlock title="Prioritize Selected Schedules on the Account ({!accountName})">
+
+            <apex:outputPanel id="errorMessages" style="width: 100%;">
+                <apex:pageMessage severity="warning" strength="2" title="Warning!" rendered="{!errors.size > 0}">
+                    <apex:dataList value="{!errors}" var="specificError">
+                        {!specificError}
+                    </apex:dataList>
+                </apex:pageMessage>
+            </apex:outputPanel>
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!saveAll}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockTable value="{!PrioritizerPage}" var="w">
+                <apex:column headerValue="Order">
+                    <apex:inputField value="{!w.theCEC.Precedence_Value__c}" rendered="{!w.displayMe}"/>
+                </apex:column>
+                <apex:column headerValue="Tier">
+                    <apex:inputField value="{!w.theCEC.Tier__c}" rendered="{!w.displayMe}" />
+                </apex:column>
+                <apex:column headerValue="Eff. Date">
+                    <apex:inputField value="{!w.theCEC.Effective_Date__c}" rendered="{!w.displayMe}" />
+                </apex:column>
+                <apex:column headerValue="Exp. Date">
+                    <apex:inputField value="{!w.theCEC.Expiration_Date__c}" rendered="{!w.displayMe}" />
+                </apex:column>                
+                <apex:column >
+                    <apex:facet name="header">GPO</apex:facet>
+                    <apex:outputTExt value="{!w.AccountName}" rendered="{!w.displayMe}" />
+                </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">Contract Number</apex:facet>
+                    <apex:outputText value="{!w.ContractNumber}" rendered="{!w.displayMe}" />
+                </apex:column>                 
+                <apex:column >
+                    <apex:facet name="header">Contract Eff. Date</apex:facet>
+                    <apex:outputText value="{0,date,MM/dd/yy}" rendered="{!w.displayMe}" > <apex:param value="{!w.ContractEffDate}" /> </apex:outputText>
+                </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">Contract Exp. Date</apex:facet>
+                    <apex:outputText value="{0,date,MM/dd/yy}" rendered="{!w.displayMe}" > <apex:param value="{!w.ContractExpDate}"  /> </apex:outputText>
+                </apex:column>   
+
+            </apex:pageBlockTable>
+     
+        </apex:pageBlock>
+        <br/>
+
+    </apex:form>
+</apex:page>

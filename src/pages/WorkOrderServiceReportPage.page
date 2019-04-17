@@ -1,0 +1,8 @@
+<apex:page standardController="WorkOrder"
+		   extensions="WorkOrderServiceReportController"
+		   lightningStylesheets="true"
+		   action="{!generateReport}">
+
+	<apex:pageMessages />
+
+</apex:page>

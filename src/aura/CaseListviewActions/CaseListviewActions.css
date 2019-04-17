@@ -1,0 +1,13 @@
+.THIS .ButtonAlignment{
+    text-align: right;
+}
+.THIS .ButtonStyle{
+    width: 90%;
+}
+.THIS .slds-size_1-of-1{
+    padding-bottom: 5px;
+}
+/*.THIS .slds-col {
+    padding-right: 0px !important; 
+    padding-left: 0px !important;
+}*/

@@ -1,0 +1,11 @@
+.THIS .favourite-button{
+    background-color: #008aad;
+    font-weight: 600;
+    font-size: 12px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    color: #ffffff;
+    border: solid 1px;
+    display: inline-block;
+    text-align: center;
+    width: 100% ;
+}

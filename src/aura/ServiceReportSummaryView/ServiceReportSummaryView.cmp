@@ -1,0 +1,38 @@
+<!--
+*********************************************************************************************************
+    Author : Vrushabh Katariya
+    Company : Hexaware Technologies
+    Description : To Display Latest Service Report Link
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>		<Copa.do US#>
+	11/15/2018	   Vrushabh Katariya		        Initial Creation 					US-0006170
+*********************************************************************************************************    
+-->
+<aura:component controller="ServiceReportSummaryViewController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ServiceAppointmentRecord" type="ServiceAppointment" />
+    <aura:attribute name="isReportReady" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    <aura:if isTrue="{!v.isReportReady}">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-wrap" >
+                <div class="slds-col slds-size--1-of-1 slds-float_left" >
+                    <lightning:icon iconName="custom:custom12" size="small" /> 
+                    <label class="form-labels" >&nbsp;&nbsp;Service Report</label>
+                </div>
+            </div>
+            
+            <div class="slds-grid slds-wrap record-view-Div" >
+                <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2" >
+                    <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="ServiceAppointment">
+                        <lightning:outputField fieldName="Community_Service_Report_Link__c" variant="label-hidden"/>
+                    </lightning:recordViewForm>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

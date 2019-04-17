@@ -1,0 +1,12 @@
+<design:component>
+	<design:attribute name="MenuType" label="Menu Type" datasource="PRODUCT INFORMATION, SERVICE REQUESTS,SERVICES, COMMUNITY, ABOUT HOLOGIC SUPPORT, CONTACT INFORMATION, REPORTS, QUICK LINKS,Breast Health,Skeletal Health, CONTACT US" default="PRODUCT INFORMATION" description="Select Manu Type" />
+    <design:attribute name="CustomHeaderText" label="Custom Header Name" description="Show Custom header name" />
+	<design:attribute name="ShowCustomHeader" label="Show Custom Header" description="Show Custom header name" />
+    <design:attribute name="IconName" label="Lightning Standard Icon Name" description="Show icons" />
+ 	<design:attribute name="Line2Header" label="Line 2 header text" description="Show line2 header name" />
+    <design:attribute name="Line2Url" label="Line 2 Url" description="Show line2 url address" />
+    <design:attribute name="showLine2" label="Show Line2?" description="Show line 2?" /> 
+    <design:attribute name="Line3Header" label="Line 3 header text" description="Show line3 header name" />
+    <design:attribute name="Line3Url" label="Line 3 Url" description="Show line3 url address" />
+    <design:attribute name="showLine3" label="Show Line3?" description="Show line 3?" /> 
+</design:component>

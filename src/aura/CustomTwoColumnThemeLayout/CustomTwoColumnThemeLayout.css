@@ -1,0 +1,32 @@
+.THIS .search-container{
+    padding-top: 230px;
+    width: 70%;
+    margin: auto;
+}
+
+/* Extra small devices / Phones */
+@media only screen and (max-width: 480px) {
+    .THIS .cCustomKnowledge .searchResults {
+        padding: 0 16px;
+    }  
+    .THIS .slds-tree__item {
+        width: 98%;
+    }
+    .THIS .cDynamicListing {
+        padding: 0 16px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .THIS .cDynamicListing {
+    	
+	}
+}
+
+@media only screen and (min-width: 720px) {
+    .THIS .left-panel {
+    	width:66% !important
+	}
+    .THIS .right-panel {
+    	width:34% !important
+	}
+}

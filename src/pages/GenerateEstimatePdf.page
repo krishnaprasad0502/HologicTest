@@ -1,0 +1,214 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Kasmoor Reddy
+Description:    VF page button on WorkOrder object which Generate Estimate PDF having the list of information related 
+                to WorkOrder and workOrderlineitems.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+08/17/2017      Kasmoor Reddy       Initial Creation (US3314)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardStylesheets="false" id="pge" renderAs="pdf" standardController="WorkOrder" extensions="GenerateEstimate"  applyHtmlTag="false" showHeader="false" >
+<apex:form >
+<head>
+    <style>
+        
+            margin-top: 1cm;
+            margin-bottom: 4cm;
+
+            @top-center {
+                content: element(header);
+            }
+            @bottom-left {
+                content: element(footer);
+            }
+        }
+
+        div.header {
+            padding: 10px;
+            position: running(header);
+        }
+        div.footer {
+            display: block;
+            padding: 5px;
+            position: running(footer);
+        }
+        .pagenumber:before {
+            content: counter(page);
+        }
+        .pagecount:before {
+            content: counter(pages);
+        }
+        div.content {
+            border-style:dotted;
+            float: left;
+            width: 100%;
+        }
+    </style>
+    
+</head>
+
+<!-- CONTENT -->
+<div class="contet">
+    <table border="0">
+        <tr>
+          <td align="left">
+            <apex:image id="theImage" value="{!$Resource.Hologic_Logo_PDF}" width="200" height="50"/>
+            </td>
+            <td >
+              <p>10210 Genetic Center Drive <br/>
+                San Diego, CA 92121 <br/>
+                Tel: (888)484-4747 <br/>
+                  Fax: (858)410-8250</p>
+            </td>
+             <td>
+                <div style="width:250px;height:40px;border:1px solid #000000;font-family:arial;font-size:200%;ont-weight: bold !important;">
+                 Repair Quotation
+                </div>
+                
+             Authorization Required <br/>
+                Approved: ___________________________ <br/>
+                Rejected: ___________________________ <br/>
+                Auth Code: __________________________ <br/>
+                Signature: ___________________________
+                
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                     <table border="0" width="90%" align="left">
+                        <tr>
+                           <td align="left">Date:</td>
+                           <td align="left">{!For_Date}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Repair Number:</td>
+                           <td align="left">{!WorkOrderDetails.WorkOrderNumber}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Quote Status:</td>
+                           <td align="left">{!Quote_Status}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        
+                        <tr>
+                           <td align="left">Customer:</td>
+                           <td align="left">{!WorkOrderDetails.Asset.Account.Parent.Name}</td>
+                           <td align="left">Address:</td>
+                           <td>{!Address_City}</td>
+                        </tr>
+                        <tr>
+                           <td align="left"></td>
+                           <td align="left"></td>
+                           <td></td>
+                           <td>{!Address_State}</td>
+                        </tr>
+                        <tr>
+                           <td align="left"></td>
+                           <td align="left"></td>
+                           <td></td>
+                           <td>{!Address_Zip}</td>
+                        </tr>
+                        <tr>
+                           <td align="left">Contact:</td>
+                           <td align="left">{!WorkOrderDetails.Contact.Name}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Acc Num:</td>
+                           <td align="left">{!WorkOrderDetails.Asset.Customer_Account__r.AccountNumber}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Service Req:</td>
+                           <td align="left">{!WorkOrderDetails.Case.CaseNumber}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Customer PO:</td>
+                           <td align="left">{!WorkOrderDetails.Case.PO_Number__c}</td>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                        <tr>
+                           <td align="left">Contract Num:</td>
+                           <td align="left">{!contractnum}</td>
+                           <td align="left">Phone:</td>
+                           <td align="left">{!WorkOrderDetails.Contact.Phone}</td>
+                        </tr>
+                        
+                  </table>
+            </td>     
+           
+        </tr>
+        <tr>
+            <td colspan="3">
+           
+                <table>
+                    <tr>
+                       <td align="Left" colspan="2"><h3>Product Information</h3></td>
+                       
+                       
+                    </tr>
+                    <tr>
+                       <td align="left">Product Number:</td>
+                       <td align="left">{!WorkOrderDetails.Asset.Product2.Name}</td>
+                       
+                    </tr>
+                    <tr>
+                       <td align="left">Description:</td>
+                       <td align="left">{!WorkOrderDetails.Asset.Product2.Description}</td>
+                       
+                    </tr>
+                    <tr>
+                       <td align="left">Serial Number:</td>
+                       <td align="left">{!WorkOrderDetails.Asset.SerialNumber}</td>
+                       
+                    </tr>
+               </table>
+
+           
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+            <h3> Technician Notes</h3>
+                {!WorkOrderDetails.Description}
+            </td>
+        </tr>
+         <tr>
+            <td colspan="3">
+                <h2>Repair Estimate Details</h2>
+                <apex:outputText value="{!printtable}" escape="false" rendered="{!IF(WorkOrderLineItemlist.size>0, true, false)}"></apex:outputText>
+              </td>
+        </tr>
+        <tr>
+            <td align="right" colspan="3">
+                <span style="padding-right:5px"><b>Total:{!totalcount}</b></span><br/>
+                <span style="padding-left:300px;fontsize:12px"><b>Shipping and handling charges will be added to invoice.</b></span>
+            </td>
+        </tr>
+         <tr>
+           
+           <td align = "left" colspan="3">
+               <h3>Terms and Conditions:</h3>
+         <p style="font-family:times;text-align:justify">Unless otherwise agreed to in writing by Hologic,all orders are subject to the Hologic Master Sales Terms and 
+                     Conditions,which is available on Hologic's website under the Product Support section at 
+                                     <a href="http://www.hologic.com/en/product-support-link/overview">http://www.hologic.com/en/product-support-link/overview</a>.
+                   
+               </p>
+             
+             </td>
+                
+        </tr>
+        </table>
+</div>
+</apex:form>
+</apex:page>

@@ -1,0 +1,43 @@
+<!--
+**********************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : Quick Links on Products
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>  		<Copa.do US#>
+	8/22/2018	   Sunil Kumar Sharma		        Initial Creation 					US-0005699 
+	11/13/2018	   Nomita Walke			        Fixed url issue 					US-0006075
+ 	11/27/2018		Nomita Walke		Fixed helper.js to remove Known issue bypass for category US-0006257
+	12/03/2018		Nomita Walke		Fixed Style class for Menu title cursor issue. US-0006257
+	12-10-2018          Sunil Kumar Sharma   Initial Creation                   US-0006257 
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+**********************************************************************************************   
+-->
+
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <!-- Attribute Declaration -->
+    <aura:attribute name="MenuType" type="String" default="Quick Links"/>
+    <aura:attribute name="isMenuHeader" type="Boolean"/>
+    <aura:attribute name="menuUrl" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="sobjRecord" type="List" />
+    <aura:attribute name="sobjFieldName1" type="String" />
+    <aura:attribute name="sobjFieldName2" type="String" />
+    <aura:attribute name="SobjType" type="String" default="Product2"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <aura:if isTrue="{!v.isMenuHeader}">
+        <div class="slds-grid slds-wrap " >
+            <div class="slds-col slds-size--1-of-1">
+                <label class="quick-link-header">{!v.MenuType}</label>
+            </div>
+        </div> 
+        <aura:set attribute="else">
+            <div class="slds-grid slds-wrap " >
+                <div class="slds-col slds-size--1-of-1">
+                    <a onclick="{!c.gotoMenuURL}" ><label class="menu-header">{!v.MenuType}</label></a>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

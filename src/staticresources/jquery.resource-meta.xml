@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>application/zip</contentType>
+    <description>jQuery v2.0.0; jQueryUI v1.11.4; jQuery BlockUI Plugin</description>
+</StaticResource>

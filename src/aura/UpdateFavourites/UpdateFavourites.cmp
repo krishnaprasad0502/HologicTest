@@ -1,0 +1,35 @@
+<!--
+*********************************************************************************************************************
+    Author       : Nikhil Mutyam
+    Company      : Hexaware Technologies
+	Created Date : 8/28/2018 3:14 AM
+    Description  : Update,Remove and Assign an Asset record as a favourite.
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>  		<Copa.do US#>
+    8/28/2018	   Nikhil Mutyam					Initial Creation					US-0005700
+*********************************************************************************************************************   
+-->
+<aura:component controller="UpdateFavouritesController" implements="force:lightningQuickAction,forceCommunity:availableForAllPageTypes,force:hasRecordId" >
+	
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="display" type="string"/>
+    
+    <!-- Logic -->
+    <div style="text-align:right">
+        <aura:if isTrue="{!v.display == 'False'}">
+        	<button class="slds-button favourite-button" onclick="{!c.UpdateRecordtoFavourite}" >
+                Add to Favorite
+        	</button>  
+        </aura:if>
+        <aura:if isTrue="{!v.display == 'True'}">
+        	<button class="slds-button favourite-button" onclick="{!c.RemoveFavourite}">
+                Remove Favorite
+        	</button>  
+        </aura:if>
+    </div>    
+</aura:component>

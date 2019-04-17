@@ -1,0 +1,304 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="OrderConfirmationPageController" id="page1" action="{!ValidateOrder}">
+    
+    <apex:form id="form1">
+
+        
+        
+        <apex:actionstatus id="status">
+            <apex:facet name="start">
+                <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+                       height:500%; opacity:0.75;width:100%; position:absolute;"> 
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 30% 50%; opacity:0.75;">
+                        <img src="/img/loading.gif" title="Please Wait..." />
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionstatus>
+
+      
+        <apex:pageBlock id="thePageBlock" title="Order Confirmation" >
+        
+            <apex:pageMessages />
+            <apex:outputPanel id="errorMessages" style="width: 100%;">
+                <apex:pageMessage severity="error" strength="3" title="Unable to save until the following errors are corrected:" rendered="{!errors.size > 0}">
+                    <apex:dataList value="{!errors}" var="specificError">
+                        {!specificError}
+                    </apex:dataList>
+                </apex:pageMessage>
+            </apex:outputPanel>
+
+            <apex:pageBlockButtons location="Both" rendered="{!AllGood && NOT(prevDuplicate)}">
+                <apex:commandButton value="Create Order" action="{!CreateOrder}" status="status" reRender="form1"/>
+                <apex:commandButton value="Save and Cancel" action="{!SaveAndCancel}"/>
+                <apex:commandButton value="Cancel" action="{!CancelAndClose}"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockButtons location="Both" rendered="{!!AllGood || prevDuplicate}">
+                <apex:commandButton value="Return to Quote" action="{!CancelAndClose}"/>
+            </apex:pageBlockButtons>
+            
+              <apex:pageBlockSection id="theSection" title="Quote Detail" columns="2">
+                  <apex:repeat value="{!QuoteFields}" var="f">
+                      <apex:outputField value="{!quote[f.fieldPath]}"/>
+                  </apex:repeat><br/>
+                  
+                  <apex:repeat value="{!QuoteInputFields}" var="f">
+                      <apex:inputField value="{!quote[f.fieldPath]}"/>    
+                  </apex:repeat>
+                  <!-- 6/16/17 added two columns to quote line to have users select which order line type for each line (RMendoza)-->
+                  <apex:repeat id="theRepeat" value="{!QuoteWrapper}" var="w">
+                    <apex:inputField id="theInput" value="{!w.relatedQuote.Order_Type__c}">
+                        <apex:actionSupport event="onchange" reRender="pgblktble" action="{!setOrderType}"/> 
+                    </apex:inputField>
+                  </apex:repeat>
+              </apex:pageBlockSection>
+              <apex:actionFunction name="loadOrderType" id="loadOrderType" action="{!setOrderType}" reRender="pgblktble"/>
+
+            <apex:pageBlockTable value="{!QuoteWrapper}" var="w" rendered="{!!AllGood}">
+                <apex:column headerValue="Quote" rendered="{!!w.isQuoteValid}">
+
+                    <apex:outputLink value="/{!w.relatedQuote.id}">{!w.relatedQuote.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Status">
+                    <apex:outputText value="{!w.QuoteStatus}" rendered="{!!w.isQuoteValid}" escape="false" />
+                </apex:column>
+            </apex:pageBlockTable>  
+                              
+
+
+            <apex:pageBlockSection title="Quote Lines Detail" columns="1" id="qlSec">
+            <apex:pageBlockTable value="{!QuoteLineWrapper}" var="lw" rendered="{!!AllGood}" id="qltble">
+               
+                <!--<apex:column headerValue="Quote Line" rendered="{!!lw.isQuoteLineValid}">
+
+                    <apex:outputLink value="/{!lw.relatedQuoteLine.id}">{!lw.relatedQuoteLine.Name}</apex:outputLink>
+                </apex:column>-->
+                 
+                     
+               
+                
+                <apex:column rendered="{!!lw.isQuoteLineValid}">
+                    <apex:facet name="header">
+                        <apex:commandLink value="Quote Line{!IF(sortExpression=='Name',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="Name"/>
+                            <apex:param value="Name" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet> 
+                    <apex:outputLink value="/{!lw.relatedQuoteLine.id}">{!lw.relatedQuoteLine.Name}</apex:outputLink>
+                </apex:column>
+                
+                <apex:repeat var="f" value="{!$ObjectType.SBQQ__QuoteLine__c.FieldSets.OrderConfirmation}">
+                    <apex:column headerValue="{!f.label}" rendered="{!!lw.isQuoteLineValid}">
+                        <apex:outputField value="{!lw.RelatedQuoteLine[f]}" />
+                    </apex:column>
+                    
+                </apex:repeat>
+                 
+         
+          
+                
+                <apex:column rendered="{!!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Requested Date{!IF(sortExpression=='Requested_Date__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="Requested_Date__c"/>
+                            <apex:param value="Requested_Date__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!lw.relatedQuoteLine.Requested_Date__c}" /> </apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Bill To Site{!IF(sortExpression=='BillTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="BillTo_Site__c"/>
+                            <apex:param value="BillTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                  
+                    <apex:outputText value="{!lw.relatedQuoteLine.BillTo_Site__r.Name}"></apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Deliver To Site{!IF(sortExpression=='DeliverTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="DeliverTo_Site__c"/>
+                            <apex:param value="DeliverTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!lw.relatedQuoteLine.DeliverTo_Site__r.Name}"></apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Ship To Site{!IF(sortExpression=='ShipTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="ShipTo_Site__c"/>
+                            <apex:param value="ShipTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!lw.relatedQuoteLine.ShipTo_Site__r.Name}"></apex:outputText>
+                </apex:column>      
+                
+                
+                
+                
+                
+                <apex:column headerValue="Status">
+                    <apex:outputText value="{!lw.QuoteLineStatus}" rendered="{!!lw.isQuoteLineValid}" escape="false"/>
+                </apex:column>
+            </apex:pageBlockTable>  
+         
+
+
+            <apex:pageBlockTable value="{!QuoteLineWrapper}" var="lw" rendered="{!AllGood}" id="pgblktble">
+                <apex:column >
+                    <apex:facet name="header">
+                       <apex:outputPanel >
+                           <apex:inputCheckbox onclick="cvCheckAllOrNone(this)" id="MasterChkBox" title="Include in Order?" selected="false"/>
+                       </apex:outputPanel>
+                    </apex:facet>
+                    
+                
+                    <apex:inputCheckbox value="{!lw.tempIncludeInOrder}" rendered="{!lw.isQuoteLineValid}">
+                        <apex:actionSupport event="onclick" action="{!setSelected}" reRender="false">
+                            <apex:param name="QuoteLine" value="{!lw.relatedQuoteLine.Id}"/>
+                            <apex:param name="Selected" value="{!lw.tempIncludeInOrder}"/>
+                        </apex:actionSupport>
+                    </apex:inputCheckbox>
+                </apex:column>
+
+                <!--<apex:column headerValue="Quote Line" rendered="{!lw.isQuoteLineValid}">
+                    <apex:outputLink value="/{!lw.relatedQuoteLine.id}">{!lw.relatedQuoteLine.Name}</apex:outputLink>
+                </apex:column>-->
+                <apex:column rendered="{!lw.isQuoteLineValid}">
+                    <apex:facet name="header">
+                        <apex:commandLink value="Quote Line{!IF(sortExpression=='Name',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="Name"/>
+                            <apex:param value="Name" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet> 
+                    <apex:outputLink value="/{!lw.relatedQuoteLine.id}">{!lw.relatedQuoteLine.Name}</apex:outputLink>
+                </apex:column>
+                
+                <apex:repeat var="f" value="{!$ObjectType.SBQQ__QuoteLine__c.FieldSets.OrderConfirmation}">
+                    <apex:column headerValue="{!f.label}" rendered="{!lw.isQuoteLineValid}">
+                        <apex:outputField value="{!lw.RelatedQuoteLine[f]}" />
+                    </apex:column>
+                </apex:repeat>
+                 <apex:column headerValue="QuantityToShip">
+                <apex:inputField value="{!lw.relatedQuoteLine.Quantity_to_Ship__c}"/> </apex:column>
+                <!-- 6/16/17 added two columns to quote line to have users select which order line type for each line (RMendoza)-->
+                <apex:column headerValue="Order Type" rendered="{!lw.isQuoteLineValid}">
+                    <apex:inputField value="{!lw.relatedQuoteLine.Order_Type__c}" html-disabled="true" />
+                </apex:column>
+
+                <apex:column headerValue="Order Line Type" rendered="{!lw.isQuoteLineValid}">
+                    <apex:inputField value="{!lw.relatedQuoteLine.Order_Line_Type__c}" />
+                </apex:column>
+                
+                <apex:column rendered="{!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Requested Date{!IF(sortExpression=='Requested_Date__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="Requested_Date__c"/>
+                            <apex:param value="Requested_Date__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!lw.relatedQuoteLine.Requested_Date__c}" /> </apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Bill To Site{!IF(sortExpression=='BillTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="BillTo_Site__c"/>
+                            <apex:param value="BillTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!lw.relatedQuoteLine.BillTo_Site__r.Name}"></apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Deliver To Site{!IF(sortExpression=='DeliverTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="DeliverTo_Site__c"/>
+                            <apex:param value="DeliverTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!lw.relatedQuoteLine.DeliverTo_Site__r.Name}"></apex:outputText>
+                </apex:column>
+                
+                <apex:column rendered="{!lw.isQuoteLineValid}" >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Ship To Site{!IF(sortExpression=='ShipTo_Site__c',IF(sortDirection='ASC','▼','▲'),'')}" action="{!testSorting}" reRender="pgblktble">
+                            <apex:param name="sortExp" value="ShipTo_Site__c"/>
+                            <apex:param value="ShipTo_Site__c" assignTo="{!sortExpression}" ></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!lw.relatedQuoteLine.ShipTo_Site__r.Name}"></apex:outputText>
+                </apex:column>              
+
+            </apex:pageBlockTable> 
+            
+            
+            
+           
+          </apex:pageBlockSection>
+          <b>
+              <apex:outputPanel style="margin-left:90%;" id="op">
+              <!--<apex:commandLink value="<--Previous" action="{!Previous}"  reRender="qlSec,op" rendered="{!DisablePrevious}"/>&nbsp;
+              <apex:outputText value="||" rendered="{!AND(DisablePrevious,DisableNext)}"></apex:outputText> &nbsp;
+              <apex:commandLink value="Next" action="{!Next}" reRender="qlSec,op" rendered="{!DisableNext}"/>-->
+              <apex:repeat value="{!pageNumbers}" var="pgno">
+              <apex:commandLink value="[{!pgno}]" action="{!noPagination}" reRender="qlSec,op">
+                  <apex:param name="PageNumber" value="{!pgno}"/>
+              </apex:commandLink>&nbsp;&nbsp;
+              </apex:repeat>
+              </apex:outputPanel>
+          </b>
+        </apex:pageBlock>
+                
+     
+    </apex:form>  
+    
+    <script type="text/javascript">
+    
+      var previousOnload = window.onload; 
+       window.onload = function() { 
+           if (previousOnload) 
+           { 
+               previousOnload(); 
+               loadOrderType(); 
+           } 
+       } 
+    
+        function cvCheckAllOrNone(allOrNoneCheckbox) {
+        
+        // Find parent table
+        var container = allOrNoneCheckbox;
+        while (container.tagName != "TABLE") {
+            container = container.parentNode;
+        }
+
+        // Switch all checkboxes
+        var inputs = container.getElementsByTagName("input");
+        var checked = allOrNoneCheckbox.checked;
+        for (var i = 0; i < inputs.length; i++) {
+            var input = inputs.item(i);
+            if (input.type == "checkbox") {
+                if (input != allOrNoneCheckbox && input.disabled == false) {
+                    input.checked = checked;
+                    }
+                }
+            }
+        }
+
+        function getPicklistValue()
+        {
+            alert(document.getElementById('{!$Component.form1.theRepeat.theInput}').value);   
+        }
+
+    
+    
+    
+    
+    </script>      
+</apex:page>

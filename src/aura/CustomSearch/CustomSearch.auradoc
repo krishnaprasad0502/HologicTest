@@ -1,0 +1,8 @@
+<aura:documentation>
+	<aura:description>
+        This is a generic component created for search. 
+        This can be used as global search, knowledge article level search and 
+        can be further customized.
+    </aura:description>
+	
+</aura:documentation>

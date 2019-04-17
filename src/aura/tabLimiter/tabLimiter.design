@@ -1,0 +1,3 @@
+<design:component>
+	<design:attribute name="limit" label="Limit" description="Limit the number of tabs open at one time"  />
+</design:component>

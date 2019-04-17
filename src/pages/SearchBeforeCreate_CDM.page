@@ -1,0 +1,80 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Search addresses in Customer Data Management(CDM) system before creating the leads in Salesforce
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+03/01/2018      Mani Sundaresan       Initial Creation (US-4246)
+
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Lead" extensions="CDMExtension" sidebar="false" showheader="false" applyBodyTag="false" applyHtmlTag="false" standardStylesheets="false" >
+    
+    <!--Lightning Design System-->
+    <head>
+        <apex:slds />
+    </head>
+    <body class="slds-scope">
+        <apex:form id="frm">
+            <apex:pageMessages />
+            <!-- Action Function to initiate the apex callout to CDM and to display the loading image during the callout -->
+            <apex:actionFunction name="loadPageContent" action="{!searchCDM}" status="loading" reRender="frm" oncomplete="display(true);" />
+                <div id="main" style="display:none;"> 
+                <apex:dataTable value="{!wrapDataQualityOrgList}" var="dq" id="tbl" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">
+                <apex:column >
+                    <div class="slds-text-title_caps slds-truncate">
+                        <apex:facet name="header">PartyName</apex:facet>
+                    </div>
+                    <apex:outputText value="{!dq.dataQualityOrg.PartyName}" styleClass="slds-truncate"></apex:outputText>
+                </apex:column>
+                <apex:column >
+                    <div class="slds-text-title_caps slds-truncate">
+                        <apex:facet name="header">PartySiteId</apex:facet>
+                    </div>
+                    <apex:outputText value="{!dq.dataQualityOrg.PartySiteId}" styleClass="slds-truncate"></apex:outputText>
+                </apex:column>
+                <apex:column >
+                    <div class="slds-text-title_caps slds-truncate">
+                    <apex:facet name="header">Address</apex:facet>
+                    </div>
+                    <apex:outputText value="{!dq.address}" styleClass="slds-truncate"></apex:outputText>
+                </apex:column>
+                <apex:column >
+                    <div class="slds-text-title_caps slds-truncate">
+                        <apex:facet name="header">RegistryId</apex:facet>
+                    </div>
+                    <apex:outputText value="{!dq.dataQualityOrg.RegistrationId}" styleClass="slds-truncate"></apex:outputText>
+                </apex:column>
+            </apex:dataTable>
+            <br/>
+             <button class="slds-button slds-button_neutral slds-align_absolute-center" onClick="window.top.close();">Close</button>
+            </div>
+        </apex:form>
+        
+        <apex:actionStatus id="loading">
+            <apex:facet name="start">
+            <div style="z-index: 1000; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: white; opacity: 0.25">
+    
+            </div>
+            <div style="z-index: 1001; text-align: center; vertical-align: middle; position: fixed; top: 50%; left: 50%; padding: 1em; margin: -2em -10em; width: 30em; height: 35px; border-radius: 5px; background-color: transparent">
+                <img src="{!$Resource.LoadingImage}" style="vertical-align: middle; padding-right: 1em" />
+               
+            </div>
+            </apex:facet>
+         </apex:actionStatus>
+        
+        <script>
+        var previousOnload = window.onload; window.onload = function() { if (previousOnload) { previousOnload(); } loadPageContent(); }
+        
+        function display(val){
+            if(val){
+                document.getElementById('main').style.display='block';
+            }
+            else{
+                document.getElementById('main').style.display='none';
+            }
+        }
+        </script>
+            
+    </body>
+    
+</apex:page>

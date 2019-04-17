@@ -1,0 +1,7 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+        	List of Actions to be displayed on Case List View
+        </p>
+    </aura:description>
+</aura:documentation>

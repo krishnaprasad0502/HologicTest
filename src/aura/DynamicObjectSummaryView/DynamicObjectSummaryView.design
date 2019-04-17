@@ -1,0 +1,11 @@
+<design:component>
+    <design:attribute name="viewNameHeader" label="Header Text" description="Enter header text for view." />
+    <design:attribute name="iconName" label="Icon Name" description="Enter Icon Name here." />
+    <design:attribute name="sobjType" label="Sobject API Name" description="Enter Sobject API Name" />
+	<design:attribute name="childSobjType" label="Child Sobject API Name" description="Enter Child Sobject API Name" />
+    <design:attribute name="fieldSetName" label="Field Set Name" description="Enter Field Set API Name" />
+    <design:attribute name="parentObjectFieldAPIName" label="Parent Lookup Field API Name" description="Enter lookup field api name for parent object." />
+    <design:attribute name="isRelatedListView" label="Is Child Object View ?" description="True if component is used to show child object view." />
+	<design:attribute name="columnValue" label="Columns to display" description="Number of columns to display." />
+
+</design:component>

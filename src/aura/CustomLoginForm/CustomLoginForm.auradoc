@@ -1,0 +1,7 @@
+<aura:documentation>
+	<aura:description>
+    	Login form component to enter user name and password. 
+        Forgot password link and Register account links.
+    </aura:description>
+
+</aura:documentation>

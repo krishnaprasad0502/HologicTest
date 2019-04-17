@@ -1,0 +1,433 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 8/14/2018
+	Description: This lightning component is used to show the community header panel.
+
+	Controller:CommunityNavigationController
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >  <Copa.do US#>
+	8/14/2018			Sunil Kumar Sharma		Initial Creation 				US-0005633 
+ 	10/25/2018			Nomita Walke			Updated Live Chat link <a> tag.
+	02/11/2018			Nomita Walke			Added Site URL to all navigation.	US-0006062, US-0006075
+	11/13/2018			Sunil Sharma			Updated link for Live Chat		US-0006077
+	11/20/2018			Sunil Sharma			Defect fix business hours and text update for Live Chat		US-0006172
+ 	12/17/2018			Nomita Walke			Fixed error with style THIS .custom-toggle-trigger:before. Removed background url. 	US-0006345 
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+	21/12/2018			Vrushabh Katariya		Site Tour Video Link for Customer		US-0006345
+ 	03/01/2019			Sunil Sharma			UI fix									US-0006454
+ 	02/01/2019			Vrushabh Katariya		My Profile changes						US-0006454
+ 	11/01/2019			Vrushabh Katariya		Contact Us link for non login page		US-0006454
+*********************************************************************************************************
+-->
+
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes" access="global">
+   	<ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    
+    <!-- Attribute Declaration-->
+    <aura:attribute name="showMenu" type="Boolean" default="false"/>
+    <aura:attribute name="showSearch" type="Boolean" default="false"/>
+    <aura:attribute name="search" type="String"/>
+    <aura:attribute name="bShowLogin" type="Boolean" default="false"/>
+    <aura:attribute name="sUserName" type="String" default="false"/>
+    <aura:attribute name="userInfo" type="Object"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="showLiveChat" type="Boolean" default="false"/>
+    <aura:attribute name="inptText" type="String"/>
+    <aura:attribute name="ifmsrc" type="String"/>
+    <aura:attribute name="selectedTechnicalSkill" type="String"/>
+    <aura:attribute name="selectedRelatedSkill" type="String"/>
+    <aura:attribute name="isTechnicalSupportSelected" type="Boolean" /> 
+    <aura:attribute name="isButtonVisible" type="Boolean" />
+    <aura:attribute name="isOnlineHours" type="Boolean"/>
+    <aura:attribute name="technicalSupportOptions" type="List"/>    
+    <aura:attribute name="logoImageUrl" type="String"/>   
+    <aura:attribute name="currentPageUrl" type="String"/>
+    <aura:attribute name="baseUrl" type="String"/>
+    <aura:attribute name="showHeaderText" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+        <!-- Live chat Section - Starts -->
+        <aura:if isTrue="{!v.showLiveChat}">
+            <div class="live-chat" >
+                <section id= "live-chat-section" role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div id="live-chat-container" class="slds-modal__container">
+                        <header class="slds-modal__header" style="right:0px !important;">
+                            
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Live Chat Support</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <aura:if isTrue="{!!v.isOnlineHours}">
+                                <div class="slds-grid,slds-wrap">
+                                    <div class="livechat-header slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                         style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                        {!$Label.c.Live_Chat_Offline_Hours_Message}<br/>
+                                    </div>	
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-grid,slds-wrap" style="width:70%;margin:auto;">
+                                        <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                             style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size--1-of-12">
+                                                    <input type="radio" id="tokenRadioId" value="Technical Support" name="LiveChatRadio" 
+                                                           onclick="{!c.handleRadioClick}" style="width:40% ;height:1.2em;margin:left"/> 
+                                                </div>
+                                                <div class="slds-col slds-size--11-of-12">
+                                                    <label  >Technical Support</label><br/>
+                                                    <aura:if isTrue="{!v.isTechnicalSupportSelected}">
+                                                        <div class="slds-grid,slds-wrap">
+                                                            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-8 slds-p-bottom--small" 
+                                                                 style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                                <lightning:combobox aura:id="select1" class="option-list" name="select" value="" placeholder="Select Topics" options="{! v.technicalSupportOptions }" onchange="{! c.handleSelectChange }"/>            
+                                                            </div>
+                                                        </div>
+                                                    </aura:if>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                             style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size--1-of-12">
+                                            <input type="radio" id="tokenRadioId" value="Non Technical Queries" name="LiveChatRadio" onclick="{!c.handleRadioClick}" 
+                                                   style="width:40% ;height:1.2em;margin:left"/>
+                                            </div>
+                                            <div class="slds-col slds-size--11-of-12">
+                                            <label >Non-Technical Inquiries (e.g. Support Portal, Service Reports, Service Contracts Billing) </label>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                             style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size--1-of-12">
+                                                    <input type="radio" id="tokenRadioId" value="Parts Inquiries" name="LiveChatRadio" onclick="{!c.handleRadioClick}" style="width:40% ;height:1.2em;margin:left"/> 
+                                                </div>
+                                                <div class="slds-col slds-size--11-of-12">
+                                                    <label>Parts Inquiries</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <aura:if isTrue="{!v.isButtonVisible}">
+                                        <div class="slds-grid,slds-wrap" style="width:100%;margin:auto;">
+                                            <iframe width="700" height="200" style="border-width:0px;" src="{!v.ifmsrc}" />
+                                        </div>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Close" onclick="{!c.hideLiveChat}" />
+                            <!--<button class="slds-button slds-button_neutral" Press="{!c.hideLiveChat}">Close</button>-->
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>
+        <!-- Live chat Section - Ends -->
+        <div style="border-bottom:3px solid #eeeeee">
+        <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+            <div class="headerBar" style="background: #2B2967;color: #ffffff;">
+                <div class="slds-grid slds-wrap" style="height:30px;font-weight: 600;color: #E3E4E6 !important;">
+                    <div class="slds-col slds-size_4-of-12" >    
+                        <a class="logo navbar-btn slds-float_left active" href="/" title="Home" rel="home">
+                            
+                        </a>
+                    </div>
+                    <div class="slds-col slds-size_2-of-12 top-header" >
+                       <label style="color:#E3E4E6 !important;float: right;padding-right: 15px;">Need immediate help?</label> 
+                    </div>  
+                    <div class="slds-col slds-size_1-of-12 livechat top-header">
+                        <!--<div><a href="{!v.configSetting.SiteURL__c + v.configSetting.Live_Chat__c}">Live Chat</a></div>-->
+                        <div><a onclick="{!c.showLiveChat}">Live Chat</a></div>
+                    </div> 
+                    <div class="slds-col slds-size_3-of-12 top-header" style="width:23% !important">
+                        <ui:menu class="slds-float_right slds-p-right_small" >
+                            <ui:menuTriggerLink aura:id="trigger" label="Welcome">
+                                <label style="color:#E3E4E6 !important">Welcome,&nbsp;{!v.userInfo.FirstName}&nbsp;{!v.userInfo.LastName}</label>
+                                <lightning:icon iconName="utility:chevrondown" size="small"/>
+                            </ui:menuTriggerLink>
+                            <ui:menuList class="actionMenu" aura:id="actionMenu">
+                                <ui:actionMenuItem aura:id="item1" label="My Profile" click="{!c.openMyProfile}"/>
+                                <ui:actionMenuItem aura:id="item2" label="My Systems" click="{!c.gotoMenuURL5}"/>
+                                <!-- Schedule PM Future and Historic data US-0006345
+									Added One more drop down item "Site Tour" after login	
+								-->
+                                <ui:actionMenuItem aura:id="item3" label="Site Tour" click="{!c.gotoSiteTour}"/>
+                            </ui:menuList>
+                        </ui:menu>
+                    </div>
+                    
+                    <div class="slds-col slds-size_2-of-12 top-header" style="border-left: 1px solid white;">
+                        <div class="slds-float_left">
+                            <aura:if isTrue = "{!v.userInfo != null}">
+                                <ui:button press="{!c.logout}" ><label style="color:#E3E4E6 !important"><a>SIGN OUT</a></label></ui:button>
+                            </aura:if>
+                            <aura:if isTrue = "{!v.userInfo == null}">
+                                <label style="color:#E3E4E6 !important">Sign In</label>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <div class="navbar-header" style="max-width:1170px; margin:auto;height:70px;">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-3 slds-medium-size_3-of-12 slds-large-size_2-of-12">
+                    <div class="region region-navigation-left">
+                       <!-- <a class="logo navbar-btn slds-float_left active" href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}" title="Home" rel="home"> --> 
+                        <a class="logo navbar-btn slds-float_left active" href="{!v.configSetting.HologicSiteURL__c}" title="Home" rel="home">
+                            <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                            	<!--<img src="{!v.configSetting.Base_URL__c+v.configSetting.HoLogic_Logo_Url__c}" alt="Home"/>-->
+                                <img src="{!v.logoImageUrl}" alt="Home"/>
+                                <aura:set attribute="else">
+                                    <img src="{!v.logoImageUrl}" alt="Home"/>
+                                </aura:set>
+                            </aura:if>
+                        </a>
+                    </div>            
+                </div>
+                <aura:if isTrue="{!v.showHeaderText}">
+                <aura:if isTrue="{!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">          
+                        <div class="slds-col slds-size_2-of-3 slds-medium-size_9-of-12 slds-large-size_10-of-12">
+                            <p class="head-txt" >Breast and Skeletal Health, USA customers  
+                                <a onclick="{!c.scrollBottom}"  style="float:right; margin-right: 20px; color:#131f6b;"> Contact Us</a>
+                            </p>
+                         </div>                                              
+                </aura:if>    
+                </aura:if>
+                <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                    <div class="slds-col slds-size_1-of-3 slds-medium-size_8-of-12 slds-large-size_9-of-12">
+                        <div class="region region-navigation">
+                            <nav role="navigation" aria-labelledby="block-hologic-main-menu-menu" id="block-hologic-main-menu">
+                                <h2 class="sr-only" id="block-hologic-main-menu-menu">Main navigation (Header)</h2>
+                                <ul class="menu menu--main nav navbar-nav5" style="font-face: ProximaNova-Semibold character: 0px">
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals(v.configSetting.Hologic_Home__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}"  class="dropdown-toggle current-tab" data-toggle="dropdown" aria-expanded="false">
+                                                Home
+                                                <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    Home 
+                                                    <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li> 
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals($Label.c.Community_Site_Prefix+ v.configSetting.Knowledgebase__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Knowledgebase__c}" class="dropdown-toggle current-tab" data-toggle="dropdown" aria-expanded="false">
+                                                Knowledgebase 
+                                                <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Knowledgebase__c}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    Knowledgebase 
+                                                    <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li>
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals($Label.c.Community_Site_Prefix+ v.configSetting.Documentation__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Documentation__c}" class="dropdown-toggle current-tab" data-toggle="dropdown" aria-expanded="false">
+                                                Manuals <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Documentation__c}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    Manuals <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li>
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals($Label.c.Community_Site_Prefix+ v.configSetting.Products__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Products__c}" class="dropdown-toggle current-tab" data-toggle="dropdown" aria-expanded="false">
+                                                Products <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+$Label.c.Community_Site_Prefix+v.configSetting.Products__c}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    Products <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li>
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals(v.configSetting.My_Service_Requests__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+v.configSetting.My_Service_Requests__c}" class="dropdown-toggle current-tab" data-toggle="dropdown" aria-expanded="false">
+                                                My Service Requests <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+v.configSetting.My_Service_Requests__c}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    My Service Requests <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li>
+                                    <li class="expanded dropdown">
+                                        <aura:if isTrue="{!equals('/s'+ v.configSetting.My_Systems__c,v.currentPageUrl)}">
+                                            <a href="{!v.configSetting.SiteURL__c+'/s'+v.configSetting.My_Systems__c}" class="dropdown-toggle current-tab" data-toggle="dropdown current-tab" aria-expanded="false">
+                                                My Systems <span class="caret"></span>
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <a href="{!v.configSetting.SiteURL__c+'/s'+v.configSetting.My_Systems__c}" class="dropdown-toggle" data-toggle="dropdown current-tab" aria-expanded="false">
+                                                    My Systems <span class="caret"></span>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                        <ul class="dropdown-menu" style="display: none;">
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>    
+                    </div>
+                    <div class="slds-col slds-size_1-of-3 slds-medium-size_1-of-12 slds-large-size_1-of-12" style="padding-top: 23px !important;position:relative !important;">
+                        <section id="block-search-toggle" class="block block-custom-general block-custom-toggle-trigger clearfix">
+                            <div class="block--wrap">
+                                <lightning:button class="custom-toggle-trigger fa fa-search" variant="base" label="" title="" onclick="{! c.handleSearchClick }"/>
+                            </div>
+                        </section>
+                        <aura:if isTrue="{!v.showSearch}">
+                            <section id="block-searchform" class="block block-custom-general block-custom-global-search-block clearfix collapse in" aria-expanded="true" style="">
+                                <div class="block--wrap">
+                                    <div class="custom-global-search-form" data-drupal-selector="custom-global-search-form" 
+                                         id="custom-global-search-form" accept-charset="UTF-8" onkeyup="{! c.submitSearch }">
+                                        <div class="form-item js-form-item form-type-search js-form-type-search form-item-k js-form-item-k form-no-label form-group">
+                                            <label for="edit-k" class="control-label sr-only">Keywords</label>
+                                            <lightning:input class="form-search form-control" placeholder="Search by keyword" value="{!v.search}"/>                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </aura:if>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+        <aura:if isTrue="{!v.showMenu}">
+            <div id="mySidenav" class="sidenav" style="width: 288px;font-family: 'Proxima Nova Lt',sans-serif;">
+                <div class="region region-navigation-collapsible">
+                    <nav role="navigation" aria-labelledby="block-useraccountmenu-menu" id="block-useraccountmenu">
+                        <h2 class="sr-only" id="block-useraccountmenu-menu">User account menu</h2>
+                        <ul class="menu menu--account nav1 navbar-nav navbar-right" style="font-family: 'Proxima Nova Lt',sans-serif;">
+                            <li>
+                                <a data-drupal-link-system-path="package-inserts">Welcome,&nbsp;{!v.userInfo.FirstName}&nbsp;{!v.userInfo.LastName}</a>
+                            </li>
+                            <li>
+                                <aura:if isTrue = "{!v.userInfo != null}">
+                                    <a onclick="{!c.logout}" data-drupal-link-system-path="node/566">Logout</a>
+                                </aura:if>
+                            </li>
+                        </ul>
+                    </nav>
+                    <nav role="navigation" aria-labelledby="block-mainnavigation-menu" id="block-mainnavigation">
+                        <h2 class="sr-only" id="block-mainnavigation-menu">Main navigation</h2>
+                        <ul class="menu menu--main nav2 navbar-nav">
+                            <li class="expanded dropdown">
+                                <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}" class="dropdown-toggle" data-toggle="dropdown">Home <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a onclick="{!c.gotoMenuURL1}" class="dropdown-toggle" data-toggle="dropdown">Knowledgebase <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a onclick="{!c.gotoMenuURL2}" class="dropdown-toggle" data-toggle="dropdown">Manuals <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a onclick="{!c.gotoMenuURL3}" class="dropdown-toggle" data-toggle="dropdown">Products <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a href="{!v.configSetting.SiteURL__c+v.configSetting.My_Service_Requests__c}" class="dropdown-toggle" data-toggle="dropdown">My Service Requests <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a href="{!v.configSetting.SiteURL__c+'/s'+v.configSetting.My_Systems__c}" class="dropdown-toggle" data-toggle="dropdown">My Systems <span class="caret"></span></a>
+                            </li>
+                            <li class="expanded dropdown">
+                                <a onclick="{!c.openMyProfile}" class="dropdown-toggle" data-toggle="dropdown">My Profile <span class="caret"></span></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </aura:if>
+        <div class="layoutContainer">
+            <header class="{!v.showMenu ? 'navbar navbar-default navbar-fixed-top' : 'navbar navbar-default'}" id="navbar" role="banner" style="left: 288px;">
+                <div class="slds-grid slds-wrap container3">
+                    <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                        <div class="slds-col slds-size_2-of-12 slds-align_absolute-center">
+                            <lightning:button onclick="{!c.toggleMenu}" type="button" class="navbar-toggle">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </lightning:button>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.showMenu}">
+                        <div class="slds-col slds-size_8-of-12 slds-align_absolute-center logoStyle">
+                            <div class="region2 region-navigation-left">
+                                <!-- <a class="logo navbar-btn pull-left active" href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}" title="Home" rel="home" > --> 
+                                <a class="logo navbar-btn pull-left active" href="{!v.configSetting.HologicSiteURL__c}" title="Home" rel="home" > 
+                                    <img src="{!v.configSetting.SiteURL__c+v.configSetting.HoLogic_Logo_Url__c}" alt="Home"/>
+                                </a>
+                            </div>
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="slds-col slds-size_12-of-12 slds-align_absolute-center logoStyle">
+                                <div class="region2 region-navigation-left">
+                                    <!-- <a class="logo navbar-btn pull-left active" href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}" title="Home" rel="home" > --> 
+                                    <a class="logo navbar-btn pull-left active" href="{!v.configSetting.HologicSiteURL__c}" title="Home" rel="home" > 
+                                        <img src="{!v.configSetting.SiteURL__c+v.configSetting.HoLogic_Logo_Url__c}" alt="Home"/>
+                                    </a>
+                                </div>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                    <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                        <div class="slds-col slds-size_2-of-12 slds-align_absolute-center" style="padding-top:15px">
+                            <section id="block-search-toggle" class="block block-custom-general block-custom-toggle-trigger clearfix">
+                                <div class="block--wrap">
+                                    <lightning:button class="custom-toggle-trigger fa fa-search" variant="base" label="" title="" onclick="{! c.handleSearchClick }"/>
+                                </div>
+                            </section>
+                            <aura:if isTrue="{!v.showSearch}">
+                                <section id="mobileSearchform" class="block block-custom-general block-custom-global-search-block clearfix collapse in" aria-expanded="true" style="">
+                                    <div class="block--wrap">
+                                        <div class="custom-global-search-form" data-drupal-selector="custom-global-search-form" id="custom-global-search-form" accept-charset="UTF-8" onkeyup="{! c.submitSearch }">
+                                            <div class="form-item js-form-item form-type-search js-form-type-search form-item-k js-form-item-k form-no-label form-group">
+                                                <label for="edit-k" class="control-label sr-only">Keywords</label>
+                                                <lightning:input class="mobile-form-search form-control" placeholder="Search by keyword" value="{!v.search}"/>                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </aura:if>
+                        </div> 
+                    </aura:if>
+                </div>
+            </header>
+        </div>
+    </aura:if>
+</aura:component>

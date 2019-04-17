@@ -1,0 +1,37 @@
+<!-- 02/21/17 US-0002330 - Created VF Page for Custom Template Section to display Related Accounts (CECS) in Pricing Agreement output-->
+<apex:page rendered="{!cecs.size != 0}" showHeader="false" sidebar="false" cache="false" contentType="text/xml" controller="RelatedAccountsController">
+    <block font-weight="bold" font-size="1em" text-align="center" color="#000000" page-break-before="always">Participating Facilities</block>
+    <block>
+    <table table-layout="fixed" width="100%" border-color="#000000" border-width="1px" border-style="solid">
+            <table-column column-width="30%"/>
+            <table-column column-width="30%"/>
+            <table-column column-width="40%"/>
+
+        <table-header>
+            <table-row font-weight="bold" font-size="0.7em" text-align="left" color="#000000" >
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt" text-align="center"><block>Participating Facility</block></table-cell>
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt" text-align="center"><block>Customer Number</block></table-cell>
+                <table-cell border="1px solid black"  margin="0pt" padding="2pt" padding-top="2pt" text-align="center"><block>Ship to Address</block></table-cell>
+            </table-row>
+        </table-header>
+
+        <table-body>
+        <apex:repeat var="c" value="{!cecs}">
+            <table-row font-size="0.7em">
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="center" >
+                    <block>{!c.Customer_Account__r.Name}</block>
+                </table-cell>
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="center" >
+                    <block>{!c.Customer_Account__r.Oracle_Customer_Number__c}</block>
+                </table-cell>
+                <table-cell border="1px solid black" margin="0pt" padding="2pt" padding-left="2pt" padding-right="2pt" text-align="center" >
+                    <block>{!c.Customer_Account__r.BillingStreet}</block>
+                    <block>{!c.Customer_Account__r.BillingCity &', '& c.Customer_Account__r.BillingState &' '& c.Customer_Account__r.BillingPostalCode}</block>
+                    <block>{!c.Customer_Account__r.BillingCountry}</block> 
+                </table-cell>
+            </table-row>
+        </apex:repeat>
+        </table-body>
+    </table>
+    </block>
+</apex:page>

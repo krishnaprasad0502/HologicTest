@@ -1,0 +1,160 @@
+<!--
+*********************************************************************************************************
+ Author       : Sunil Kumar Sharma
+ Company      : Hexaware Technologies
+ Created Date : 09/21/2018
+ Description  : Feedback Page 
+
+ History:
+ <Date>         <Author Name>        	<Brief description of change >   		<Copa.do US#>
+ 10/25/2018		Sunil Kumar Sharma		Initial Creation 						US-0005988 
+ 11/06/2018		Vrushabh Katariya		Table Responsiveness					US-0006075
+ 01/11/2019		Vrushabh Katariya		Removed row from table					US-0006454				
+*********************************************************************************************************
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <header>
+                <h1 class= "header1">
+                    <label>Feedback</label>
+                </h1>
+            </header>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-wrap" style ="background: #F5F5F5;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <header>
+                <p class="content-text">
+                    <label class= "form-label">
+                        As a valued Hologic customer, your success and satisfaction is important to us.If you have any 
+                        feedback or you would like to escalate an issue to our Support Managers you may do so by phone 
+                        or email. Please see the contact information for our Breast and Skeletal Health Technical Support Managers below.
+                    </label>
+                </p>
+                <br/>
+            </header>
+        </div>
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <header>
+                <h2 class= "header2">
+                    <label>Support Portal Feedback</label>
+                </h2>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        To provide feedback on your portal experience please share your thoughts 
+                        with our Customer Care team at <a href="mailto:customercare@hologic.com">customercare@hologic.com</a>. 
+                    </label>
+                </p>
+                <br/>
+            </header>
+        </div>
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <header>
+                <h2 class= "header2">
+                    <label>Support Management Escalation</label>
+                </h2>
+                <br/>
+                <p class="content-text">
+                    <label class= "form-label">
+                        If you would like to provide feedback or escalate an issue to one of our Support Managers you 
+                        may do so by phone or email. Please see the contact information for our Support Managers below.
+                    </label>
+                </p>
+                <br/>
+            </header>
+        </div>
+    </div>
+    <aura:if isTrue="{!!($Browser.isPhone|| $Browser.isTablet || $Browser.isIPad)}"> 
+        <div class=" slds-grid slds-wrap table-class" style="width:96% !important;margin:auto !important;">
+            <div class=" header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;"><label>Name</label></div>
+            <div class="header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Title</div>
+            <div class="header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Phone</div>
+            <div class="header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style= "border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;width:25% !important">Email</div>
+            <div class="header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Location</div>
+            <div class="header-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Products</div>
+        </div>
+        <div class=" slds-grid slds-wrap table-class" style="width:96% !important;margin:auto !important;">
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Jerry McDonald</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Manager, Technical Support</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 761-7201</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style= "border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;width:25% !important"><a href="mailto:Jerry.McDonald@hologic.com">Jerry.McDonald@hologic.com</a></div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast Health</div>
+        </div>
+        <div class=" slds-grid slds-wrap table-class" style="width:96% !important;margin:auto !important;">
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marcia Trudel</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Manager, Technical Support</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 761-7133</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style= "border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;width:25% !important"><a href="mailto:Marcia.Trudel@hologic.com">Marcia.Trudel@hologic.com</a></div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Skeletal Health</div>
+        </div>
+        <div class=" slds-grid slds-wrap table-class" style="width:96% !important;margin:auto !important;">
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Steve Plante</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Sr. Manager, Technical Support</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 999-7625</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style= "border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;width:25% !important"><a href="mailto:Steven.Plante@hologic.com">Steven.Plante@hologic.com</a></div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</div>
+            <div class="column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast and Skeletal Health</div>
+        </div>
+        <div class=" slds-grid slds-wrap table-class" style="width:96% !important;margin:auto !important;">
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Karen Grady</div>
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Sr. Director, Customer Experience</div>
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">(508) 263-8769</div>
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style= "border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;width:25% !important"><a href="mailto:karen.grady@hologic.com">Karen.Grady@hologic.com</a></div>
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Marlborough, MA</div>
+            <div class=" column-row slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-12 slds-p-bottom--small" style="border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast and Skeletal Health</div>
+        </div>
+        <aura:set attribute="else">
+            <table  class="scroll table-class" >
+                <thead>
+                    <tr style="margin:auto !important;">
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Name</th>
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Title</th>
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Phone</th>
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Email</th>
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Location</th>
+                        <th class=" header-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="margin:auto !important;"> 
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Jerry McDonald</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Manager, Technical Support</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 761-7201</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;"><a href="mailto:Jerry.McDonald@hologic.com">Jerry.McDonald@hologic.com</a></td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast Health</td>
+                    </tr>
+                    <tr style="margin:auto !important;">
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marcia Trudel</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Manager, Technical Support</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 761-7133</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;"><a href="mailto:Marcia.Trudel@hologic.com">Marcia.Trudel@hologic.com</a></td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Skeletal Health</td>
+                    </tr>
+                    <tr style="margin:auto !important;">
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Steve Plante</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Sr. Manager, Technical Support</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">(781) 999-7625</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;"><a href="mailto:Steven.Plante@hologic.com">Steven.Plante@hologic.com</a></td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;">Marlborough, MA</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast and Skeletal Health</td>
+                    </tr>
+                    <tr style="margin:auto !important;">
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Karen Grady</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Sr. Director, Customer Experience</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">(508) 263-8769</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;"><a href="mailto:karen.grady@hologic.com">Karen.Grady@hologic.com</a></td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;">Marlborough, MA</td>
+                        <td class=" column-row slds-col slds-p-bottom--small" style="width:auto !important;border-top: 1px solid #00CCFF;border-left: 1px solid #00CCFF;border-bottom: 1px solid #00CCFF;border-right: 1px solid #00CCFF;">Breast and Skeletal Health</td>
+                    </tr>
+                </tbody>
+            </table>
+        </aura:set>
+    </aura:if>
+</aura:component>

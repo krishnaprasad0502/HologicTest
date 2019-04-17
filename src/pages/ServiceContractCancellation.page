@@ -1,0 +1,363 @@
+<!------------------------------------------------------------
+Author:			Denise Bacher
+Company:		Salesforce.com
+Description:	Provides ability to cancel ServiceContracts and ContractLineItems
+
+History:
+<Date>			<Authors Name>		<Brief Description of Change>
+08/01/2015		Denise Bacher		Initial Creation (US1333)
+09/13/2017		John Christy		Updated for inclusion of Termination Reason (US0003375)
+------------------------------------------------------------>
+<apex:page standardController="ServiceContract" extensions="ServiceContractCancellation_ControllerX" tabStyle="ServiceContract" 
+		docType="html-5.0" standardStylesheets="false" showHeader="true" sidebar="false">
+		
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-2.2.2.min.js')}"/>
+	<apex:includeScript value="{!$Resource.svg4everybody}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system.min.css')}"/>
+	
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.min.js')}"/> 
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.min')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.structure.min.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui-1.11.4/jquery-ui.theme.min.css')}"/> 
+	
+	<style>
+		.slds .slds-panel{
+			max-width: 96vw;
+		}
+		
+		span.dateFormat{
+			display: none;
+		}
+	</style>
+	
+	<script>
+		$j = jQuery.noConflict();
+		$j(document).ready(function() {
+			svg4everybody();
+			initActions();
+			
+			$j("#saveBtn").click(function(event){
+				event.preventDefault();
+				if (confirm('Are you sure you want to save the termination ?')) {
+					saveCancellation();
+				}
+			});
+		});
+		
+		function initActions(){
+			$j(".aljs-Date").datepicker({
+				defaultDate: "+0d",
+				numberOfMonths: 1,
+				changeMonth: true,
+				changeYear: true,
+				minDate: new Date({!YEAR(serviceContract.StartDate)}, {!MONTH(serviceContract.StartDate)} - 1, {!DAY(serviceContract.StartDate)}),
+				maxDate: new Date({!YEAR(serviceContract.EndDate)}, {!MONTH(serviceContract.EndDate)} - 1, {!DAY(serviceContract.EndDate)})
+			});
+			
+			$j(".sc-date").change(function(){
+				serviceContractTerminationSet();
+			});
+			
+			$j(".sc-reason").change(function(){
+				serviceContractTerminationReasonSet();
+			});
+			
+			$j(".sc-supress").change(function(){
+				serviceContractSupressCredit();
+			});
+			
+			$j(".sc-full").change(function(){
+				serviceContractFullCredit();
+			});
+			
+			$j(".sc-finalRefund").change(function(){
+				serviceContractRefundOverride();
+			});
+			
+			$j(".cli-date").change(function(){
+				var cliId = $j(this).closest('tr').attr('id');
+				contractLineTerminationSet(cliId);
+			});
+			$j(".cli-reason").change(function(){
+				var cliId = $j(this).closest('tr').attr('id');
+				contractLineTerminationReasonSet(cliId);
+			});
+			
+			$j(".cli-supress").change(function(){
+				var cliId = $j(this).closest('tr').attr('id');
+				contractLineSupressCredit(cliId);
+			});
+			
+			$j(".cli-full").change(function(){
+				var cliId = $j(this).closest('tr').attr('id');
+				contractLineFullCredit(cliId);
+			});
+			
+			$j(".cli-finalRefund").change(function(){
+				var cliId = $j(this).closest('tr').attr('id');
+				contractLineRefundOverride(cliId);
+			});
+		}
+	</script>
+	
+	<c:LoadingScreen />
+	
+	<apex:form styleClass="slds">
+		<apex:actionFunction name="saveCancellation" action="{!saveCancellation}" status="loading" rerender="messages, pageMessages"/>
+		
+		<apex:actionFunction name="serviceContractTerminationSet" action="{!serviceContractTerminationDateChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();"/>
+		
+		<apex:actionFunction name="serviceContractTerminationReasonSet" action="{!serviceContractTerminationReasonChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();"/>
+
+        <apex:actionFunction name="serviceContractSupressCredit" action="{!serviceContractSupressCreditChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();"/>
+		
+        <apex:actionFunction name="serviceContractFullCredit" action="{!serviceContractFullCreditChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();"/>
+		
+		<apex:actionFunction name="serviceContractRefundOverride" action="{!serviceContractFinalRefundOverride}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();"/>
+		
+		<apex:actionFunction name="contractLineTerminationSet" action="{!contractLineTerminationDateChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();">
+			<apex:param name="selectedContractLineId" value="" assignTo="{!selectedContractLineId}"/>
+		</apex:actionFunction>
+        
+        <apex:actionFunction name="contractLineTerminationReasonSet" action="{!contractLineTerminationReasonChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();">
+			<apex:param name="selectedContractLineId" value="" assignTo="{!selectedContractLineId}"/>
+		</apex:actionFunction>
+		
+		<apex:actionFunction name="contractLineSupressCredit" action="{!contractLineSupressCreditChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();">
+			<apex:param name="selectedContractLineId" value="" assignTo="{!selectedContractLineId}"/>
+		</apex:actionFunction>
+		
+		<apex:actionFunction name="contractLineFullCredit" action="{!contractLineFullCreditChanged}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();">
+			<apex:param name="selectedContractLineId" value="" assignTo="{!selectedContractLineId}"/>
+		</apex:actionFunction>
+		
+		<apex:actionFunction name="contractLineRefundOverride" action="{!contractLineFinalRefundOverride}" status="loading" rerender="serviceContractDetail, contractLineTable" onComplete="initActions();">
+			<apex:param name="selectedContractLineId" value="" assignTo="{!selectedContractLineId}"/>
+		</apex:actionFunction>
+		
+		<div class="slds-page-header">
+			<div class="slds-grid">
+				<div class="slds-col slds-has-flexi-truncate">
+					<p class="slds-page-header__title">Service Contract Termination</p>
+				</div>
+			</div>
+		</div>
+		
+		<apex:messages id="messages" styleClass="slds-notify slds-notify--alert slds-theme--error slds-theme--alert-texture" />
+		<apex:pageMessages id="pageMessages"/>
+		
+		<fieldset class="slds-form--compound">
+			<apex:outputPanel styleClass="form-element__group" layout="block" id="serviceContractDetail">
+				<div class="slds-form-element__row">
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Account</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Account.Name}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Contract Name</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Name}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Contract Number</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.ContractNumber}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5"/>
+					<div class="slds-form-element slds-size--1-of-5"/>
+				</div>
+				
+				<div class="slds-form-element__row">
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Start Date</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.StartDate}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">End Date</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.EndDate}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Terminated Date</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Terminated_Date__c}" rendered="{!!serviceContractTermination}"/>
+							<apex:inputField styleClass="slds-input aljs-Date sc-date" value="{!serviceContract.Terminated_Date__c}" rendered="{!serviceContractTermination}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+                        <label class="slds-form-element__label">Termination Reason</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Termination_Reason__c }" rendered="{!!serviceContractTerminationReason}"/>
+							<apex:inputField styleClass="slds-input sc-reason" value="{!serviceContract.Termination_Reason__c }" rendered="{!serviceContractTerminationReason}"/>
+						</div>
+                    </div>
+					<div class="slds-form-element slds-size--1-of-5"/>
+				</div>
+				
+				<div class="slds-form-element__row">
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Total Amount</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.TotalPrice}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Prorated Amount</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Prorated_Amount__c}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Refund Amount</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Refund_Amount__c}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Final Refund Amount</label>
+						<div class="slds-form-element__control">
+							<apex:outputField styleClass="slds-form-element__static" value="{!serviceContract.Final_Refund_Amount__c}" rendered="{! ISBLANK(serviceContract.Terminated_Date__c) || !serviceContractTermination || serviceContract.Suppress_Credit__c || serviceContract.Full_Credit__c}"/>
+							<apex:inputField styleClass="slds-input sc-finalRefund" value="{!serviceContract.Final_Refund_Amount__c}" rendered="{! !ISBLANK(serviceContract.Terminated_Date__c) && serviceContractTermination && !serviceContract.Suppress_Credit__c && !serviceContract.Full_Credit__c}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Suppress Credit</label>
+						<div class="slds-form-element__control">
+							<apex:inputCheckbox styleClass="sc-supress" value="{!serviceContract.Suppress_Credit__c}" disabled="{! ISBLANK(serviceContract.Terminated_Date__c) || !serviceContractTermination}"/>
+						</div>
+					</div>
+					<div class="slds-form-element slds-size--1-of-5">
+						<label class="slds-form-element__label">Full Credit</label>
+						<div class="slds-form-element__control">
+							<apex:inputCheckbox styleClass="sc-full" value="{!serviceContract.Full_Credit__c}" disabled="{! ISBLANK(serviceContract.Terminated_Date__c) || !serviceContractTermination}"/>
+						</div>
+					</div>
+				</div>
+			</apex:outputPanel>
+		</fieldset>
+		
+		<!--  START Contract Line Item Table -->
+		<div class="slds-panel slds-m-top--medium">
+			<h3 class="slds-text-heading--small slds-m-bottom--x-small">Contract Line Items</h3>
+			
+			<apex:outputPanel styleClass="slds-panel__section" layout="block" id="contractLineTable">
+				<div class="slds-scrollable--x">
+					<table class="slds-table slds-table--bordered">
+						<thead>
+							<tr class="slds-text-heading--label">
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Line Number</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Product Description</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Product Code</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Start Date</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">End Date</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Terminated Date</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Termination Reason</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Total Price</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Prorated Amount</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Refund Amount</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Final Refund Amount</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Suppress Credit</div>
+								</th>
+								<th class="slds-cell-shrink" scope="col">
+									<div class="slds-truncate">Full Credit</div>
+								</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<apex:repeat value="{!contractLineItems}" var="line">
+								<tr id="{!line.Id}">
+									<td>
+										<apex:outputText value="{0} >> " rendered="{! !ISBLANK(line.ParentContractLineItemId)}">
+											<apex:param value="{!line.ParentContractLineItem.LineItemNumber}" />
+										</apex:outputText>
+										<apex:outputField value="{!line.LineItemNumber}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.PricebookEntry.Product2.Name}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.PricebookEntry.Product2.ProductCode}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.StartDate}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.EndDate}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.SBQQSC__TerminatedDate__c}" rendered="{!!contractLineTermination}"/>
+										<apex:inputField styleClass="slds-input aljs-Date cli-date" value="{!line.SBQQSC__TerminatedDate__c}" rendered="{!contractLineTermination}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.Termination_Reason__c}" rendered="{!!contractLineTerminationReason}"/>
+										<apex:inputField styleClass="slds-input cli-reason" value="{!line.Termination_Reason__c}" rendered="{!contractLineTerminationReason}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.TotalPrice}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.Prorated_Amount__c}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.Refund_Amount__c}"/>
+									</td>
+									<td>
+										<apex:outputField value="{!line.Final_Refund_Amount__c}" rendered="{! ISBLANK(line.SBQQSC__TerminatedDate__c) || !contractLineTermination || line.Suppress_Credit__c || line.Full_Credit__c}"/>
+										<apex:inputField styleClass="slds-input cli-finalRefund" value="{!line.Final_Refund_Amount__c}" rendered="{! !ISBLANK(line.SBQQSC__TerminatedDate__c) && contractLineTermination && !line.Suppress_Credit__c && !line.Full_Credit__c}"/>
+									</td>
+									<td>
+										<apex:inputCheckbox styleClass="cli-supress" value="{!line.Suppress_Credit__c}" disabled="{! ISBLANK(line.SBQQSC__TerminatedDate__c) || !contractLineTermination}"/>
+									</td>
+									<td>
+										<apex:inputCheckbox styleClass="cli-full" value="{!line.Full_Credit__c}" disabled="{! ISBLANK(line.SBQQSC__TerminatedDate__c) || !contractLineTermination}"/>
+									</td>
+								</tr>
+							</apex:repeat>
+						</tbody>
+					</table>
+				</div>
+			</apex:outputPanel>
+		</div>
+		<!-- END Contract Line Item Table -->
+		
+		<section class="slds-clearfix">
+			<div class="slds-float--right slds-m-around--small">
+				<apex:commandButton styleClass="slds-button slds-button--neutral" action="{!cancel}" value="Cancel"/>
+				<button class="slds-button slds-button--brand" id="saveBtn">Apply</button>
+			</div>
+		</section>
+	
+	</apex:form>
+</apex:page>

@@ -1,0 +1,122 @@
+<!--
+*********************************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : To display Dynamic Object record view based on field set given.
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>		<Copa.do US#>
+	09/21/2018	   Sunil Kumar Sharma		        Initial Creation 					US-0005701
+*********************************************************************************************************    
+-->
+<aura:component controller="DynamicObjectSummaryViewController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <!-- Attribute Declaration -->
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="childRecordId" type="Id" />
+    <aura:attribute name="parentRecordId" type="Id" />
+    <aura:attribute name="viewNameHeader" type="String" />
+    <aura:attribute name="sobjType" type="String" />
+    <aura:attribute name="childSobjType" type="String" />
+    <aura:attribute name="fieldSetName" type="String" />
+    <aura:attribute name="parentObjectFieldAPIName" type="String" />
+    <aura:attribute name="fieldList" type="List" />
+    <aura:attribute name="columnValue" type="Integer" />
+    <aura:attribute name="iconName" type="String"/>
+    <aura:attribute name="isRelatedListView" type="Boolean" default="false"/>
+    <aura:attribute name="isDataLoadComplete" type="Boolean" default="false"/>
+    
+    <!-- Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    
+    <aura:if isTrue="{!v.isRelatedListView}">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-wrap" >
+                <div class="slds-col slds-size--1-of-1 slds-float_left" >
+                    <lightning:icon iconName="{!v.iconName}" size="small" /> 
+                    <label class="form-labels" >&nbsp;&nbsp;{!v.viewNameHeader}</label>
+                </div>
+            </div>
+            
+            <aura:if isTrue="{!v.isDataLoadComplete}" >
+                <div class="slds-grid slds-wrap record-view-Div" >
+                    <aura:if isTrue="{!equals(v.columnValue,2)}" >
+                        <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2" >
+                            <lightning:recordViewForm recordId="{!v.childRecordId}" objectApiName="{!v.childSobjType}">
+                                <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                    <aura:if isTrue="{! (mod(index,2) == 0) ? 'true':'false'}">
+                                        <lightning:outputField fieldName="{!items}" />
+                                    </aura:if>
+                                </aura:iteration>                
+                            </lightning:recordViewForm>
+                        </div>
+                        <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2" >
+                            <lightning:recordViewForm recordId="{!v.childRecordId}" objectApiName="{!v.childSobjType}">
+                                <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                    <aura:if isTrue="{! (mod(index,2)!= 0) ? 'true':'false'}">
+                                        <lightning:outputField fieldName="{!items}" />
+                                    </aura:if>
+                                </aura:iteration>                
+                            </lightning:recordViewForm>
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-1" >
+                                <lightning:recordViewForm recordId="{!v.childRecordId}" objectApiName="{!v.childSobjType}">
+                                    <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                            <lightning:outputField fieldName="{!items}" />
+                                    </aura:iteration>                
+                                </lightning:recordViewForm>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </aura:if>
+        </div>       
+        <aura:set attribute="else">
+            <aura:if isTrue="{!!equals(v.parentRecordId,null)}" >
+                <div class="slds-card">
+                    <div class="slds-card__header slds-grid slds-wrap" style="text-align: center;">
+                        <div class="slds-col slds-size--1-of-1 slds-float_left" >
+                            <lightning:icon iconName="custom:custom12" size="small" /> 
+                            <label class="form-labels" >&nbsp;&nbsp;{!v.viewNameHeader}</label>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.isDataLoadComplete}" >
+                        <div class="slds-grid slds-wrap record-view-Div" >
+                            <aura:if isTrue="{!equals(v.columnValue,2)}" >
+                                <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2" >
+                                    
+                                    <lightning:recordViewForm recordId="{!v.parentRecordId}" objectApiName="{!v.childSobjType}">
+                                        <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                            <aura:if isTrue="{! (mod(index,2) == 0) ? 'true':'false'}">
+                                                <lightning:outputField fieldName="{!items}" />
+                                            </aura:if>
+                                        </aura:iteration>                
+                                    </lightning:recordViewForm>
+                                </div>
+                                <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2" >
+                                    <lightning:recordViewForm recordId="{!v.parentRecordId}" objectApiName="{!v.childSobjType}">
+                                        <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                            <aura:if isTrue="{! (mod(index,2)!= 0) ? 'true':'false'}">
+                                                <lightning:outputField fieldName="{!items}" />
+                                            </aura:if>
+                                        </aura:iteration>                
+                                    </lightning:recordViewForm>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-1" >
+                                        <lightning:recordViewForm recordId="{!v.parentRecordId}" objectApiName="{!v.childSobjType}">
+                                            <aura:iteration items="{!v.fieldList}" var="items" indexVar="index" >
+                                                <lightning:outputField fieldName="{!items}" />
+                                            </aura:iteration>                
+                                        </lightning:recordViewForm>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </aura:if>
+                </div> 	
+            </aura:if>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,139 @@
+<!------------------------------------------------------------
+Author:         Denise Bacher
+Company:        Salesforce.com
+Description:    Allows setting of Bill/Ship to Account and Site from related Accounts via Customer_Relationship__x
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+11/08/2016      Denise Bacher       Initial Creation (US-0001169)
+------------------------------------------------------------>
+<apex:page standardController="Case" extensions="CaseBillShipTo_ControllerX" tabStyle="Case">
+    <apex:form >
+        <apex:pageMessages ></apex:pageMessages>
+
+        <apex:pageBlock id="PageBlock" title="" mode="edit">
+        
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save Address Information" action="{!save}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="Case Address Information" columns="2">
+                
+                <apex:pageBlockSectionItem id="BillToAccountItem" rendered="true" HelpText="Select the Bill To Customer before selecting the Bill To Site.">
+                    <apex:outputLabel value="Bill To Customer" for="BTA" />
+                    <apex:outputPanel >
+                        <div class="requiredInput">
+                            <apex:selectList id="BTA" value="{!case.Bill_to_Customer__c}" size="1" >
+                                <apex:selectOptions value="{!billToAcctOptions}" />
+                                <apex:actionSupport event="onchange" rerender="errormsg,RefreshTable,panelid,STSPageBlockTable,BTS,errormsg1,STSPaginationButtons" action="{!billToAcctSelected}">
+                                    <apex:param name="selectedBillToAcctOption" assignTo="{!selectedBillToAcctOption}" value="" />
+                                    <apex:param name="Type" assignTo="{!Type}" value="BTA" />
+                                </apex:actionSupport>
+                            </apex:selectList>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem id="BillToSiteItem" rendered="true" HelpText="Select the Bill To Customer before selecting the Bill To Site.">
+                    <apex:outputLabel value="Bill To Site" for="BTS" />
+                    <apex:outputPanel id="BTS">
+                    <apex:pageBlock id="pageblocktable">
+                       <script type="text/javascript">
+                            function SearchResult() {
+                            searchResult(
+                                         document.getElementById("searchkey").value
+                                        );
+                            }
+                        </script>
+                        <apex:actionFunction name="searchResult" action="{!runSearch}" immediate="true" reRender="RefreshTable,panelid,errormsg" id="actionfun">
+                           <apex:param name="searchkey" value="" />
+                        </apex:actionFunction>
+                      <apex:outputLabel value="Enter Search Key" />
+                      <input type="text" id="searchkey" onkeyup="SearchResult();"/>
+                      <apex:pageBlockTable value="{!Billtosite}" var="BTS"  id="RefreshTable" >
+                                <apex:column >
+                                     <apex:facet name="header"></apex:facet>
+                                    <apex:actionSupport event="onclick" action="{!SelectedBTS}" reRender="" immediate="true">
+                                      <input type="radio" id="siteid" name="selectradio"/> 
+                                    <apex:param assignTo="{!selectedBTS}" value="{!BTS.Site_id}" name="selectedBTS"/>
+                                    </apex:actionSupport>
+                                </apex:column>
+                                <apex:column width="950">
+                                   <apex:facet name="header">Bill to Site</apex:facet>
+                                    {!BTS.Site_Address}
+                                </apex:column>
+                                
+                       
+                       </apex:pageBlockTable> 
+                         <apex:outputText id="errormsg"  value="{!if(Billtosite.size = 0,'There are no Bill to Site address to display.','')}"/>
+                      <apex:outputPanel id="panelid">
+                          <apex:commandLink value="<<- Previous" action="{!setPrevious}" reRender="panelid,RefreshTable" rendered="{!pagination >= 10 && pagination < BillTo_totalcount}"  immediate="true" id="previous"/>
+                          <apex:outputText value=" || " rendered="{!pagination >=10 && pagination < BillTo_totalcount}" id="Refre"/>
+                          <apex:commandLink value="Next ->>" action="{!setNext}" reRender="panelid,RefreshTable" rendered="{!pagination+10 < BillTo_totalcount && BillTo_totalcount>10}" immediate="true" id="next" />
+                       </apex:outputPanel>
+                    </apex:pageBlock>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem id="ShipToAccountItem" rendered="true" HelpText="Select the Ship To Customer before selecting the Ship To Site.">
+                    <apex:outputLabel value="Ship To Customer" for="STA" />
+                    <apex:outputPanel >
+                        <div class="requiredInput">
+                            <apex:selectList id="STA" value="{!case.Ship_to_Customer__c}" size="1">
+                              <apex:selectOptions value="{!shipToAcctOptions}" />
+                              <apex:actionSupport event="onchange" rerender="STSPageBlockTable,errormsg1,STSPaginationButtons" action="{!shipToAcctSelected}">
+                                <apex:param name="selectedShipToAcctOption" assignTo="{!selectedShipToAcctOption}" value="" />
+                                <apex:param name="Type" assignTo="{!Type}" value="STA" />
+                              </apex:actionSupport>
+                            </apex:selectList>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem id="ShipToSiteItem" rendered="true" HelpText="Select the Ship To Customer before selecting the Ship To Site.">
+                    <apex:outputLabel value="Ship To Site" for="STS" />
+                        <apex:outputPanel id="STS">
+                        <apex:pageBlock id="shiptopageblocktable">
+                            <script type="text/javascript">
+                                function STSSearch() {
+                                STSSearchResult(
+                                            document.getElementById("STSsearchkey").value
+                                           );
+                                }
+                            </script>
+                            <apex:actionFunction name="STSSearchResult" action="{!STSrunSearch}" immediate="true" reRender="STSPageBlockTable,STSPaginationButtons,errormsg1" id="actionfun">
+                                <apex:param name="STSsearchkey" value="" />
+                            </apex:actionFunction>
+                            
+                            <apex:outputLabel value="Enter Search Key" />
+                            <input type="text" id="STSsearchkey" onkeyup="STSSearch();"/>
+                            
+                            <apex:pageBlockTable value="{!Shiptosite}" var="STS"  id="STSPageBlockTable">
+                                <apex:column >
+                                    <apex:facet name="header"></apex:facet>
+                                    <apex:actionSupport event="onclick" action="{!SelectedSTS}" reRender="" immediate="true">
+                                     <input type="radio" id="siteid" name="selectSTS"/>
+                                     <apex:param assignTo="{!selectedSTS}" value="{!STS.Site_id}" name="selectedSTS"/>
+                                    </apex:actionSupport>
+                                </apex:column>
+                                <apex:column width="950">
+                                    <apex:facet name="header">Bill to Site</apex:facet>
+                                    {!STS.Site_Address}
+                                </apex:column>
+                               
+                            </apex:pageBlockTable>
+                           
+                              <apex:outputText id="errormsg1"  value="{!if(Shiptosite.size = 0,'There are no Ship to Site address to display.','')}"/>
+                            <apex:outputPanel id="STSPaginationButtons">
+                                <apex:commandLink value="<<- Previous" action="{!STSsetPrevious}" reRender="STSPaginationButtons,STSPageBlockTable" rendered="{!STSpagination>=10 && STSpagination<ShipTo_totalcount}"  immediate="true" id="previous"/>
+                                <apex:outputText value=" || " rendered="{!STSpagination >=10 && STSpagination < ShipTo_totalcount}" id="Refre"/>
+                                <apex:commandLink value="Next ->>" action="{!STSsetNext}" reRender="STSPaginationButtons,STSPageBlockTable" rendered="{!STSpagination+10 < ShipTo_totalcount && ShipTo_totalcount>10}" immediate="true" id="next" />
+                            </apex:outputPanel>
+                        </apex:pageBlock>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+         </apex:pageBlock>
+    </apex:form>
+</apex:page>

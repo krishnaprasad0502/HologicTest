@@ -1,0 +1,38 @@
+<!--
+********************************************************************************************************************
+    Author 		 : Nikhil Mutyam
+    Company 	 : Hexaware Technologies
+    Created Date : 9/13/2018 9:16 AM	
+	Description  : Custom Theme Layout for Asset list views.
+
+    History:
+    <Date>         	<Author Name>			<Brief Description of Change> 		<Copa.do US#>
+	9/13/2018  		Nikhil Mutyam			Initial Creation					US-0005700
+********************************************************************************************************************  
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes,forceCommunity:themeLayout" access="global" >
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="Column1" type="Aura.Component[]"/>
+    <aura:attribute name="Column5" type="Aura.Component[]"/>
+    
+	<div class="slds-grid">
+        <div class="slds-col slds-size--1-of-1">
+    		{!v.Column1}
+    	</div>
+    </div> 
+    
+    <div class="slds-grid slds-wrap" style="max-width: 1345px;margin: auto;"> 
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" >
+    		{!v.body}
+    	</div>
+    </div>
+
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-col slds-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column5}
+    	</div>
+    </div>
+</aura:component>

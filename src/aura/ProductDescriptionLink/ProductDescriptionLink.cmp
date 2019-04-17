@@ -1,0 +1,33 @@
+<!--
+*****************************************************************************************
+	Author:Sunil Kumar Sharma
+	Company:Hexaware Technologies
+	Description: This lightning component is used to show the product record link for individual 
+		     	 community product description records. 
+	Controller:ProductViewController
+
+	History:
+    <Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	12/02/2018			Sunil Kumar Sharma		Initial Creation 					US-0006260 
+*****************************************************************************************
+-->
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <!-- Attribute Declarations-->
+    <aura:attribute name="productDescription" type="String"/>
+    <aura:attribute name="showContainer" type="Boolean" default="false"/>
+    <aura:attribute name="productRec" type="String"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="listViewName" type="String" />
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.showContainer}">
+        <div class="slds-grid " style="padding-top:10px;">
+            <div class="slds-col slds-size--1-of-2 " >
+                <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c+'product2/'+ v.productRec}" style="Font-size:14px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#008aad;" >
+                    {!v.productDescription}
+                </a>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

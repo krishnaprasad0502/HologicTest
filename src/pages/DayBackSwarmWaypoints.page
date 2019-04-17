@@ -1,0 +1,52 @@
+<apex:page standardStylesheets="false" standardController="Swarm_Waypoint__c" sideBar="false">
+
+    <apex:outputPanel rendered="{! $User.UIThemeDisplayed == 'Theme4d' }">
+        <apex:stylesheet value="{!URLFOR($Resource.dbk__style_resources,'styles/lightning.css')}"/>
+    </apex:outputPanel>
+
+    <apex:includeScript value="/canvas/sdk/js/36.0/controller.js"/>
+
+    <script type="text/javascript">
+        var projectID = '{!Swarm_Waypoint__c.Id}';
+        var projectName = '{!Swarm_Waypoint__c.Name}';
+        var optimalDate = '{!Swarm_Waypoint__c.Optimal_Date__c}';
+        var lookForwardDate = '{!Swarm_Waypoint__c.Look_Forward_Date__c}';
+        var targetCallDate = '{!Swarm_Waypoint__c.Target_Call_Date__c}';
+        var dateToUse;
+        if(optimalDate) {
+            dateToUse = new Date(optimalDate);
+            dateToUse.setDate(dateToUse.getDate()+1);
+           
+        }
+        else if(lookForwardDate) {
+            dateToUse = new Date(lookForwardDate);
+            dateToUse.setDate(dateToUse.getDate()+1);
+            
+        }
+        else if(targetCallDate) {
+            dateToUse = new Date(targetCallDate);
+            dateToUse.setDate(dateToUse.getDate()+1);
+            
+        }
+        else {
+            dateToUse = new Date();
+            dateToUse.setDate(dateToUse.getDate()-1);
+        }
+        dateToUse = dateToUse.getFullYear() + '-' + (dateToUse.getMonth() + 1 ) + '-' + (dateToUse.getDate());
+        
+        DayBack.subscribe();
+    </script>
+
+    <apex:includeScript value="{!$Resource.DayBackJSSwarmWaypoint}"/>
+
+    <apex:canvasApp namespacePrefix="dbk" canvasId="dbk" developerName="DayBack" width="100%"/>
+
+    <script type="text/javascript">
+        setTimeout(function() {
+           DayBack.init({
+               theme: "{! $User.UIThemeDisplayed}"
+           });
+        },0);
+    </script>
+
+</apex:page>

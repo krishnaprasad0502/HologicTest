@@ -1,0 +1,23 @@
+<aura:component implements="force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes">
+    
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    
+    <force:recordData aura:id="recordLoader" 
+                      recordId="{!v.recordId}" 
+                      fields="RecordTypeId, RecordType.Name" 
+                      targetFields="{!v.simpleRecord}"
+                      targetError="{!v.recordError}"/>
+
+	<lightning:button label="Generate Customer Service Report" 
+                      title="Generate Customer Service Report" 
+                      class="buttonCSRSelect" 
+                      onclick="{! c.handleClick }"/>
+
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            {!v.recordError}
+        </div>
+    </aura:if>
+
+</aura:component>

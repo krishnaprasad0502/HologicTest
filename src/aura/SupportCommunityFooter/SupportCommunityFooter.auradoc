@@ -1,0 +1,9 @@
+<aura:documentation>
+	<aura:description>
+    	The component is used to show completed footer panel which contains below components.
+        1. SocialLinkFooter
+        2. MenuLinkFooter
+        3. CopyRightlinkFooter
+    </aura:description>
+	
+</aura:documentation>

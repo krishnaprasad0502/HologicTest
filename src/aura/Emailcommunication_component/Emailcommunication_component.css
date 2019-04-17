@@ -1,0 +1,80 @@
+/*.THIS.table.slds-table.slds-table--bordered.slds-table--cell-buffer {
+    padding: 0.5rem;
+}
+.THIS.textoverflow {
+        white-space: nowrap; 
+        width: 20em; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        }
+.THIS.uiInputSelectOption {
+        padding-top: 16px;
+        }
+.THIS.label.slds-form-element__label {
+      
+        font-size: large;
+        }
+.THIS.span.slds-output.uiOutputText {
+        colour: white;
+        color: white;
+        font-size: larger;
+        }
+.THIS.span.slds-form-element__control {
+        color: white;
+        font-size: medium;
+        }
+.THIS.abc{
+        padding-bottom: 3px;
+        width: 63%;
+        }
+.THIS.endate {
+        left: 44px;
+        padding-top: 7px;
+        }
+.THIS.bca {
+        width: 20%;
+        }
+.THIS.reset {
+         position: relative !important;
+        left: 1100px;
+         }
+.THIS.reassign {
+        position: relative !important;
+        right:70px;
+            }
+.THIS.delete {
+        position: relative !important;
+        right:60px;
+          }
+.THIS.test{
+        width:50% !important;
+        aria-expanded:"true" !important;
+        aria-haspopup:"false" !important;
+        overflow:unset !important;
+        }
+.THIS.datePicker-openIcon.display {
+        position: relative;
+        left: 168px;
+        top: -23px;
+        }
+.THIS.uiInputSelectOption {
+        padding-top: 16px;
+        }
+.THIS.form-element.uiInput.uiInputDate.uiInput--default.uiInput--input.uiInput--datetime {
+        
+        top: 6px;       
+        }
+.THIS.textoverflow {
+        white-space: nowrap; 
+        width: 20em; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        }
+.THIS.uiInput.forceSearchInputLookupDesktop.uiInput--default.forceInputField {
+        width: 200px;
+        }*/
+.THIS.button.slds-button.slds-button--brand.reset {
+        top: 12px;
+        position: relative !important;
+        left: 50%;
+        }

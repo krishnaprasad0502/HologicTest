@@ -1,0 +1,15 @@
+.THIS .breadcrumbs{
+    Font-size:13px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight:600;
+    color:#008AAD;
+    text-transform: initial;
+}
+
+.THIS .current-page>a{
+    Font-size:13px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight:600;
+    color:#777777 !important;
+    text-transform: initial;
+}

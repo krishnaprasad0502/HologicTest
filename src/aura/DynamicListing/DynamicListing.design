@@ -1,0 +1,63 @@
+<design:component>
+	<design:attribute name="displayWidget" label="Display Widget" default="true" description="Set as true to display widget component" />	
+	<design:attribute name="ListType" label="List Type" datasource="Account,Asset,Contact,Case,Product2,Knowledge__kav,CollaborationGroupFeed,Entitlement,FeedItem,Community_Favorite_Articles__c" default="Account" description="Select Object Type" />
+	<design:attribute name="FieldName" label="Field Name" default="Name" description="Enter Field API Name" />
+	<design:attribute name="FieldName2" label="2nd Field Name" description="Enter Field API Name" />
+    <design:attribute name="FieldName3" label="3rd Field Name" description="Enter Field API Name" />
+    <design:attribute name="FieldName4" label="4th Field Name" description="Enter Field API Name" />
+	<design:attribute name="SortBy" label="Sort By" description="Enter Field API Name to sort by" />
+    <design:attribute name="Limit" label="Limit" description="Enter a number to limit records" />
+    <design:attribute name="DescriptionLineLimit" label="Description Limit" description="Check to display single line from description else 5 lines" />
+    <design:attribute name="MarginTop" label="Margin Top" description="Check to set margin-top by 30px" />
+    <design:attribute name="border" label="Border" description="Border style to draw dividers." />
+    
+	<design:attribute name="Line1Display" label="Display Line 1?" description="Select whether to display Line 1(Quick Links)" />
+    <design:attribute name="Line1Title" label="Title" description="Select Title for Line 2" />
+    <design:attribute name="Line1FontColor" label="Lin1 Color" default="Black" description="Select text Color" />
+    <design:attribute name="Line1Weight" label="Lin1 Font Type" datasource="normal, bold" default="normal" description="Select text type" />
+    <design:attribute name="Line1Header" label="Lin1 Header Style" datasource="None, Large Header, Medium Header, Small Header, Plain Text, Colored Text" default="None" description="Select text visibility type" />
+    
+    <design:attribute name="Line2Display" label="Display Line 2?" description="Select whether to display Line 2" />
+    <design:attribute name="Line2Title" label="Title" description="Select Title for Line 2" />
+    <design:attribute name="Line2FontColor" label="Lin2 Color" default="Black" description="Select text Color" />
+    <design:attribute name="Line2Weight" label="Lin2 Font Type" datasource="normal, bold" default="normal" description="Select text type" />
+    <design:attribute name="Line2Header" label="Lin2 Header Style" datasource="None, Large Header, Medium Header, Small Header, Plain Text, Colored Text" default="None" description="Select text visibility type" />
+    <design:attribute name="Line2Link" label="Show Line2 as link" description="Select if this line should be shown as link" />
+        
+    <design:attribute name="Line3Display" label="Display Line 3?" description="Select whether to display Line 3" />
+    <design:attribute name="Line3Title" label="Title" description="Select Title for Line 2" />   
+    <design:attribute name="Line3FontColor" label="Lin3 Color" default="Black" description="Select text Color" />
+    <design:attribute name="Line3Weight" label="Lin3 Font Type" datasource="normal, bold" default="normal" description="Select text type" />
+    <design:attribute name="Line3Header" label="Lin3 Header Style" datasource="None, Large Header, Medium Header, Small Header, Plain Text, Colored Text" default="None" description="Select text visibility type" />
+    <design:attribute name="Line3Link" label="Show Line3 as link" description="Select if this line should be shown as link" />
+    
+    <design:attribute name="Line4Display" label="Display Line 4?" description="Select whether to display Line 4" />
+    <design:attribute name="Line4FontColor" label="Lin4 Color" default="Black" description="Select text Color" />
+    <design:attribute name="Line4Weight" label="Lin4 Font Type" datasource="normal, bold" default="normal" description="Select text type" />
+    <design:attribute name="Line4Header" label="Lin4 Header Style" datasource="None, Large Header, Medium Header, Small Header, Plain Text, Colored Text" default="None" description="Select text visibility type" />
+    <design:attribute name="Line4Link" label="Show Line4 as link" description="Select if this line should be shown as link" />
+    <!-- US-0006169 Changes START-->
+    <!-- Updated below Label to display properly in builder 
+  		Instead of Lin4 updated it to Line5	-->
+    <design:attribute name="Line5Display" label="Display Line 5?" description="Select whether to display Line 5" />
+    <design:attribute name="Line5FontColor" label="Line5 Color" default="Black" description="Select text Color" />
+    <design:attribute name="Line5Weight" label="Line5 Font Type" datasource="normal, bold" default="normal" description="Select text type" />
+    <design:attribute name="Line5Header" label="Line5 Header Style" datasource="None, Large Header, Medium Header, Small Header, Plain Text, Colored Text" default="None" description="Select text visibility type" />
+	<!-- US-0006169 Changes END-->
+    
+    <design:attribute name="detailPageUrl" label="Detail Page URL" default="#" description="Enter detail page URL" />
+    
+    <design:attribute name="ListViewName" label="List View Name" default="All" description="Enter List View Label" />
+    <design:attribute name="ListViewURL" label="List View URL" default="#" description="Enter List View URL" />
+    
+    <design:attribute name="ShowRelatedRecords" label="Show Related Records?" description="Select whether to display records respective to record page" />
+    <design:attribute name="RelatedFieldAPI" label="Related Field API" description="Select Relationship Field" />
+    
+    <design:attribute name="FilterField" label="Filter By" description="Filter By API" />
+    <design:attribute name="FilterOperator" label="Operator" description="Operator" />
+    <design:attribute name="FilterValue" label="Filter Value" description="Filter Value" />
+    <design:attribute name="MapDataCategories" label="Data Category Mapping" description="Map according to Data Categories?"/>
+    <design:attribute name="DataCategoryField" label="Data Category Field" description="Data category Field Name"/>
+    <design:attribute name="LandingPageObjectType" label="Detail page Object" description="Api name of object where the component is residing"/>
+    <design:attribute name="IsQuestionTypeFeed" label="Question Feed ?" description="True if feed item is of question type."/>
+</design:component>

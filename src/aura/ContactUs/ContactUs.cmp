@@ -1,0 +1,47 @@
+<!--
+*********************************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : The component is used to display contact information. 
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>		<Copa.do US#>
+	09/25/2018	   Sunil Kumar Sharma		        Initial Creation 					US-0005633 
+*********************************************************************************************************    
+-->
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<!-- Attribute Declaration -->
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-grid slds-wrap" >
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+        	
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" >
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <header><h1 class= "header1"> Hours </h1></header>
+            <p class="Form-P">7:00AM to 8:00PM EST</p>
+        </div>
+    </div>
+	<div class="slds-grid slds-wrap" >
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small">
+            <header><h1 class= "header1"> Breast Health </h1></header>
+            <p class="Form-P">Email: <a href="{!'mailto:'+ v.configSetting.Breast_Health_Email__c}" style="text-decoration: underline;">{!v.configSetting.Breast_Health_Email__c}</a></p>
+            <p class="Form-P">Phone: <label>{!v.configSetting.Breast_Health_Phone__c}</label></p>
+            <p class="Form-P"><a href="{!v.configSetting.Breast_Health_Phone_Menu__c}" style="text-decoration: underline;" target="_blank">Phone Menu Details</a></p>
+        </div>
+
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small">
+            <header><h1 class= "header1"> Skeletal Health </h1></header>
+            <p class="Form-P">Email: <a href="{!'mailto:'+v.configSetting.Skeletal_Health_Email__c}" style="text-decoration: underline;">{!v.configSetting.Skeletal_Health_Email__c}</a></p>
+            <p class="Form-P">Phone: <label>{!v.configSetting.Skeletal_Health_Phone__c}</label></p>
+            <p class="Form-P"><a href="{!v.configSetting.Skeletal_Health_Phone_Menu__c}" style="text-decoration: underline;" target="_blank">Phone Menu Details</a></p>
+
+        </div>
+    </div>
+    
+</aura:component>

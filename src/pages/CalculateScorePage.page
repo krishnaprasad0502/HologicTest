@@ -1,0 +1,162 @@
+<!------------------------------------------------------------
+Author:         Raviraj Reddy
+Company:        Cynosure
+Description:    Page to create ScoreCard
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+03/15/2018      Raviraj Reddy        Initial Creation (US3808)
+------------------------------------------------------------>
+<apex:page standardController="Task" extensions="CalculateScorePageController" tabStyle="Task"  lightningStylesheets="true" showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0"  >
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="x-ua-compatible" content="ie=edge" />
+      <title>Score Card</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+      <!-- Import the Design System style sheet -->
+      <apex:slds />
+
+    </head>    
+
+   <script language="JavaScript" type="text/javascript">
+     
+    
+        function errorCheck(){
+               var spinnerDiv = document.getElementById("SpinnerID"); 
+             var finalCode = document.getElementById("j_id0:FormID:FincodeVal").value;
+               if(finalCode == '' || finalCode == null){
+                  var x = document.getElementById("messageBox");
+                  x.style.display = "block";
+                }else{
+                  var y = document.getElementById("messageBox2");
+                  if( y.style.display != "block"){
+                      callSave();
+                      //window.top.close();
+                      var x = document.getElementById("messageBox");https://cynosure--cynosand2--c.cs52.visual.force.com/s.gif
+                      x.style.display = "none";
+                      y.style.display = "block";
+                  }
+                }                
+        }
+        
+        
+    </script>
+    
+
+  <!-- REQUIRED SLDS WRAPPER -->
+  <div class="slds-scope"> 
+  <div  id="messageBox" class="slds-theme--error slds-box slds-box--x-small" style="display:none">
+              <p><strong>Error:</strong>
+               Please select <strong>Overall Code</strong></p>
+   </div>
+   <div  id="messageBox2" class="slds-theme_success slds-box slds-box--x-small" style="display:none">
+              <p><strong>Success:</strong>
+               Task is created. Please select <strong>Close </strong> button</p>
+   </div>
+            
+    <div class="slds-container--center slds-container--small">
+        <!-- MASTHEAD -->
+         
+        <div class="slds-text-heading--large slds-text-align--center" style="margin-bottom:50px">Score Card</div>
+        
+        <!-- / MASTHEAD -->    
+    
+        <!-- PRIMARY CONTENT WRAPPER -->
+        <div class="myapp">
+           
+            <apex:form id="FormID">
+                
+                  
+             <!--
+                 <c:SLDSDynamicLookup SLDSResourceName="{!$Resource.SLDS_New}" ObjectApiName="User" DisplayFieldApiNames="Name" DisplayFieldsPattern="Name"  photo="field->smallPhotoUrl" LabelName="PSP User" SetValueToField="{!obj.OwnerID}"/>
+            -->
+                <div class="slds-form-element">
+    
+                  <label class="slds-form-element__label" for="text-input-01">Related To</label>
+                  <div class="slds-form-element__control">
+                    <apex:inputText styleClass="slds-input" value="{!assetRecord.Name}"/>
+                  </div>
+                </div>
+                 
+                <div class="slds-form-element" >
+                  <label class="slds-form-element__label" for="text-input-01">Subject</label>
+                  <div class="slds-form-element__control">
+                    <apex:inputText styleClass="slds-input"  value="{!obj.Subject}"/>
+                  </div>
+                </div>
+                
+                <br/><br/>
+                
+                <div class="slds-form-element">
+                  <label class="slds-text-heading_small" for="text-input-01">1.Value of customer to Cynosure revenue growth</label>
+                  <div >
+                    <apex:selectList value="{!revenueGrowth}" size="1" styleClass="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-picklist slds-size_small">
+                       <apex:selectOptions value="{!options}"/>
+                   </apex:selectList>
+                  </div>
+                </div>
+                <br/>
+                
+                <div class="slds-form-element">
+                  <label class="slds-text-heading_small" for="text-input-01">2.Value of customer to Cynosure / SculpSure brand </label>
+                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-picklist  slds-size_small">
+                    <apex:selectList value="{!sculpsureBrand}" size="1">
+                       <apex:selectOptions value="{!options}"/>
+                   </apex:selectList>
+                  </div>
+                </div>
+                <br/>
+                
+                <div class="slds-form-element">
+                  <label class="slds-text-heading_small" for="text-input-01">3.Attitude of staff and providers</label>
+                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-picklist slds-size_small ">
+                    <apex:selectList value="{!staffAndProviders}" size="1">
+                       <apex:selectOptions value="{!options}"/>
+                   </apex:selectList>
+                  </div>
+                </div>
+                
+                <br/>
+                
+                <div class="slds-form-element">
+                  <label class="slds-text-heading_small" for="text-input-01">4.Clinic's ability to sustain viable cash pay business</label>
+                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-picklist slds-size_small">
+                    <apex:selectList value="{!cashPayBusiness}" size="1" >
+                       <apex:selectOptions value="{!options}"/>
+                   </apex:selectList>
+                  </div>
+                </div>
+                
+                <br/>
+                
+                <div class="slds-form-element">
+                  <label class="slds-text-heading_small" for="text-input-01">5.Overall Code.</label>
+                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-picklist slds-size_small ">
+                    <apex:selectList id="FincodeVal" value="{!finalCode}" size="1">
+                       <apex:selectOptions value="{!options}"/>
+                   </apex:selectList>
+                  </div>
+                </div>
+
+                <br/><br/>
+                <div class="slds-text-align--center">
+                  <apex:commandButton id="saveButtonID" value="Save" onclick="errorCheck();" styleClass="slds-button slds-button--neutral slds-button_brand slds-grow" reRender="FormID"/>
+                  <apex:commandButton value="Cancel" onclick="window.parent.opener.popupClosed();window.top.close();" styleClass="slds-button slds-button--neutral slds-button_brand slds-grow" />
+                  <apex:commandButton value="Close" onclick="window.parent.opener.popupClosed();window.top.close();" styleClass="slds-button slds-button--neutral slds-button_brand slds-grow" />
+
+                </div>
+                <apex:actionFunction name="callSave" action="{!SaveTask}" reRender="FormID"/>
+            </apex:form>
+        </div>
+        <!-- / PRIMARY CONTENT WRAPPER -->    
+    </div>
+
+  </div>
+  <!-- / REQUIRED SLDS WRAPPER -->    
+ <!-- <apex:includeScript value="{!$Resource.SLDSDynamicLookupScript}"/>  -->
+
+</html>
+</apex:page>

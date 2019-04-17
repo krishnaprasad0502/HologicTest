@@ -1,0 +1,9 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+        	Community Navigation Component used in Quick Links as sidebar. 
+            On the click of menu user gets redirected to a new page or will see his actions being performed in the same page.
+            Uses "Service Community Menu" for all operations on page in the backend
+        </p>
+    </aura:description>
+</aura:documentation>

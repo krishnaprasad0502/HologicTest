@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>
+        The component is used to show social link grid on the community footer.
+    </aura:description>
+	
+</aura:documentation>

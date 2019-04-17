@@ -1,0 +1,8 @@
+<apex:component controller="DeliveryInfoDetails" access="global">
+
+    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+        <apex:param value="{!Today}" />
+    </apex:outputText>
+    
+  
+</apex:component>

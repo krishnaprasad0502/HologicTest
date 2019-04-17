@@ -1,0 +1,65 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 10/09/2018
+	Description: This lightning component is used as theme layout for community discussion home page.*
+
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	10/09/2018			Sunil Kumar Sharma		Initial Creation 					US-0005633
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+*********************************************************************************************************
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,forceCommunity:themeLayout" access="global" >
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    <!-- Attribute Declaration-->
+    <aura:attribute name="Column1" type="Aura.Component[]"/>
+    <aura:attribute name="Column2" type="Aura.Component[]"/>
+    <aura:attribute name="Column3" type="Aura.Component[]"/>
+    <aura:attribute name="Column4" type="Aura.Component[]"/>
+    <aura:attribute name="Column5" type="Aura.Component[]"/>
+    <aura:attribute name="Column6" type="Aura.Component[]"/>
+    <aura:attribute name="Column7" type="Aura.Component[]"/>
+    <aura:attribute name="Column8" type="Aura.Component[]"/>
+    <aura:attribute name="Column9" type="Aura.Component[]"/>
+    <aura:attribute name="Column10" type="Aura.Component[]"/>    
+    <aura:attribute name="search" type="Aura.Component[]"/>
+    
+	<div class="slds-grid">
+        <div class="slds-col slds-size--1-of-1">
+    		{!v.Column1}
+    	</div>
+    </div> 
+    
+    <div class="slds-grid slds-wrap" style="max-width: 1170px;margin: auto;"> 
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+    		{!v.Column2}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+    		{!v.Column3}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-bottom--small" >
+    		{!v.Column4}
+    	</div>
+    </div>
+        <div class="slds-grid slds-wrap" style="max-width: 1170px;margin: auto;">
+    	<div class="slds-col slds-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column8}
+    	</div>
+    </div>
+    <div class="slds-grid slds-wrap" style="max-width: 1170px;margin: auto;">
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-3 slds-p-bottom--small">
+    		{!v.Column6}
+    	</div>
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small" style= "padding-top:25px;">
+    		{!v.Column7}
+    	</div>
+    </div>
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-col slds-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column5}
+    	</div>
+    </div>
+</aura:component>

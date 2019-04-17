@@ -1,0 +1,19 @@
+<apex:component controller="AssetAttributePicklistController" allowDML="true">
+    <apex:attribute name="PicklistName" description="Name of picklist" type="String" required="required" assignTo="{!picklistValue}"/>
+    <apex:attribute name="Category" description="Category of picklist items" type="String" required="required" assignTo="{!categoryValue}"/>
+    <apex:attribute name="Value" description="Value passed of inputfield/picklist." type="String" required="required" assignTo="{!selectValue}"/>
+    <apex:attribute name="Label" description="Label of inputfield/picklist." type="String" required="required" assignTo="{!labelValue}"/>
+    <apex:selectList value="{!selectValue}" size="1" onchange="setValue(this)" disabled="{!isEditable}" rendered="{!isPicklist}" label="{!labelValue}">
+        <apex:selectOptions value="{!PickListValues}"/>
+    </apex:selectList>
+    <apex:inputCheckbox selected="{!selectValue}" onchange="setValue(this)" label="{!labelValue}" disabled="{!isEditable}" rendered="{! IF(!isPicklist && dataType == 'checkbox', true, false)}"/>
+    <apex:input type="date" value="{!selectValue}" onchange="setValue(this)" label="{!labelValue}" disabled="{!isEditable}" rendered="{! IF(!isPicklist && dataType == 'date', true, false)}"/>
+    <apex:inputText value="{!selectValue}" onchange="setValue(this)" label="{!labelValue}" disabled="{!isEditable}" rendered="{! IF(!isPicklist && dataType == 'text', true, false)}"/>
+    <script>
+    function setValue(val){
+        var valSplit = val.name.split(":");
+        var valText = document.getElementById('j_id0:j_id4:j_id10:j_id40:' + valSplit[4] + ':idInputVal');
+        valText.value = val.value;
+    }
+    </script>
+</apex:component>

@@ -1,0 +1,477 @@
+<!--
+*********************************************************************************************************
+ Author       : Niraj Wani
+ Company      : Hexaware Technologies
+ Created Date : 9/23/2018
+ Description  : This lightning component is used to for Community Reports. 
+
+ History:
+ <Date>         <Author Name>            <Brief Description of Change>     <Copa.do US#>
+ 9/12/2018	    Niraj Wani				 Initial Creation 
+ 11/14/2018     Niraj Wani               Added Buttons at Bottom           US-0006171
+ 11/22/2018     Niraj Wani               Conditional display of 
+										 Buttons at Bottom                 US-0006171
+ 01/11/2019		Nomita Walke			Updated the message for generating CSR	US-0006454
+01/11/2019		Yogitha Malireddy		Updated to show asset serial number in step2	US-0006454
+*********************************************************************************************************
+-->
+<aura:component controller="ServiceReportController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="isStep0" type="boolean" default="false"/>
+    <aura:attribute name="isStep1" type="boolean" default="false"/>
+    <aura:attribute name="isStep2" type="boolean" default="false"/>
+    <aura:attribute name="isStep3" type="boolean" default="false"/>
+    <aura:attribute name="firstStepNumber" type="Integer" default="false"/>
+    <aura:attribute name="lastStepNumber" type="Integer" default="false"/>
+    <aura:attribute name="stepNumber" type="Integer" default="0"/>
+    <aura:attribute name="stepTitle" type="String" default="STEP1"/>
+    <aura:attribute name="reportTitle" type="String" default="Generate Report"/>
+    <aura:attribute name="validationError" type="String" default=""/>
+    <aura:attribute name="Step0Result" type="Object" />
+    <aura:attribute name="Step1Result" type="Object" />
+    <aura:attribute name="Step1ResultJSON" type="Object" />
+    <aura:attribute name="Step2Result" type="Object" />
+    <aura:attribute name="Step3Result" type="Object" />
+    <aura:attribute name="Step3ResultJSON" type="String" />
+    <aura:attribute name="id" type="String" default=""/>
+    <aura:attribute name="recordType" type="String" default=""/>
+    <aura:attribute name="reportType" type="String" default=""/>
+    <aura:attribute name="filterObject" type="String" default=""/>
+    <aura:attribute name="isSelectAllAssets" type="boolean" default="false"/> 
+    <aura:attribute name="isSelectAllCases" type="boolean" default="false"/> 
+    <aura:attribute name="serviceStartDate" type="Date" />
+    <aura:attribute name="serviceEndDate" type="Date" />
+    <aura:attribute name="serviceAppointmentPageURL" type="String" default=""/>
+    <aura:attribute name="searchAssetsKeyword" type="String" default=""/>
+    <aura:attribute name="numOfRows" type="Integer" default="0"/> 
+    <aura:attribute name="numOfRowsAccount" type="Integer" default="0"/>
+    <aura:attribute name="numOfRowsAsset" type="Integer" default="0"/>
+    <aura:attribute name="numOfRowsCase" type="Integer" default="0"/>
+    <aura:attribute name="numOfRowsSA" type="Integer" default="0"/>
+    <!-- attribute to accept Visualforce page's javascript method -->
+    <aura:attribute name="sendData" type="object"/>
+    <div class="slds-grid slds-gutters slds-wrap ">
+        <!--Use aura:if tag to display first step of wizard -->  
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+            <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." variant="brand" size="large" class="slds-hide"/>
+            <h1 id="header" class="headlineTitleText slds-m-vertical_x-small">{!v.reportTitle}</h1>
+            <aura:if isTrue="{!v.isOpen}">
+                <div class="slds-box">
+                    <!-- ###### Top Header and Navigation Buttons ######-->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+                        <div class="slds-float_left">
+                        <h2 id="header" class="stepTitle slds-text-heading_medium">{!v.stepTitle}</h2>
+                    	<div class="slds-text-color_error">{!v.validationError}</div>
+                        </div>
+                        <div class="slds-grid slds-float_right slds-grid_vertical-align-end ">
+                                <aura:if isTrue="{! greaterthan(v.stepNumber , v.firstStepNumber ) }">
+                                    <lightning:button class="reportButton" variant="neutral" 
+                                                      label="Back"
+                                                      title="Back"
+                                                      onclick="{! c.goBack }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! lessthan(v.stepNumber , v.lastStepNumber ) }">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Next"
+                                                      title="Next"
+                                                      onclick="{! c.nextStep }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! and (equals(v.stepNumber , v.lastStepNumber ), equals(v.reportType, 'History'))}">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Generate Report"
+                                                      title="Generate"
+                                                      onclick="{!c.downloadDocument}"/>
+                                </aura:if>                           
+                        </div>
+                    </div> 
+                    <!--###### STEP0 Content######-->
+                    <aura:if isTrue="{!v.isStep0}">
+                        <div class="slds-p-around_medium" id="step-1">                            
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">      
+                                <thead>  
+                                    <tr class="slds-text-title--caps">
+                                        <th>            
+                                            <!-- Radio Button Column --> 											 
+                                        </th>
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Company">Company</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Location">Location</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Address">City/State/Postal</div>
+                                        </th>
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Type">Type</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>        
+                                    <aura:iteration items="{!v.Step0Result}" var="account">
+                                        <aura:if isTrue="{! notequals ('Self Registration Account', account.acc.Name) }">
+                                        <tr>
+                                            <td>
+                                                <ui:inputRadio aura:id="checkAccount"  name="{!account.acc.Id}"  change="{!c.onCheckboxChange}"  value="{!account.selected}" />
+                                            </td>
+                                            <aura:if isTrue="{! equals (account.acc.RecordType.Name, 'Customer')}">
+                                            <td scope="row">
+                                                <div class="tableData slds-truncate" title="">{!account.acc.Name}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="tableData slds-truncate" title="">{!account.acc.BillingStreet}</div>
+                                            </td>
+                                            <aura:set attribute="else">
+                                                <td scope="row">
+                                                <div class="tableData slds-truncate" title="">{!account.acc.Parent.Name}</div>
+                                            	</td>
+       											<td scope="row">
+                                                <div class="tableData slds-truncate" title="">{!account.acc.Name}</div>
+                                            	</td>
+   											</aura:set>
+                                            </aura:if>
+                                            <td>
+                                                <div class="tableData slds-truncate" title="">{!account.acc.BillingCity} , {!account.acc.BillingStateCode} , {!account.acc.BillingPostalCode}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="tableData slds-truncate" title="">{!account.acc.RecordType.Name}</div>
+                                            </td>
+                                        </tr>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </aura:if>
+                    <hr/>
+                    <!--###### STEP1 Content######-->
+                    <aura:if isTrue="{!v.isStep1}">
+                        <div class="slds-p-around_medium" id="step-1">
+                             <div class="slds-form-element slds-lookup" data-select="single" style="max-width:35%;" >
+							<!-- <div class="slds-form-element__control"> -->
+                                <div class="slds-input-has-icon slds-input-has-icon--right slds-p-bottom_small">
+                                <lightning:buttonIcon iconName="utility:search" variant="bare" 
+                                                      onclick="{! c.handleAssetSearch }" alternativeText="Search" class="slds-input__icon" />
+                                <ui:inputText value="{!v.searchAssetsKeyword}" class="slds-lookup__search-input slds-input" 
+                                              placeholder="Search Assets" keyup="{!c.onAssetSearchKeyUp}" />
+                                </div>
+                           <!-- </div> -->
+                            </div>
+                            <br/>                            
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">      
+                                <thead>  
+                                    <tr class="slds-text-title--caps">
+                                        <th>           
+                                            <label class="slds-checkbox">
+                                                <ui:inputCheckbox value="{!v.isSelectAllAssets}" change="{!c.handleSelectAllAssets}" aura:id="selectAll"/>
+                                                <span class="slds-checkbox--faux" />
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="SerialNumber">Serial Number</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="SiteName">Site Name</div>
+                                        </th>
+                                         <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Asset Location">Asset Location</div>
+                                        </th>
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Product">Product</div>
+                                        </th>
+                                        <th  class="" scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Description">Description</div>
+                                        </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>        
+                                    <aura:iteration items="{!v.Step1Result.assetWrapper}" var="asset">
+                                        <tr>
+                                            <th>
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox aura:id="checkContact" value="{!asset.selected}" text="{!asset.asse.SerialNumber}"/>
+                                                    <span class="slds-checkbox--faux" />
+                                                    <span class="slds-form-element__label"></span>
+                                                </label>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!asset.asse.SerialNumber}</div>
+                                            </th>
+                                            <aura:if isTrue="{!not($Browser.isPhone)}">
+                                                <td>
+                                                    <div class="tableData slds-truncate" title="">{!asset.asse.Account.Name}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="tableData slds-truncate" title=""> <aura:unescapedHtml value="{!asset.asse.Install_Location_Label__c}"/> </div>
+                                                </td>
+                                                <th scope="row">
+                                                    <div class="tableData slds-truncate" title="">{!asset.asse.Product2.Name}</div>
+                                                </th>
+                                                <td class="" >
+                                                    <div class="tableData slds-truncate" title="">{!asset.asse.Description}</div>
+                                                </td>
+                                            </aura:if>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </aura:if>
+                    <!--###### STEP2 Content######-->
+                    <aura:if isTrue="{! and (v.isStep2, equals(v.reportType, 'History')) }">
+                        <div class="slds-p-around_medium" id="step-2">
+                            <div class="slds-grid slds-gutters" style="max-width:50%;"> 
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:inputDate aura:id="ServiceStartDate" label="Service Start Date" value="{!v.serviceStartDate}" displayDatePicker="true" format="MM/dd/yyyy"/>
+                                    </span>
+                                </div>
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:inputDate aura:id="ServiceEndDate" label="Service End Date" value="{!v.serviceEndDate}" displayDatePicker="true" format="MM/dd/yyyy"/>
+                                    </span>
+                                </div>
+                              <!--  <div class="slds-col">
+                                    <span></span>
+                                </div> -->
+                                <div class="slds-col">
+                                    <span>
+                                        <lightning:button class="reportButton" variant="brand" 
+                                                          label="Apply Filter"
+                                                          title="ApplyFilter"
+                                                          onclick="{! c.applyFilter }"/>
+                                        <!-- <ui:button class="slds-button slds-button_brand" label="Apply Filter"  press="{!c.applyFilter}" /> -->
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">      
+                                <thead>  
+                                    <tr class="slds-text-title--caps">
+                                        <th>           
+                                            <label class="slds-checkbox">
+                                                <ui:inputCheckbox value="{!v.isSelectAllCases}" change="{!c.handleSelectAllCases}" aura:id="selectAll"/>
+                                                <span class="slds-checkbox--faux" />
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Case Number">Case Number</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Asset Number">Asset Number</div>
+                                        </th>
+                                        
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Subject">Subject</div>
+                                        </th>
+                                        
+                                        <th  class="" scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Date Created">Date Created</div>
+                                        </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>        
+                                    <aura:iteration items="{!v.Step2Result.caseWrapper}" var="case">
+                                        <tr>
+                                            <th>
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox aura:id="checkCase" value="{!case.selected}" text="{!case.caseVal.CaseNumber}"/>
+                                                    <span class="slds-checkbox--faux" />
+                                                    <span class="slds-form-element__label"></span>
+                                                </label>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!case.caseVal.CaseNumber}</div>
+                                            </th>
+                                            
+                                            <td>
+                                                <div class="tableData slds-truncate" title="">{!case.caseVal.Asset.Name}</div>
+                                            </td>
+                                            
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!case.caseVal.Subject}</div>
+                                            </th>
+                                            <td class="" >
+                                                <div class="tableData slds-truncate" title="">{!case.caseVal.Community_CreatedDate__c}</div>
+                                            </td>
+                                            
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>                            
+                        </div>
+                    </aura:if>
+                    <!--###### STEP2 Service Appointment Content ######--> 
+                    <aura:if isTrue="{! and (v.isStep2, equals(v.reportType, 'FieldService')) }">
+                        <div class="slds-p-around_medium" id="step-2">
+                            <div class="slds-grid slds-gutters"> 
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:inputDate aura:id="ServiceStartDate" label="Service Start Date" value="{!v.serviceStartDate}" displayDatePicker="true" format="MM/dd/yyyy"/>
+                                    </span>
+                                </div>
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:inputDate aura:id="ServiceEndDate" label="Service End Date" value="{!v.serviceEndDate}" displayDatePicker="true" format="MM/dd/yyyy"/>
+                                    </span>
+                                </div>
+                              <!--  <div class="slds-col">
+                                    <span></span>
+                                </div> -->
+                                <div class="slds-col">
+                                    <span>
+                                        <lightning:button class="reportButton" variant="brand" 
+                                                          label="Apply Filter"
+                                                          title="ApplyFilter"
+                                                          onclick="{! c.applyServiceAppointmentFilter }"/>                                     
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer" role="grid">      
+                                <thead>  
+                                    <tr class="slds-text-title--caps">                    
+                                        <th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="SA Number">                            
+                                                SA Number
+                                            </div>
+                                        </th>                                 
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Case Number">Case Number</div>
+                                        </th>
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Asset Serial Number">Asset Serial Number</div>
+                                        </th>
+                                        <th  scope="col">
+                                            <div class="tableHeaders slds-truncate" title="WO Number">WO Number</div>
+                                        </th>
+ 										<th scope="col">
+                                            <div class="tableHeaders slds-truncate" title="SA Subject">Subject</div>
+                                        </th>                                         
+                                        <th  class="" scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Date Created">Date Created</div>
+                                        </th>
+                                         <!--<th  class="" scope="col">
+                                            <div class="tableHeaders slds-truncate" title="Owner Name">Owner Name</div>
+                                        </th>-->
+                                    </tr>
+                                </thead>
+                                <tbody>        
+                                    <aura:iteration items="{!v.Step2Result}" var="sApp">
+                                        <aura:if isTrue="{! not(empty(sApp.ServiceReports))  }">
+                                        <tr>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="">
+                                                    <a class="" target="_blank" href="{! concat( v.serviceAppointmentPageURL + 'serviceappointment/' , sApp.Id)}">
+                                                        {!sApp.AppointmentNumber}
+                                                    </a>
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!sApp.Case__c}</div>
+                                            </th> 
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!sApp.Related_Work_Order__r.Asset.SerialNumber}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="tableData slds-truncate" title="">{!sApp.Work_Order__c}</div>
+                                            </th>
+                                            <th>
+                                                <div class="tableData slds-truncate" title="">{!sApp.Subject}</div>
+                                            </th>
+                                            <th class="" >
+                                                <div class="tableData slds-truncate" title="">{!sApp.Community_CreatedDate__c}</div>
+                                            </th>
+                                            <!--<th class="" >
+                                                <div class="tableData slds-truncate" title="">{!sApp.Owner.Name}</div>
+                                            </th>   -->  
+                                        </tr>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            
+                            
+                        </div>
+                    </aura:if>
+                    <!--###### STEP3 Content######-->
+                    <aura:if isTrue="{!v.isStep3}">
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>
+                                <b>
+                                    Click the Generate Report button to download your Service History Report.<br/>
+Note: If you do not see your report automatically open, please check the download area of your browser. 
+                                </b>
+                            </p>
+                        </div>
+                        
+                    </aura:if>
+                    <!--###### WIZARD NAV BUTTONS ######
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+                        <div class="slds-grid slds-grid_vertical-align-end">
+                            <footer class="">
+                                <aura:if isTrue="{! greaterthan(v.stepNumber , v.firstStepNumber ) }">
+                                    <lightning:button class="reportButton" variant="neutral" 
+                                                      label="Back"
+                                                      title="Back"
+                                                      onclick="{! c.goBack }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! lessthan(v.stepNumber , v.lastStepNumber ) }">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Next"
+                                                      title="Next"
+                                                      onclick="{! c.nextStep }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! and (equals(v.stepNumber , v.lastStepNumber ), equals(v.reportType, 'History'))}">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Generate Report"
+                                                      title="Generate"
+                                                      onclick="{!c.downloadDocument}"/>
+                                </aura:if>
+                                
+                            </footer>
+                        </div>
+                    </div> -->
+                <!-- ###### Bottom Navigation Buttons - Only show when number of rows more than 5 ######-->
+                    <aura:if isTrue="{!  greaterthan(v.numOfRows , 5 )}">
+                    <div class="slds-clearfix slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+                        <div class="slds-float_left">
+                        	 <h2 id="header" class="stepTitle slds-text-heading_medium">&nbsp;&nbsp;</h2>
+                        </div>
+                        <div class="slds-grid slds-float_right slds-grid_vertical-align-end ">
+                                <aura:if isTrue="{! greaterthan(v.stepNumber , v.firstStepNumber ) }">
+                                    <lightning:button class="reportButton" variant="neutral" 
+                                                      label="Back"
+                                                      title="Back"
+                                                      onclick="{! c.goBack }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! lessthan(v.stepNumber , v.lastStepNumber ) }">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Next"
+                                                      title="Next"
+                                                      onclick="{! c.nextStep }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! and (equals(v.stepNumber , v.lastStepNumber ), equals(v.reportType, 'History'))}">
+                                    <lightning:button class= "reportButton" variant="brand" 
+                                                      label="Generate Report"
+                                                      title="Generate"
+                                                      onclick="{!c.downloadDocument}"/>
+                                </aura:if>                           
+                        </div>
+                    </div> 
+                   </aura:if>
+                </div>
+                
+            </aura:if>
+        
+        </div> 
+    </div>
+</aura:component>

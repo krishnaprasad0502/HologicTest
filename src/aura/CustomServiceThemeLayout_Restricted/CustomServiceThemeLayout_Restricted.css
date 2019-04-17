@@ -1,0 +1,28 @@
+.THIS .search-container{
+    width: 45%;
+    margin: auto !important ;
+    padding-top:55px !important ;
+}
+
+.THIS .slds-grid .hero-div{
+    width:50% !important ;
+    margin: auto !important ;
+    padding-top:50px !important ;
+    text-align:center ;
+    
+}
+
+.THIS .slds-grid .hero-div-mobile{
+    width:50% !important ;
+    margin: auto !important ;
+    text-align:center ;
+    padding-bottom: 10px ;
+}
+.THIS .slds-grid .hero-sub-div{
+    
+    width:100% ;
+    text-align:center ;
+}
+.THIS .hero-image{
+    background-image: url('../resource/Community_Hero_Image/Community_Hero_Image.jpg') !important;
+}

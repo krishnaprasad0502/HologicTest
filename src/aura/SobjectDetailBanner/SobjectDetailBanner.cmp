@@ -1,0 +1,69 @@
+<!--
+*************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : The component is created to show customized header on object detail page.
+
+    History:
+    <Date>         <Author Name>             <Brief Description of Change>   <Copa.do US#>
+ 	8/22/2018	   Sunil Kumar Sharma		 Initial Creation   			 US-0005699
+ 	12/20/2018			Sunil					UI fixes					 US-0006345
+	02/11/2019			Sunil					UI fixes					 US-0006703
+*************************************************************************************
+-->
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="sobjRecord" type="List" />
+    <aura:attribute name="sobjFieldName1" type="String" />
+    <aura:attribute name="sobjFieldName2" type="String" />
+    <aura:attribute name="sobjFieldName3" type="String" />
+    <aura:attribute name="sobjFieldName4" type="String" />
+    <aura:attribute name="hideSearchBox" type="Boolean" />
+    <aura:attribute name="SobjType" type="String" default="Product2"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:iteration items="{!v.sobjRecord}" var="item">
+        <div class="slds-grid slds-wrap" >
+            <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-1" >
+                <label style="Font-size:30px;font-family: ProximaNova-bold,sans-serif;font-weight:bold;color:#131f6b;line-Height:38px">                 
+                    <aura:if isTrue="{!equals(v.SobjType,'Asset')}">
+                    	{!item.value3}&nbsp;|&nbsp;{!item.value1}
+                        <aura:set attribute="else">
+                            {!item.value1}
+                        </aura:set>
+                    </aura:if>
+                </label>
+                <aura:if isTrue="{!equals(v.SobjType,'Asset')}">                    
+                    <aura:if isTrue="{!!empty(item.value4)}">                    
+                        <aura:if isTrue="{!!empty(item.value2)}">
+                            <h2 class="slds-banner-Header2" style="font-family: ProximaNova-Semibold,sans-serif character: 0px">
+                                {!item.value4},&nbsp;{!item.value2}
+                            </h2>
+                            <aura:set attribute="else">
+                                <h2 class="slds-banner-Header2" style="font-family: ProximaNova-Semibold,sans-serif character: 0px">
+                                    {!item.value4}
+                                </h2>
+                            </aura:set>
+                        </aura:if>  
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!!empty(item.value2)}">
+                                <h2 class="slds-banner-Header2" style="font-family: ProximaNova-Semibold,sans-serif character: 0px">
+                                    {!item.value2}
+                                </h2>
+                            </aura:if> 
+                        </aura:set>
+                    </aura:if>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!!empty(item.value4)}">
+                            <h2 class="slds-banner-Header2" style="font-family: ProximaNova-Semibold,sans-serif character: 0px">
+                                {!item.value4}
+                            </h2>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+            
+        </div>
+    </aura:iteration>
+</aura:component>

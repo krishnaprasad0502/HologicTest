@@ -1,0 +1,607 @@
+<!--
+*********************************************************************************************************************
+ Author       : Yogitha Malireddy
+ Company      : Hexaware Technologies
+ Created Date : 1/18/2019
+ Description  : This lightning component is used to create Service Request for Disposable Products Issue from multiple locations. 
+
+ History:
+ <Date>              <Author Name>        	<Brief description of change >		    <Copa.do US#>					<Copa.do US#>
+ 1/18/2019			Yogitha Malireddy		Initial Creation 					      US-0006553 	
+ 1/02/2019			Vrushabh Katariya		Case Comment and Required Fields added	  US-0006703
+*********************************************************************************************************************
+-->
+<aura:component controller="SubmitNewCaseController" implements="lightning:actionOverride,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+	<!-- Attribute Declaration -->
+    <!-- Objects -->
+    <aura:attribute name="NewSR" type="Case" default="{ sobjectType: 'Case' }"/>
+    <aura:attribute name="customerAccount" type="object"/>
+    <aura:attribute name="errorMessage" type="string" default=""/>
+    <aura:attribute name="assetDetail" type="boolean" default="false"/>
+    <aura:attribute name="showQ1Error" type="boolean" default="false"/>
+    <aura:attribute name="showS1Error" type="boolean" default="false"/>
+    <aura:attribute name="showS2Error" type="boolean" default="false"/>
+    <aura:attribute name="showS3Error" type="boolean" default="false"/>
+    <aura:attribute name="showS1NumberError" type="boolean" default="false"/>
+    <aura:attribute name="showQ2Error" type="boolean" default="false"/>
+    <aura:attribute name="showQ4Error" type="boolean" default="false"/>
+    <aura:attribute name="showQ7Error" type="boolean" default="false"/>
+    <aura:attribute name="showcontactError" type="boolean" default="false"/>
+    <aura:attribute name="q1Required" type="boolean" default="false"/>
+    <aura:attribute name="q2Required" type="boolean" default="false"/>
+    <aura:attribute name="q3Required" type="boolean" default="false"/>
+    <aura:attribute name="q4Required" type="boolean" default="false"/>
+    <aura:attribute name="q6Required" type="boolean" default="false"/>
+    <aura:attribute name="q7Required" type="boolean" default="false"/>
+    <aura:attribute name="contactRequired" type="boolean" default="false"/>
+    <aura:attribute name="DetailedDescription" type="string" default=""/>
+    <aura:attribute name="CustomerContactInfo" type="string" default=""/>
+    <aura:attribute name="Specialist" type="string" default=""/>
+    <aura:attribute name="Quantity" type="string" default=""/>
+    <aura:attribute name="SalesRep" type="string" default=""/>
+    <aura:attribute name="SerialNumber" type="string" default=""/>
+    <aura:attribute name="Address" type="string" default=""/>
+    <aura:attribute name="NumberOfPatient" type="string" default=""/>
+    <aura:attribute name="CheckboxVal" type="Boolean" default="false"/>
+    <!-- Product Selection -->
+    <aura:attribute name="customerAccountName" type="string"/>
+    <aura:attribute name="ProductName" type="String"/>
+    <aura:attribute name="ProductId" type="String"/>
+    <aura:attribute name="CommunityProductDesc" type="string"/>
+    <aura:attribute name="showProduct" type="boolean" default="false"/>
+    <aura:attribute name="showScreen2Back" type="boolean" default="false"/>
+    <aura:attribute name="showProductName" type="boolean" default="false"/>
+    <aura:attribute name="showProductDesc" type="boolean" default="false"/>
+    <!-- UI Settings -->
+    <aura:attribute name="Screen1" type="boolean" default="false"/>
+    <aura:attribute name="Screen2" type="boolean" default="false"/>
+    <aura:attribute name="Screen3" type="boolean" default="false"/>
+    <aura:attribute name="disableCreateFinish" type="boolean" default="false"/>
+    <aura:attribute name="currentUser" type="User" />
+    <!-- Service Request Dynamic Attributes coming from invocations-->
+    <aura:attribute name="CaseType" type="string"/>
+    <aura:attribute name="CaseSubType" type="string"/>
+    <aura:attribute name="CaseSubject" type="String"/>
+    <aura:attribute name="CasePriority" type="String" default="Sev 2"/>
+    <aura:attribute name="CaseTitle" type="String"/>
+    <!--Question Controls-->
+    <aura:attribute name="q1Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q1Value" type="string"/>
+    <aura:attribute name="q1Answer" type="string"/>
+    <aura:attribute name="displayQ1TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q2Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q2Value" type="string"/>
+    <aura:attribute name="q2Answer" type="string"/>
+    <aura:attribute name="displayQ2TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q3Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q3Value" type="string"/>
+    <aura:attribute name="q3Answer" type="string"/>
+    <aura:attribute name="displayQ3TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q4Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q4Value" type="string"/>
+    <aura:attribute name="q4Answer" type="string"/>
+    <aura:attribute name="displayQ4TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q7Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q7Value" type="string"/>
+    <aura:attribute name="q7Answer" type="string"/>
+    <aura:attribute name="displayQ7TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q5Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q5Value" type="string"/>
+    <aura:attribute name="q5Answer" type="string"/>
+    <aura:attribute name="displayQ5TextBox" type="boolean" default="false"/>
+    <aura:attribute name="q6Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q6Value" type="string"/>
+    <aura:attribute name="q6Answer" type="string"/>
+    <aura:attribute name="displayQ6TextBox" type="boolean" default="false"/>
+    <aura:attribute name="displayQuestionnaire" type="boolean" default="false"/>
+    <!-- Handlers -->
+    <aura:registerEvent name="closeModalEvent" type="c:CloseModal"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+		<!-- Error Message -->
+			<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+				<p class="TextErrorMessage">{!v.errorMessage}</p>
+			</div>
+		<!-- Error Message -->
+		
+		<!-- Screen 1 Open -->
+		<aura:if isTrue="{!v.Screen1}">
+			<!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-4"></div>-->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1" style="text-align:center">            	
+            		<h2 id="modal-heading-01" class="slds-text-heading_Medium " >
+                        SELECT PRODUCT
+                    </h2>
+                
+            </div>
+            <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-4"></div>-->
+            <aura:if isTrue="{!v.currentUser.Profile.Name != $Label.c.Community_Profile_Third_Party}">
+                <aura:if isTrue="{!v.showProduct}">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="margin-top:25px;">
+                        <c:CustomLookup aura:id="lookup" objectAPIName="Product2" IconName="standard:Account" label="Select Product" selectedRecordName="{!v.ProductName}" 
+                                                selectedRecordId="{!v.ProductId}" CommunityProductDesc="{!v.CommunityProductDesc}"
+                                                CaseTitle="{!v.CaseTitle}" placeHolderName="Specify Product Name.."/>
+                     </div>
+                    <br/><br/>
+				</aura:if>
+        	</aura:if>
+            <br/><br/>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" >
+                <br/>
+                <ui:outputText aura:id="nameOutput" class ="slds-text-heading_Small"  value="Provide Lot for Disposable Issue or Serial Number for Equipment Issue(Limit 1 per Issue)"/>
+                
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+                <br/>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.showS1NumberError}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                
+                                <lightning:input required ="true" aura:id="Validation5" disabled="false" name="input5"  aria-describedby="error-SN1" value="{!v.NewSR.Lot_Number__c}" label="Lot Number"/>
+                                <div class="slds-form-element__help TextErrorMessage" id="error-SN1">Lot Number or Serial Number Required </div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:input required ="true" aura:id="Validation5" disabled="false" name="input5" value="{!v.NewSR.Lot_Number__c}" label="Lot Number"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                        
+                        
+                        
+                       <!-- <lightning:input name="input5" disabled="false" value="{!v.NewSR.Lot_Number__c}" label="Lot Number"/>-->
+                    </div>
+				</div>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.showS1Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:input aura:id="Validation1" name="validation" messageWhenValueMissing="Required Field" required ="true" aria-describedby="error-S1" disabled="false" value="{!v.Quantity}" label="{!$Label.c.Community_Disposable_Text_Q4}"/>
+                                <div class="slds-form-element__help TextErrorMessage" id="error-S1">Required Field</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:input aura:id="Validation1" name="validation" messageWhenValueMissing="Required Field" required ="true" disabled="false" value="{!v.Quantity}" label="{!$Label.c.Community_Disposable_Text_Q4}"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </div>
+				</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+                <br/>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.showS1NumberError}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:input required ="true" aura:id="Validation5" disabled="false" name="input5"  aria-describedby="error-SN2" value="{!v.SerialNumber}" label="Serial Number"/>
+                                <!--<div class="slds-form-element__help TextErrorMessage" id="error-SN2">Required Field</div>-->
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:input required ="true" aura:id="Validation5" disabled="false" name="input5" value="{!v.SerialNumber}" label="Serial Number"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                        
+                        
+                        
+                        <!--<lightning:input name="input5" disabled="false" value="{!v.SerialNumber}" label="Serial Number"/>-->
+                    </div>
+				</div>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.showS2Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:input aura:id="Validation2" name="validation" messageWhenValueMissing="Required Field" required ="true" aria-describedby="error-S1" disabled="false" value="{!v.NumberOfPatient}" label="Number of Patients Involved"/>
+                                <div class="slds-form-element__help TextErrorMessage" id="error-S1">Required Field</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:input aura:id="Validation2" name="validation" messageWhenValueMissing="Required Field" required ="true" disabled="false" value="{!v.NumberOfPatient}" label="Number of Patients Involved"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </div>
+				</div>                
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.showS3Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:textarea aura:id="Validation3" name="validation" messageWhenValueMissing="Required Field" required ="true" aria-describedby="error-S1" disabled="false" value="{!v.DetailedDescription}" label="{!$Label.c.Community_Disposable_Text_Q1}"/>
+                                <div class="slds-form-element__help TextErrorMessage" id="error-S1">Required Field</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:textarea aura:id="Validation3" name="validation" messageWhenValueMissing="Required Field" required ="true" disabled="false" value="{!v.DetailedDescription}" label="{!$Label.c.Community_Disposable_Text_Q1}"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>           
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning:input name="input5" disabled="false" value="{!v.SalesRep}" label="{!$Label.c.Community_Disposable_Text_Q3}"/>
+                    </div>
+				</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning:input name="input5" disabled="false" value="{!v.Specialist}" label="{!$Label.c.Community_Disposable_Text_Q5}"/>
+                    </div>
+				</div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="text-align:right">
+	    		<br/><br/>
+	    		<lightning:button aura:id="Screen1Next" label="NEXT" variant="brand" onclick="{!c.Screen1Next}" class="sfdc_page_button"/>
+	    	</div>
+        </aura:if>
+    </div>
+    <!-- Screen 1 Close -->
+ 	<!-- Screen 2 Open -->
+    <div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+    	<aura:if isTrue="{!v.Screen2}">
+            <div class="{! and(v.CaseType == 'Web',$Label.c.Community_Show_Deflection == 'Yes') ? 'slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2' : 'slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1'}">
+                <!-- SLDS Page Header -->
+                <!-- Compliance Question 1-->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q2}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q1Required}">
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup1" options="{!v.q1Options}" value="{! v.q1Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ1Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup1" options="{!v.q1Options}" value="{! v.q1Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" aria-describedby="error-01"
+                                                      onchange="{!c.handleQ1Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if> 
+                    <aura:if isTrue="{!v.displayQ1TextBox}">
+                        <aura:if isTrue="{!v.showQ1Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:textarea label="Provide a detail description of the injury" class="TextAreaStyle slds-text-color_weak" aria-describedby="error-01" name="input3" value="{!v.q1Answer}" />
+                                <div class="slds-form-element__help TextErrorMessage" id="error-01">{!$Label.c.Communtiy_Case_Creation_Q1_Error}</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:textarea label="Provide a detail description of the injury" class="TextAreaStyle slds-text-color_weak" name="input3" value="{!v.q1Answer}" />
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </aura:if>  
+                </div>
+                <!-- Compliance Question 1 End-->
+                <!-- Compliance Question 2 Start-->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q3}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q2Required}">
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup2" options="{!v.q2Options}" value="{! v.q2Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ2Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup2" options="{!v.q2Options}" value="{! v.q2Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" 
+                                                      onchange="{!c.handleQ2Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if>
+                    <aura:if isTrue="{!v.displayQ2TextBox}">
+                        <aura:if isTrue="{!v.showQ2Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <ui:outputText aura:id="nameOutput" class ="slds-text-heading_Small"/>
+                                <lightning:textarea label="Provide a detail description of the exposure" class="TextAreaStyle slds-text-color_weak" aria-describedby="error-02" name="input2" value="{!v.q2Answer}" />
+                                <div class="slds-form-element__help TextErrorMessage" id="error-02">{!$Label.c.Communtiy_Case_Creation_Q1_Error}</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <ui:outputText aura:id="nameOutput" class ="slds-text-heading_Small" />
+                                    <lightning:textarea label="Provide a detail description of the exposure" class="TextAreaStyle slds-text-color_weak" name="input2" value="{!v.q2Answer}" />
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </aura:if> 
+                </div>
+                <!-- Compliance Question 2 End-->
+                <!-- Compliance Question 3 start-->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q4}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q3Required}">
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup3" options="{!v.q3Options}" value="{! v.q3Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ3Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup3" options="{!v.q3Options}" value="{! v.q3Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" 
+                                                      onchange="{!c.handleQ3Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if>
+                    
+                </div>
+                <!-- Compliance Question 3 End-->
+                <!-- Compliance Question 4 Start-->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q5}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q4Required}"> 
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup4" options="{!v.q4Options}" value="{! v.q4Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ4Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup4" options="{!v.q4Options}" value="{! v.q4Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" 
+                                                      onchange="{!c.handleQ4Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if>
+                    <aura:if isTrue="{!v.displayQ4TextBox}">
+                        <aura:if isTrue="{!v.showQ4Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <div>
+                                    <br/>
+                                    <div class="slds-grid slds-text-heading_Small">
+                                        <b>{!$Label.c.Community_Case_Comment_Q6}</b><br/>
+                                    </div>
+                                    <div class="slds-grid">
+                                        <lightning:radioGroup name="radioGroup5" options="{!v.q5Options}" value="{! v.q5Value }" 
+                                                              type="radio" variant="label-hidden" class="customRadioCls" 
+                                                              onchange=""/>
+                                    </div> 
+                                    <div class="slds-grid slds-text-heading_Small">
+                                        <b><br/>NOTE: Do not ship contaminated product back to Hologic prior to receiving a biohazard container.</b><br/>
+	            					</div>
+                                    <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                            <br/>
+                                        <div class="slds-grid slds-text-heading_Small">
+                                                <i>NOTE: Please enter below information in format-<br/>
+                                                Company Name:<br/>
+                                                Company Address:<br/>
+                                                Contact Name:<br/>
+                                                Email Address:<br/>
+                                                Phone Number:</i>
+                                            </div>
+                                        <lightning:textarea  label="{!$Label.c.Community_Disposable_Text_Q6}" class="TextAreaStyle slds-text-color_weak tallTextArea" aria-describedby="error-06" name="input2" value="{!v.Address}" placeholder="Company Name
+                                                                                                                                                                                                                                                  Company Address
+                                                                                                                                                                                                                                                  Contact Name
+                                                                                                                                                                                                                                                  Email Address
+                                                                                                                                                                                                                                                  Phone Number"/>
+                                            <div class="slds-form-element__help TextErrorMessage" id="error-06">{!$Label.c.Communtiy_Case_Creation_Q1_Error}</div>
+                                        </div> 
+                                        <aura:set Attribute="else">
+                                            <div>
+                                                <br/>
+                                                <div class="slds-grid slds-text-heading_Small">
+                                                <i>NOTE: Please enter below information in format-<br/>
+                                                Company Name:<br/>
+                                                Company Address:<br/>
+                                                Contact Name:<br/>
+                                                Email Address:<br/>
+                                                Phone Number:</i>
+                                            </div>
+                                                <lightning:textarea   label="Provide a detail description of the exposure" class="TextAreaStyle slds-text-color_weak tallTextArea" name="input2" value="{!v.Address}" placeholder="Company Name
+                                                                                                                                                                                                                                   Company Address
+                                                                                                                                                                                                                                   Contact Name
+                                                                                                                                                                                                                                   Email Address
+                                                                                                                                                                                                                                   Phone Number"/>
+                                            </div> 
+                                        </aura:set>
+                               </div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <div class="slds-grid slds-text-heading_Small">
+                                        <b>{!$Label.c.Community_Case_Comment_Q6}</b><br/>
+                                    </div>
+                                    <div class="slds-grid">
+                                        <lightning:radioGroup name="radioGroup5" options="{!v.q5Options}" value="{! v.q5Value }" 
+                                                              type="radio" variant="label-hidden" class="customRadioCls" 
+                                                              onchange=""/>
+                                    </div> 
+                                    
+                                    <div class="slds-grid slds-text-heading_Small">
+                                        <b><br/>NOTE: Do not ship contaminated product back to Hologic prior to receiving a biohazard container.</b><br/>
+	            					</div>
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-grid slds-text-heading_Small">
+                                                <i>NOTE: Please enter below information in format-<br/>
+                                                Company Name:<br/>
+                                                Company Address:<br/>
+                                                Contact Name:<br/>
+                                                Email Address:<br/>
+                                                Phone Number:</i>
+                                            </div>
+                                            
+                                            <lightning:textarea class="tallTextArea" name="input5" value="{!v.Address}" label="{!$Label.c.Community_Disposable_Text_Q6}" placeholder="Company Name
+                                                                                                                                                                                      Company Address
+                                                                                                                                                                                      Contact Name
+                                                                                                                                                                                      Email Address
+                                                                                                                                                                                      Phone Number"/><br/>
+                                        </div>
+                                    </div>
+                                 </div> 
+                            </aura:set>
+                        </aura:if>
+                    </aura:if>
+                </div>
+                <!-- Compliance Question 4 End-->
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q8}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q7Required}">
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup7" options="{!v.q7Options}" value="{! v.q7Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ7Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup7" options="{!v.q7Options}" value="{! v.q7Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" 
+                                                      onchange="{!c.handleQ7Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if>
+                    <aura:if isTrue="{!v.displayQ7TextBox}">
+                        <aura:if isTrue="{!v.showQ7Error}">
+                            <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+                                <br/>
+                                <lightning:input type="checkbox" onchange ="{!c.onCheck}" label="Same as Shipping Contact" checked ="{!v.CheckboxVal}" name="checkbox1"/>
+                                <div class="slds-grid slds-text-heading_Small">
+                                    <i>NOTE: Please enter below information in format-<br/>
+                                        Company Name:<br/>
+                                        Company Address:<br/>
+                                        Contact Name:<br/>
+                                        Email Address:<br/>
+                                        Phone Number:</i>
+                                </div>
+                                <lightning:textarea class="TextAreaStyle slds-text-color_weak tallTextArea" aria-describedby="error-07" name="input7" value="{!v.q7Answer}" placeholder="Company Name
+                                                                                                                                                                                         Company Address
+                                                                                                                                                                                         Contact Name
+                                                                                                                                                                                         Email Address
+                                                                                                                                                                                         Phone Number"/>
+                                <div class="slds-form-element__help TextErrorMessage" id="error-07">{!$Label.c.Communtiy_Case_Creation_Q1_Error}</div>
+                            </div> 
+                            <aura:set Attribute="else">
+                                <div>
+                                    <br/>
+                                    <lightning:input type="checkbox" onchange ="{!c.onCheck}" label="Same as Shipping Contact" checked ="{!v.CheckboxVal}" name="checkbox1"/>
+                                    <div class="slds-grid slds-text-heading_Small">
+                                        <i>NOTE: Please enter below information in format-<br/>
+                                            Company Name:<br/>
+                                            Company Address:<br/>
+                                            Contact Name:<br/>
+                                            Email Address:<br/>
+                                            Phone Number:</i>
+                                    </div>
+                                    <lightning:textarea class="TextAreaStyle slds-text-color_weak tallTextArea" name="input7" value="{!v.q7Answer}" placeholder="Company Name
+                                                                                                                                                                 Company Address
+                                                                                                                                                                 Contact Name
+                                                                                                                                                                 Email Address
+                                                                                                                                                                 Phone Number"/>
+                                </div> 
+                            </aura:set>
+                        </aura:if>
+                    </aura:if> 
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+                    <div class="slds-grid slds-text-heading_Small">
+                        <abbr class="slds-required" title="required">*</abbr>
+                        <b>{!$Label.c.Community_Case_Comment_Q7}</b><br/>
+                    </div>
+                    <aura:if isTrue="{!v.q6Required}">
+                        <div class="slds-grid slds-has-error">
+                            <lightning:radioGroup name="radioGroup6" options="{!v.q6Options}" value="{! v.q6Value }" 
+                                                  type="radio" variant="label-hidden" class="customRadioCls" 
+                                                  onchange="{!c.handleQ6Change}"/>
+                        </div>
+                        <aura:set Attribute="else">
+                            <div class="slds-grid">
+                                <lightning:radioGroup name="radioGroup6" options="{!v.q6Options}" value="{! v.q6Value }" 
+                                                      type="radio" variant="label-hidden" class="customRadioCls" 
+                                                      onchange="{!c.handleQ6Change}"/>
+                            </div>  
+                        </aura:set>
+                    </aura:if>
+                    
+                </div>
+                
+                <!-- Section 4 Screen 2 Buttons -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="text-align:right">
+                    <div class="slds-clearfix">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_left">
+                                <br/><br/>
+                                <lightning:button aura:id="Screen2Back" label="BACK" variant="brand" onclick="{!c.Screen2Back}" class="sfdc_page_button ">
+                                    
+                                </lightning:button>
+                            </div>
+                            <div class="slds-float_right">
+                                <br/><br/>
+                                <lightning:button aura:id="Screen3Save" label="FINISH" variant="brand" onclick="{!c.Screen3Save}" disabled="{!v.disableCreateFinish}" class="{!v.disableCreateFinish == true ? 'sfdc_page_button_disable' : 'sfdc_page_button '}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>                         
+            </div>            
+        </aura:if>
+    </div>
+    <!-- Screen 2 Close -->
+    
+    
+</aura:component>

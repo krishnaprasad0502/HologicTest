@@ -1,0 +1,9 @@
+<design:component>
+	<design:attribute name="SobjType" label="Sobject Type" datasource="Product2,Asset" default="Product2" description="Select Sobject Type" />
+	<design:attribute name="sobjFieldName1" label="Field name 1" description="Select Field name 1" />
+	<design:attribute name="sobjFieldName2" label="Field name 2" description="Select Field name 2" />
+	<design:attribute name="sobjFieldName3" label="Field name 3" description="Select Field name 3" />
+    <design:attribute name="sobjFieldName4" label="Field name 4" description="Select Field name 4" />
+    <design:attribute name="hideSearchBox" label="Hide Search Box ?" description="Select to hide search box." />
+
+</design:component>

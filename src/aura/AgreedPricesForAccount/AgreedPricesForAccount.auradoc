@@ -1,0 +1,11 @@
+<aura:documentation>
+    <aura:description>
+Author:     Gerald Ricciardi
+Company:    Apps Associates
+Description:  Lightning Component to get Agreed Prices for an Account
+
+History:
+Date         Authors Name        Brief Description of Change
+07/27/2017   Gerald Ricciardi    Initial Creation (US-0003129)
+	</aura:description>
+</aura:documentation>

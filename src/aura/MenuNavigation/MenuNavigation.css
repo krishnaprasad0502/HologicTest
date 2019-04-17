@@ -1,0 +1,25 @@
+@font-face {
+   font-family: 'ProximaNova-Semibold';
+   src: url(/hologicsupport/s/sfsites/c/resource/Font_Awesome/Font_Awesome/fontawesome/fonts/ProximaNova-Semibold.ttf)
+ }
+.THIS .menu-header{
+    color: #131f6b !important;
+    opacity: 100% !important;
+    font-size: 24px !important;
+    font-family: ProximaNova-bold,sans-serif !important;
+    line-height: 38px !important;
+    font-weight: bold !important;
+}
+
+.THIS .slds-icon-text-default{
+   fill: #2B2967!important;
+}
+
+.THIS .menu-links{
+    color: #008aad!important;
+    font-weight:600;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-size: 15px;   
+    line-height:15px;
+    cursor: pointer;
+}

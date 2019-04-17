@@ -1,0 +1,159 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Displays Site Contacts fields from Opportunity
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+02/16/2017      Mani Sundaresan       Initial Creation
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Opportunity" extensions="opportunitySiteContact" sidebar="false" docType="html-5.0"> 
+    <!--jQuery TO SHOW THE NEW ACCOUNT FORM ON BUTTON CLICK-->
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js">
+    </script>
+    <!--SLDS STYLESHEET STATIC RESOURCE-->
+        <apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+            <apex:includeScript value="{!$Resource.SLDSDynamicLookupScript}"/>
+            <apex:form >
+                <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">   
+                    <body>
+                    <!-- REQUIRED SLDS WRAPPER -->
+                        <div class="slds"> 
+                            
+                            
+                            <div id="actFrm" aria-labelledby="newaccountform">
+                                        
+                                        <div class="slds-align--absolute-center">
+                                            <!-- BOXED AREA -->
+                                                <fieldset class="slds-box slds-theme--shade slds-theme--default slds-container--medium slds-form--compound slds-form--compound--horizontal">
+                                                    
+                                                    
+                                                    
+                                                    <!-- CREATE A NEW FORM -->
+                                                        <form class="slds-form--stacked">
+                                                            <apex:outputpanel rendered="{!$User.UITheme != 'Theme4t'}">
+                                                            <div class="form-element__group">
+                                                                <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                    <label class="slds-form-element__label">Additional/Primary Contact</label>
+                                                                    <div class="slds-form-element slds-select_container">
+                                                                        <apex:selectList size="1" value="{!Opportunity.Additional_Primary_Contact__c}" styleClass="slds-select">
+                                                                            <apex:selectOptions value="{!contactOptions}" />
+                                                                                </apex:selectList>
+                                                                            </div> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                            <label class="slds-form-element__label">IT/PACS Administrator</label>
+                                                                            <div class="slds-form-element slds-select_container">
+                                                                                <apex:selectList size="1" value="{!Opportunity.IT_PACS_Administrator__c}" styleClass="slds-select">
+                                                                                    <apex:selectOptions value="{!contactOptions}" />
+                                                                                        </apex:selectList>
+                                                                            </div>
+                                                                                    
+                                                                     </div>
+                                                                 <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                          <label class="slds-form-element__label">Purchasing Agent/CFO</label>
+                                                                               <div class="slds-form-element slds-select_container">
+                                                                                            <apex:selectList size="1" value="{!Opportunity.Purchasing_Agent_CFO__c}" styleClass="slds-select">
+                                                                                                <apex:selectOptions value="{!contactOptions}" />
+                                                                                                    </apex:selectList>
+                                                                                                </div> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                <label class="slds-form-element__label">Mammography/MRI Manager</label>
+                                                                                                <div class="slds-form-element slds-select_container">
+                                                                                                    <apex:selectList size="1" value="{!Opportunity.Mammography_MRI_Manager__c}" styleClass="slds-select">
+                                                                                                        <apex:selectOptions value="{!contactOptions}" />
+                                                                                                            </apex:selectList>
+                                                                                                  </div>
+                                                                                                        
+                                                                                 </div>
+                                                                                                        
+                                                                 </div>
+                                                                 <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                     <c:SLDSDynamicLookup SLDSResourceName="{!$Resource.SLDS}" ObjectApiName="Contact" DisplayFieldApiNames="Name,Email" DisplayFieldsPattern="Name - Email" SetValueToField="{!Opportunity.Unifi_Administrator__c}" LabelName="Unifi Administrator"/>       
+                                                                 </div>
+                                                                 </apex:outputpanel>  
+                                                              <apex:outputpanel rendered="{!$User.UITheme == 'Theme4t'}">   
+                                                              <div class="form-element__group">
+                                                                <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                    <label class="slds-form-element__label">Additional/Primary Contact</label>
+                                                                    <div class="slds-form-element slds-select_container">
+                                                                        <apex:selectList size="1" value="{!Opportunity.Additional_Primary_Contact__c}" styleClass="slds-select">
+                                                                            <apex:selectOptions value="{!contactOptions}" />
+                                                                                </apex:selectList>
+                                                                            </div> 
+                                                                     </div>
+                                                                     <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                   
+                                                                            <label class="slds-form-element__label">IT/PACS Administrator</label>
+                                                                            <div class="slds-form-element slds-select_container">
+                                                                                <apex:selectList size="1" value="{!Opportunity.IT_PACS_Administrator__c}" styleClass="slds-select">
+                                                                                    <apex:selectOptions value="{!contactOptions}" />
+                                                                                        </apex:selectList>
+                                                                            </div>
+                                                                                    
+                                                                     </div>
+                                                                 <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                          <label class="slds-form-element__label">Purchasing Agent/CFO</label>
+                                                                               <div class="slds-form-element slds-select_container">
+                                                                                            <apex:selectList size="1" value="{!Opportunity.Purchasing_Agent_CFO__c}" styleClass="slds-select">
+                                                                                                <apex:selectOptions value="{!contactOptions}" />
+                                                                                                    </apex:selectList>
+                                                                                                </div> 
+                                                                                 </div>
+                                                                        <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                          <label class="slds-form-element__label">Mammography/MRI Manager</label>
+                                                                                                <div class="slds-form-element slds-select_container">
+                                                                                                    <apex:selectList size="1" value="{!Opportunity.Mammography_MRI_Manager__c}" styleClass="slds-select">
+                                                                                                        <apex:selectOptions value="{!contactOptions}" />
+                                                                                                            </apex:selectList>
+                                                                                                  </div>
+                                                                                                
+                                                                                                        
+                                                                                 </div>
+                                                                        <div class="slds-form-element__row slds-m-top--x-small slds-align-middle">
+                                                                            <c:SLDSDynamicLookup SLDSResourceName="{!$Resource.SLDS}" ObjectApiName="Contact" DisplayFieldApiNames="Name,Email" DisplayFieldsPattern="Name - Email" SetValueToField="{!Opportunity.Unifi_Administrator__c}" LabelName="Unifi Administrator"/>      
+                                                                        </div>                                
+                                                                 </div>
+                                                                 
+                                                                                                        
+                                                           </apex:outputpanel>                                              
+                                                                                                        
+                                                        </form>
+                                                        <!-- CREATE NEW ACCOUNT FORM -->
+                                                                                                            
+                                                   </fieldset>
+                                        </div>
+                                        <!-- / BOXED AREA -->
+                                        
+                                     </div>
+                                        <!-- / CREATE NEW ACCOUNT -->
+                                        
+                                   </div>
+                    <!-- /REQUIRED SLDS WRAPPER -->
+                    </body>
+            
+            <apex:actionFunction name="updateOpportunity" action="{!saveSiteContact}" reRender="redirectPanel"/>
+                
+    <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+    <script> 
+    Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+                                     onData:function(e) {
+                                         Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+                                     }});
+    Sfdc.canvas.publisher.subscribe({ name: "publisher.post",
+                                     onData: function(e) {
+                                         updateOpportunity();
+                                         Sfdc.canvas.publisher.publish({name: "publisher.refresh", payload:{ refresh:"true"}});
+                                         
+                                         
+                                     }}); 
+    </script>
+    
+    
+</html>
+    <apex:actionFunction name="cancelSiteContact" action="{!Cancel}" immediate="true"/>
+    <apex:actionFunction name="SaveSiteContact" action="{!saveSiteContact}"/>
+    <apex:pageBlock rendered="{!NOT(isLightning)}" >
+        <apex:pageBlockButtons location="bottom">
+            <input type="button" value="Save" onclick="SaveSiteContact();"/>
+            <input type="button" value="Cancel" onclick="cancelSiteContact();"/>
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,44 @@
+<!------------------------------------------------------------
+Author:		 Denise Bacher
+Company:		Salesforce.com
+Description:	Displays a blocking component ui, used for action functions on VF pages
+
+History:
+<Date>			<Authors Name>		<Brief Description of Change>
+04/04/2016		Denise Bacher		 Initial Creation ()
+------------------------------------------------------------>
+<apex:component >
+	
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery.blockUI.min.js')}"/>
+	
+	<script>
+		function showLoading() {
+			$j.blockUI({ 
+				message: $j('#domMessage'),
+				css: { 
+					backgroundColor: '#FFFFFF', 
+					border: '0px'
+				},
+				overlayCSS: {
+					backgroundColor: '#FFFFFF',
+				} 
+			});	
+		}
+		function hideLoading() {
+			$j.unblockUI(); 
+		}
+	</script>
+		
+	<!-- ACTION FUNCTIONS -->
+	<apex:actionStatus id="loading" onStart="showLoading();" onStop="hideLoading(); return false;" />
+	
+	<div id="domMessage" style="display:none;"> 
+		<div class="slds-spinner_container">
+			<div class="slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+				<div class="slds-spinner__dot-a"></div>
+				<div class="slds-spinner__dot-b"></div>
+			</div>
+		</div>
+	</div>
+	
+</apex:component>

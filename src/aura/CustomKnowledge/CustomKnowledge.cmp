@@ -1,0 +1,271 @@
+<!--
+*********************************************************************************************************
+ Author       : Niraj Wani
+ Company      : Hexaware Technologies
+ Created Date : 9/12/2018
+ Description  : This lightning component is used to display articles. 
+
+ History:
+ <Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+ 9/12/2018			Niraj Wani				Initial Creation 					US-0005634
+02/11/2018			Nomita Walke			Added Base/Site URL to all navigation.	US-0006075
+11/20/2018			VRUSHABH KATARIYA		Updated Style							US-0006169	
+12/03/2018			VRUSHABH KATARIYA		BreadCrumb to show category	label 		US-0006257 
+12/03/2018			Niraj Wani				Article Type URL Parameter Fix			US-0006257  
+12/13/2018			Niraj Wani				Article Type URL Defect					US-0006345 
+12/20/2018     		Sunil Sharma           	Initial Creation                		US-0006345  
+1/17/2019			Yogitha Malireddy		Added condition to remove date parameter US-0006553  
+*********************************************************************************************************
+-->
+
+<aura:component controller="CustomKnowledgeController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+    
+    <!-- Attribute Declaration-->
+    <aura:attribute name="ReturnedObject" type="object"/>
+    <aura:attribute name="options" type="list"/>
+    <aura:attribute name="value" type="List" default=""/>
+    <aura:attribute name="SelectedTypes" type="list" default=""/>
+    <aura:attribute name="urlCategory" type="String" default=""/>
+    <aura:attribute name="SelectedCategory" type="String" default=""/>
+    <aura:attribute name="searchKeyword" type="String" default="" />
+    <aura:attribute name="articletype" type="String" default="" />
+    <aura:attribute name="numofrecordsonpage" type="String" default="5" />
+    <aura:attribute name="items" type="Object"/>
+    <aura:attribute name="page" type="Integer" default="0" description="Page Number"/>
+    <aura:attribute name="pages" type="Integer" description="Total Pages"/>
+    <aura:attribute name="total" type="Integer" description="Total Records"/>
+    <aura:attribute name="ParentCategory" type="String" default="" />
+    <aura:attribute name="NoResultMessage" type="String" default="No Items" />
+    <aura:attribute name="SearchBoxPlaceHolder" type="String" default="Search.." />
+    <aura:attribute name="ArticlePageLink" type="String" default="" />
+    <aura:attribute name="ArticlePageBoxLink" type="String" default="" />
+    <aura:attribute name="ArticleSummaryChars" type="Integer" default="150" />
+    <aura:attribute name="ArticleDetail" type="String" default="Default" />
+    <aura:attribute name="SelCategoryName" type="String" default="" />
+    <aura:attribute name="LimitNumOfRowsFirstLoad" type="Integer" default="100" />
+    <aura:attribute name="DisplayTitle" type="boolean" default="false" />
+    <aura:attribute name="TypeOfArticles" type="String" default="Articles" />
+    <aura:attribute name="isUrlPassed" type="boolean" default="false" />
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="urlArticletype" type="String" default="" />
+    <aura:attribute name="selTreeNodeValue" type="String" default="" />
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- SHOW LOADING SPINNER--> 
+    <div class="slds-grid slds-wrap" >        
+        <aura:if isTrue="{!or(equals(v.articletype,'All'),(v.isUrlPassed))}">
+            <aura:if isTrue="{!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12" >
+                   
+                </div> 
+                <aura:set attribute="else">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12" style="background-color:#EEEFF0;height:112px">
+                        
+                    </div> 
+                </aura:set>
+            </aura:if>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12 searchBox" style="background-color:#EEEFF0;height:112px;">
+                <div class="slds-form-element slds-lookup" data-select="single" style="max-width:87%;top:25%;float:right;" >
+                    <div class="slds-form-element__control">
+                        <div class="slds-input-has-icon slds-input-has-icon--right slds-p-bottom_medium">
+                            <lightning:buttonIcon iconName="utility:search" variant="bare" 
+                                                  onclick="{! c.handleClick }" alternativeText="Search" class="slds-input__icon" />
+                            <ui:inputText value="{!v.searchKeyword}" class="slds-lookup__search-input slds-input" 
+                                          placeholder="{!v.SearchBoxPlaceHolder}"  keyup="{!c.onKeyUp}" />
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <aura:set attribute="else">
+                <aura:if isTrue="{!!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12" style="background-color:#EEEFF0;height:112px">
+                    </div> 
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12 searchBox" style="background-color:#EEEFF0;height:112px">
+                        <div class="slds-form-element slds-lookup" data-select="single" style="max-width:70%;top:25%"  >
+                            <div class="slds-form-element__control">
+                                <div class="slds-input-has-icon slds-input-has-icon--right slds-p-bottom_medium">
+                                    <lightning:buttonIcon iconName="utility:search" variant="bare" 
+                                                          onclick="{! c.handleClick }" alternativeText="Search" class="slds-input__icon" />
+                                    <ui:inputText value="{!v.searchKeyword}" class="slds-lookup__search-input slds-input" 
+                                                  placeholder="{!v.SearchBoxPlaceHolder}" keyup="{!c.onKeyUp}" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12 searchBox" style="background-color:#EEEFF0;height:112px">
+                            <div class="slds-form-element slds-lookup" data-select="single" style="top:25%"  >
+                                <div class="slds-form-element__control">
+                                    <div class="slds-input-has-icon slds-input-has-icon--right slds-p-bottom_medium">
+                                        <lightning:buttonIcon iconName="utility:search" variant="bare" 
+                                                              onclick="{! c.handleClick }" alternativeText="Search" class="slds-input__icon" />
+                                        <ui:inputText value="{!v.searchKeyword}" class="slds-lookup__search-input slds-input" 
+                                                      placeholder="{!v.SearchBoxPlaceHolder}" keyup="{!c.onKeyUp}" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:set>
+        </aura:if>
+        
+        <!-- Filters -->
+        <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." variant="brand" 
+			size="large" class="slds-hide"/>
+        <aura:if isTrue="{!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="padding-left:20px">
+                <aura:if isTrue="{!equals(v.articletype,'All')}" >
+                    <c:BreadCrumbsList homeLabel="Home" homeUrl="/s" firstLevelNavLabel="Knowledgebase" />
+                    <aura:set attribute="else">
+                        <c:BreadCrumbsList homeLabel="Home" homeUrl="/s" firstLevelNavLabel="{!v.articletype}" />
+                    </aura:set>
+                </aura:if>    
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="padding-left:20px;padding-top:10px;">
+                <aura:if isTrue="{!equals(v.articletype,'All')}" >
+                    <label style="color: #131F6B;line-height: 38px;font-family: ProximaNova-bold,sans-serif;
+                                  font-weight:bold;font-size:30px">Knowledgebase</label>
+                    <aura:set attribute="else">
+                        <label style="color: #131F6B;line-height: 38px;font-family: ProximaNova-bold,sans-serif;
+                                      font-weight:bold;font-size:30px">{!v.articletype}</label>
+                    </aura:set>
+                </aura:if>
+                
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" >
+                    <aura:if isTrue="{!equals(v.articletype,'All')}" >
+                        <c:BreadCrumbsList homeLabel="Home" homeUrl="/s" firstLevelNavLabel="Knowledgebase" />
+                        <aura:set attribute="else">
+                            <c:BreadCrumbsList homeLabel="Home" homeUrl="/s" firstLevelNavLabel="{!v.articletype}" />
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="padding-top:10px;">
+                    <aura:if isTrue="{!equals(v.articletype,'All')}" >
+                        <label style="color: #131F6B;line-height: 38px;font-family: ProximaNova-bold,sans-serif;
+                                      font-weight:bold;font-size:30px">Knowledgebase</label>
+                        <aura:set attribute="else">
+                            <label style="color: #131F6B;line-height: 38px;font-family: ProximaNova-bold,sans-serif;
+                                          font-weight:bold;font-size:30px">{!v.articletype}</label>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="height:3px;opacity: 0.5;background-color: #E3E4E6;">
+                </div>
+            </aura:set>
+        </aura:if>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12" style ="padding-top:30px">
+            <div class="slds-form slds-form_compound HO_Filters slds-p-around_medium">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group HO_FilterBox">
+                        <aura:if isTrue="{!or(equals(v.articletype,'All'),(v.isUrlPassed))}">
+                            <div class="slds-m-bottom_small">
+                                <div style = "color: #131f6b;font-family: ProximaNova-Semibold,sans-serif !important;font-weight: bold;font-size: 15px;padding: 0 2px;position: relative;"><h1>Article Types</h1></div>
+                                <lightning:checkboxGroup class="HO_ArticleType" label="" name="articletypes" 
+									options="{!v.options}" value="{! v.value }" onchange="{!c.handleArticleTypeSelection}" />
+                            </div>
+                        </aura:if>
+                        
+                        <!-- Filter - Date Categories -->
+                        <lightning:accordion aura:id="dataCatAccord" activeSectionName="">
+                            <div class="">
+                                <div style = "color: #131f6b;font-family: ProximaNova-Semibold,sans-serif;font-weight: normal;font-size: 1.2em;padding: 0 2px;position: relative;">
+                                    <h1>Category</h1>
+                                </div>
+                                <lightning:tree class="HO_DataCatTree" items="{!v.items}" onselect="{!c.handleSelect}" 
+									header=""/>
+                            </div> 
+                        </lightning:accordion>
+                    </div>	
+                </fieldset>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div  class="searchResults slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12 slds-p-horizontal_large" style="padding-top:25px">
+            <aura:if isTrue="{!not(empty(v.SelCategoryName))}">
+                <lightning:layout class="" verticalAlign="end">
+                    <lightning:layoutItem  >
+                        <lightning:pill label="{!v.SelCategoryName}" onremove="{! c.clearFilter }"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </aura:if> 
+            
+            	<div class="article-container">
+                <aura:if isTrue="{! v.DisplayTitle}">
+                    <div class="HO_DisplayTitle"><br/>Recent {! v.TypeOfArticles}</div>
+                </aura:if>
+                <!--<hr style="margin-bottom: 10px"></hr> -->
+                
+                <!-- Results -->
+                <lightning:layout >
+                    <div> 
+                    <aura:iteration var="article" items="{!v.ReturnedObject.Results}">
+                        <div class="article-sub-container">
+                            <aura:if isTrue="{! v.TypeOfArticles!= 'Manuals'}">
+                                <p class="HO_ArticleDate" >
+                                    <div>
+                                        {!article.LastPublishedDate}
+                                    </div>
+                                </p>
+                            </aura:if>
+                            
+                            <p class="HO_ArticleLink" style="font-weight:bold;">
+                                <aura:if isTrue="{! v.ArticleDetail == 'Default'}">
+                                    <aura:if isTrue="{! article.BoxLink != ''}">
+                                        <a  href="{!v.configSetting.SiteURL__c+v.ArticlePageBoxLink + '?id='+article.ArticleId}">
+                                            {!article.Title}
+                                        </a>
+                                    </aura:if>
+                                    <aura:if isTrue="{! article.BoxLink == ''}">
+                                        <a  href="{!v.configSetting.SiteURL__c+v.ArticlePageLink+article.UrlName}">
+                                            {!article.Title}
+                                        </a>
+                                    </aura:if>
+                                </aura:if>
+                                <aura:if isTrue="{! v.ArticleDetail == 'Custom'}">
+                                    <a  href="{!v.configSetting.SiteURL__c+v.ArticlePageBoxLink + '?id='+article.ArticleId}">
+                                        {!article.Title}
+                                    </a>
+                                </aura:if> 
+                            </p>
+                            <p class="HO_ArticleTypeText" style="font-weight:bold;">
+                                <div>
+                                    {!article.ProductName}
+                                </div>
+                            </p>
+                            <div class="HO_ArticleSummary">
+                                {!article.Summary}		
+                            </div>
+                        </div>
+                    </aura:iteration>
+                        </div>
+                </lightning:layout>
+            </div>
+            <aura:if isTrue="{!equals(v.total, 0)}">
+                <lightning:layout >
+                    <div class="slds-align_absolute-center" style ="padding-top: 50px;">  
+                        {!v.NoResultMessage}
+                    </div>
+                </lightning:layout>
+            </aura:if>    
+            
+            <aura:if isTrue="{!greaterthan(v.total, v.numofrecordsonpage)}">
+                <lightning:layout >
+                    <div class="slds-align_absolute-center" style ="padding-top: 50px;">            
+                        <lightning:button class="HO_Navbutton" disabled="{!v.page == 1}" variant="brand" label="Prev" 
+                                          onclick="{! c.navigate }" />   
+                        <div style ="padding-left: 15px;padding-right: 15px;">  {!v.page} of {!v.pages}  </div>
+                        <lightning:button class="HO_Navbutton" disabled="{!v.page == v.pages}" aura:id="previousPage" 
+                                          variant="brand" label="Next" onclick="{! c.navigate }" />
+                    </div>
+                </lightning:layout>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

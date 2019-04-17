@@ -1,0 +1,41 @@
+<!--
+********************************************************************************************************************
+	Author 		 : Sunil Kumar Sharma
+    Company 	 : Hexaware Technologies
+    Created Date : 12/19/2018 
+	Description  : Custom component to create breadcrumbs
+
+    History:
+    <Date>			<Author Name>                      	<Brief Description of Change> 		<Copa.do US#>
+	12/19/2018    	Sunil Kumar Sharma					Initial Creation					US-0006345 
+********************************************************************************************************************
+-->
+<aura:component controller= "BreadCrumbListController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+	<aura:attribute name="homeLabel" type="String" default="Home"/>
+    <aura:attribute name="homeUrl" type="String" />
+    <aura:attribute name="firstLevelNavLabel" type="String"/>
+    <aura:attribute name="firstLevelNavUrl" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="currentPageLabel" type="String" />
+    <aura:attribute name="currentPageUrl" type="String" />
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="ListType" type="string" default="Case"/>
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="currentPageStyle" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <div style="padding-top:20px;">
+        <lightning:breadcrumbs >
+            <lightning:breadcrumb label="{!v.homeLabel}" class="breadcrumbs" href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c}"/>
+            <aura:if isTrue="{!not(empty(v.currentPageLabel))}">
+                <lightning:breadcrumb label="{!v.firstLevelNavLabel}" class="breadcrumbs" href="{!v.configSetting.SiteURL__c+v.firstLevelNavUrl}"/>
+                <aura:set attribute="else">
+                	<lightning:breadcrumb label="{!v.firstLevelNavLabel}" class="current-page"/>
+                </aura:set>
+            </aura:if>
+            <aura:if isTrue="{!not(empty(v.currentPageLabel))}"> 
+                <lightning:breadcrumb label="{!v.currentPageLabel}" class="current-page"/>
+            </aura:if>
+        </lightning:breadcrumbs> 
+    </div>
+</aura:component>

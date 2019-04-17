@@ -1,0 +1,332 @@
+<!--
+********************************************************************************************************************
+    Author 		 : Nikhil Mutyam
+    Company 	 : Hexaware Technologies
+	Created Date : 8/13/2018 2:39 AM
+    Description  : Self Registration component for customers to log in.
+
+    History:
+    <Date>         		<Author Name>				<Brief Description of Change>  		<Copa.do US#>
+	8/13/2018			Nikhil Mutyam				Initial Creation					US-0005630 
+    10/15/2018	        Niraj Wani  				New Fields, removal of password   	US-0005861 
+ 	30/1032018			Vrushabh Katariya			Added Timezone on page				US-0005861
+ 	12/21/2018			Yogitha Malireddy			Added country field on page			US-0006345 
+ 	12/31/2018			Yogitha Malireddy			Default country to united states	US-0006345
+ 	01/02/2019			Vrushabh Katariya			Grey-out submit button				US-0006703
+********************************************************************************************************************   
+-->
+
+<!-- add implements="forceCommunity:availableForAllPageTypes" to surface the component in community builder -->
+<aura:component implements="forceCommunity:availableForAllPageTypes" controller="LightningSelfRegisterController">
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="User" type="User" default="{ 'sobjectType': 'User' }"/>
+    <aura:attribute name="accountId" type="String" required="false" description="accountId for creating the user. If not specified, it will create a PersonAccount if possible for B2C scenario. Or otherwise if it's in a community, the community's self-registration accountId will be used."/>
+    <aura:attribute name="regConfirmUrl" type="String" />
+    <aura:attribute name="newusermessage" type="String" default="../userrequest" />
+    <aura:attribute name="startUrl" type="String" required="false" description="The url you go to after a successful login" />
+    <aura:attribute name="showError" type="Boolean" required="true" description="" default="false" access="private"/>
+    <aura:attribute name="errorMessage" type="String" required="false" description="" access="private"/>
+    <aura:attribute name="firstnameLabel" type="String" required="false" default="First Name"/>
+    <aura:attribute name="lastnameLabel" type="String" required="false" default="Last Name"/>
+    <aura:attribute name="JobTitle" type="String" required="false" default="Job Title"/>
+    <aura:attribute name="Company" type="String" required="false" default="Company"/>
+    <aura:attribute name="MobilePhone" type="String" required="false" default="MobilePhone"/>
+    <aura:attribute name="OfficePhone" type="String" required="false" default="OfficePhone"/>
+    <aura:attribute name="BusinessStreetAddress" type="String" required="false" default="BusinessStreetAddress"/>
+    <aura:attribute name="City" type="String" required="false" default="City"/>
+    <aura:attribute name="State" type="String" required="false" default="State"/>
+    <aura:attribute name="zip" type="String" required="false" default="zip"/>
+    <aura:attribute name="emailLabel" type="String" required="false" default="Email"/>
+    <aura:attribute name="passwordLabel" type="String" required="false" default="Create Password"/>
+    <aura:attribute name="confirmPasswordLabel" type="String" required="false" default="Confirm Password"/>    
+    <aura:attribute name="submitButtonLabel" type="String" required="false" default="REQUEST ACCOUNT"/>
+    <aura:attribute name="includePasswordField" type="Boolean" required="false" default="true" description="Whether to include password"/>    
+    <aura:attribute name="extraFieldsFieldSet" type="String" required="false" description="A field set name whose fields are desired for user registration"/>
+    <aura:attribute name="extraFields" type="list" required="false" description="A field set name whose fields are desired for user registration"/>
+    <aura:attribute name="stateValues" type="list"/>
+    <aura:attribute name="selectedState" type="string"/>
+    <aura:attribute name="countryValues" type="list"/>
+    <aura:attribute name="selectedCountry" type="string" default="United States"/>
+    <aura:attribute name="objDetail" type="User" default="{'sobjectType' : 'User'}"/>
+    <aura:attribute name="expid" type="String" required="false" description="The branding experience ID" />    
+    <aura:attribute name="FirstnameValue" type="string"/>
+    <aura:attribute name="LastnameValue" type="string"/>
+    <aura:attribute name="JobTitleValue" type="string"/>
+    <aura:attribute name="CompanyValue" type="string"/>
+    <aura:attribute name="EmailValue" type="string"/>
+    <aura:attribute name="PasswordValue" type="string"/>
+    <aura:attribute name="RePasswordValue" type="string"/>
+    <aura:attribute name="StreetValue" type="string"/>
+    <aura:attribute name="CityValue" type="string"/>
+    <aura:attribute name="ZipValue" type="string"/>
+    <aura:attribute name="OffPhoneValue" type="string"/>
+    <aura:attribute name="MobPhoneValue" type="string"/>
+    <aura:attribute name="termsCheckbox" type="Boolean" default="False"/>
+    <aura:attribute name="SerialNumber" type="string"/>
+    <aura:attribute name="ProductInterest" type="string"/>
+    <aura:attribute name="TimeZone" type="string"/>
+    <aura:attribute name="TimeZoneValues" type="list"/>
+    <aura:attribute name="selectedZone" type="string"/>
+    <aura:attribute name="selfRegisterObj" type="Community_Self_Registration_Request__c" default="{'sobjectType' : 'Community_Self_Registration_Request__c'}"/>
+    <aura:attribute name="disablebutton" type="Boolean" default="false"/>
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+    <aura:registerevent name="sitePropagatedStartUrl" type="c:setStartUrl"/>
+   <!-- <aura:handler name="init" value="{!this}" action="{!c.initialize}"/> -->
+    <aura:dependency resource="c:setStartUrl" type="EVENT"/>
+
+    <!-- Please uncomment 
+    <aura:dependency resource="siteforce:registerQueryEventMap" type="EVENT"/>
+    -->
+    <aura:handler event="c:setStartUrl" action="{!c.setStartUrl}"/> 
+    <aura:handler event="c:setExpId" action="{!c.setExpId}"/>    
+    <aura:dependency resource="c:setExpId" type="EVENT"/>   
+    
+    <div class="slds-box">
+        <div class="patient-card slds-col--padded--medium slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+            <aura:renderIf isTrue="{!v.showError}">
+                <div id="error">
+                    <ui:outputRichText value="{!v.errorMessage}"/>
+                </div>
+            </aura:renderIf>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*First Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input name="Firstname" value="{!v.FirstnameValue}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Business Email</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="Email" value="{!v.EmailValue}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Company</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="Company" value="{!v.CompanyValue}"/>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Last Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="Lastname" value="{!v.LastnameValue}"/>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Job Title</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="JobTitle" value="{!v.JobTitleValue}"/>
+                        </div>
+                    </div>
+                  <div class="slds-form slds-form_stacked" style="margin-left: 5px;">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Office Phone</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="Email" value="{!v.OffPhoneValue}"/>
+                        </div>
+                    </div>
+                   </div>
+                </div>
+            </div>	
+        <!--</div>    
+        <div class="slds-grid slds-wrap">-->
+            <aura:if isTrue="{!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="input-id-01">&nbsp;&nbsp;Mobile Phone</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input  name="Email" value="{!v.MobPhoneValue}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12">
+                    <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="input-id-01">*Business Street Address</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input  name="Street" value="{!v.StreetValue}"/>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+			
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+                    <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="input-id-01">*City</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input  name="City" value="{!v.CityValue}"/>
+                            </div>
+                        </div>	
+                    </div>    
+                </div>
+            	<aura:set attribute="else">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12">
+                        <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="input-id-01">*Business Street Address</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input  name="Street" value="{!v.StreetValue}"/>
+                                </div>
+                            </div>                    
+                        </div>
+                    </div>
+                
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+                        <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="input-id-01">*City</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input  name="City" value="{!v.CityValue}"/>
+                                </div>
+                            </div>	
+                        </div>    
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                        <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="input-id-01">&nbsp;&nbsp;Mobile Phone</label>
+                                <div class="slds-form-element__control">
+                                    <lightning:input  name="Email" value="{!v.MobPhoneValue}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            	</aura:set>
+            </aura:if>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+            	<div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                	<div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*State</label>
+                        <div class="slds-form-element__control">
+                            <lightning:select  label=" " name="selectState" value="{!v.selectedState}" >
+                                <option value="">choose one...</option>
+                                <aura:iteration items="{!v.stateValues}" var="state">
+                                    <option text="{!state}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+            	<div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">	
+                	<div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Zip</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  name="Zip" value="{!v.ZipValue}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12" >
+            	<div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                	<div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">*Country</label>
+                        <div class="slds-form-element__control">
+                            <lightning:select  label=" " name="selectCountry" value="{!v.selectedCountry}">
+                                <option value="">United States</option>
+                                <aura:iteration items="{!v.countryValues}" var="country">
+                                    <option text="{!country}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Select option for selecting Timezone  -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">&nbsp;&nbsp;*TimeZone</label>
+                        <div class="slds-form-element__control ">
+                            <lightning:select  label =" " name="selectZone" value="{!v.selectedZone}" >
+                                <option value="">choose one...</option>
+                                <aura:iteration items="{!v.TimeZoneValues}" var="zone" indexVar="key">
+                                    <option value="{!zone.value}">{!zone.key}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>   
+                </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+            	<div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">  
+                <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">Serial Number</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  placeholder="Any Hologic equipment at your site" name="Product Interest" value="{!v.SerialNumber}"/>
+                        </div>
+                    </div> 
+                </div>   
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <div class="slds-form slds-form_stacked" style="margin-right: 5px;margin-left: 5px;">
+            	<div class="slds-form-element">
+                        <label class="slds-form-element__label" for="input-id-01">&nbsp;&nbsp;Product Of Interest</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input  placeholder="List Hologic products you use" name="Product Interest" value="{!v.ProductInterest}"/>
+                        </div>
+                 </div>   
+                </div>
+            </div>
+            
+    	</div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+            <a href="./">Have an account? Log in</a>
+        </div>    
+    </div>
+    
+    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_1-of-1">
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <ui:inputCheckbox  aura:id="taskCheckBox" text="{!v.termsCheckbox}" 
+                class="sq-25 checkbox checkbox--default checkbox--states-1 brm mrs bg-secondary-btn sq-22 a-mid dib" 
+                change="{!c.OnTermsSelection}" value=""/>
+                <label class="slds-checkbox__label" for="checkbox-5">
+                    <span class="slds-form-element__label">
+                        By submitting this registration, I agree I have read and accepted the terms of the  
+                        <a href="{!$Label.c.Support_Self_Register_Agreement_URL}" target="_blank"><b>My Hologic Support Center Agreement</b></a> and 
+                        <a href="{!$Label.c.Support_Self_Register_Privacy_URL}" target="_blank"><b>Hologic Privacy Policy</b></a>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-col--padded--medium slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small slds-align_absolute-center">
+    	&nbsp;
+    </div>
+    
+    <div class="slds-col--padded--medium slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small slds-align_absolute-left">
+        <lightning:button  label="REQUEST ACCOUNT" title="Request an Account" onclick="{!c.handleSelfRegister}" disabled="{!v.disablebutton}" class="{!v.disablebutton == true ? 'sfdc_page_button_disable' : 'ButtonStyle '}"/>
+    </div>
+    
+</aura:component>

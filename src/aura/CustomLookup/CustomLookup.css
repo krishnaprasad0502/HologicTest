@@ -1,0 +1,19 @@
+.THIS .leftPaddingClass {
+    padding-left: 2rem;
+}
+.THIS .pillSize{
+ width:95%;
+}
+.THIS .ListHeader{
+	color: #008AAD !important;
+	font-size: 12px;
+	font-weight: bold;
+}
+.THIS .slds-text-heading_Small{
+    color: #131F6B !important;
+    opacity: 100%;
+    font-size: 12px ;
+    font-family: ProximaNova-semibold,sans-serif ;
+    line-height: 18px;
+    font-weight:bold;
+}

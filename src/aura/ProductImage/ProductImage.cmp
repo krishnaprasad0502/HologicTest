@@ -1,0 +1,33 @@
+<!--
+*********************************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : Fetch Product Image and display on Product detail.
+
+    History:
+    <Date>         <Author Name>                    <Brief Description of Change>		<Copa.do US#>
+	8/22/2018	   Sunil Kumar Sharma		        Initial Creation 					US-0005699
+ 	10/26/2018		Nomita Walke					Updated the product image url <a> 	US-0006062
+*********************************************************************************************************    
+-->
+<aura:component controller= "ProductViewController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <!-- Attribute Declaration -->
+    <aura:attribute name="SobjType" type="String" default="Product2"/> 
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="sobjRecord" type="List" />
+    <aura:attribute name="sobjFieldName1" type="String" />
+    <aura:attribute name="sobjFieldName2" type="String" />
+    <aura:attribute name="orgBaseUrl" type="String" />
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:iteration items="{!v.sobjRecord}" var="item">
+        <div class="slds-grid">
+            <div class="slds-col slds-size--1-of-1" style ="height:300px;width:75%;border-style: groove;border-width: 1px;border-color: #FBFCFC;">    		
+                <img src="{!v.configSetting.SiteURL__c+ item.value1}" height ="300" />
+            </div>
+        </div>
+    </aura:iteration>
+</aura:component>

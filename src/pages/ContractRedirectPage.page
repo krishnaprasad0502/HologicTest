@@ -1,0 +1,11 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    VF Page to override New Button on Contract object.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+10/04/2016      Mani Sundaresan       Initial Creation (HD-0733)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Contract" extensions="contractRedirect" action="{!pageRedirect}">
+ 
+</apex:page>

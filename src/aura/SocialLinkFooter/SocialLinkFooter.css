@@ -1,0 +1,40 @@
+.THIS .fieldParent{
+    text-align: center;
+}
+.THIS .field--item:first-child {
+    margin-left: 0;
+}
+.THIS .field--item {
+    margin: 0 10px;
+    display: inline-block;
+}
+.THIS .paragraph {
+        display: inline-block;
+    font-size: 24px;
+}
+
+.THIS .paragraph > a{
+color: #2B2967;
+    text-decoration: none;
+        background-color: transparent;
+    font-size: 24px;
+}
+.THIS .fa{
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+.THIS .fa:before {
+        display: inline-block;
+    height: 21px;
+    width: 1em;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.THIS .fa-glassdoor:before {
+    background-image: url(https://www.hologic.com/themes/custom/hologic/images/glassdoor.png);
+    content: " ";
+}

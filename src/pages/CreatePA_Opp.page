@@ -1,0 +1,12 @@
+<apex:page showHeader="true" sidebar="true" standardController="Opportunity" extensions="Ext_ContractNewAnR" action="{!RunThatOpp}">
+    <apex:form >
+        <apex:outputText rendered="false" value="{!Opportunity.SBQQ__RenewedContract__c}{!Opportunity.SBQQ__AmendedContract__c}{!Opportunity.Price_Agreement_Contract__c}{!Opportunity.Pricing_Agreement_Created__c}{!Opportunity.StageName}{!Opportunity.SBQQ__PrimaryQuote__c}"></apex:outputText>
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:commandButton value="Return to Opportunity" action="{!gotoOpp}"></apex:commandButton>
+        <!--Adding New Button for Amendment Quote -->
+        <apex:commandButton action="{!gotoQuote}" value="Go To Quote" rendered="{!showButtonQuote}"/>
+        <!--<apex:commandButton value="View Pricing Agreement" action="{!goToContract}" rendered="{!issuccessful}"></apex:commandButton>-->
+
+    </apex:form>
+
+</apex:page>

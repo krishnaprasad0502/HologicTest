@@ -1,0 +1,43 @@
+<apex:page controller="QuoteContractPricingController" sidebar="false" >
+
+<apex:form >
+<p>
+    Quote Name: <apex:inputText value="{!quoteName}"/><br/>
+    <apex:commandButton value="Submit"/>
+</p>
+
+<apex:pageBlock title="All Contracted Price Agreements">
+    <apex:pageBlockTable value="{!ContractAgreedPriceList}" var="record">
+        <!--<apex:column value="{!record.Id}"/>-->
+        <apex:column value="{!record.Agreed_Price__r.Product__c}"/>
+        <apex:column value="{!record.Agreed_Price__r.Product__r.Description}"/>
+        <apex:column value="{!record.Agreed_Price__r.Price__c}"/>
+        <apex:column value="{!record.Agreed_Price__c}"/>
+        <!--<apex:column value="{!record.Agreed_Price__r.Bundle_Product__c}"/>-->
+        <!--<apex:column value="{!record.Agreed_Price__r.APLookupKeywParent__c}"/>-->
+        <apex:column headerValue="AP Start Date"  value="{!record.Agreed_Price__r.Start_Date__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Contract__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Contract__r.Name}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Precedence_Value__c}"/>
+        
+    </apex:pageBlockTable>
+</apex:pageBlock>
+<p/>
+<apex:pageBlock title="Default Contract Price Agreement">
+    <apex:pageBlockTable value="{!DefaultContractAgreedPriceList}" var="record">
+        <apex:column value="{!record.Agreed_Price__r.Product__c}"/>
+        <apex:column value="{!record.Agreed_Price__r.Product__r.Description}"/>
+        <apex:column value="{!record.Agreed_Price__r.Price__c}"/>
+        <apex:column value="{!record.Agreed_Price__c}"/>
+        <!--<apex:column value="{!record.Agreed_Price__r.Bundle_Product__c}"/>-->
+        <!--<apex:column value="{!record.Agreed_Price__r.APLookupKeywParent__c}"/>-->
+        <apex:column headerValue="AP Start Date" value="{!record.Agreed_Price__r.Start_Date__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Contract__c}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Contract__r.Name}"/>
+        <apex:column value="{!record.Customer_Eligible_Contract__r.Precedence_Value__c}"/>
+    </apex:pageBlockTable>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

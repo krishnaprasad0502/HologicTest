@@ -1,0 +1,13 @@
+.THIS p.address {
+    font-size: 90%;
+}
+.THIS p.addressType {
+    font-weight: 600;
+    margin-top: 0.75em;
+}
+.THIS p.addressInfo {
+    margin-left: 0.5em;
+}
+.THIS p.intro {
+    margin-top: 0.75em;
+}

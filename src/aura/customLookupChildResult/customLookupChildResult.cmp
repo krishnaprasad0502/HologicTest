@@ -1,0 +1,72 @@
+<!--
+****************************************************************************************************************
+	Author       : Vrushabh Katariya
+	Company      : Hexaware Technologies
+	Created Date : 8/23/2018
+	Description  : This lightning component is used to return the list of Systems on Service Request creation. 
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	8/23/2018			Vrushabh Katariya		Initial Creation 					US-0005699 
+****************************************************************************************************************
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+	
+    <!-- Attribute Declaration-->
+    <aura:attribute name="oRecord" type="sObject" />
+    <aura:attribute name="IconName" type="string"/> 
+ 	<aura:attribute name="ObjectType" type="string"/>
+    <!-- Handlers -->
+  	<aura:registerEvent name="oSelectedRecordEvent" type="c:selectedsObjectRecordEvent"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!(v.ObjectType == 'Asset')}">
+        <div style="max-width:90%;margin:auto;">
+            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}">
+                <span id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta " 
+                      role="option">
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.SerialNumber}
+                        </span>
+                    </span>
+                    
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.Community_Product_Description__c}
+                        </span>
+                    </span>
+                    
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.Install_Location_Label__c}
+                        </span>
+                    </span>
+                </span>
+            </li>
+        </div>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!(v.ObjectType == 'Product2')}">
+                <div style="max-width:90%;margin:auto;">
+                    <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}">
+                        <span id="prodlistbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta " 
+                              role="option">
+                            <span class="slds-media__body slds-Search-text">  
+                               <!-- <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">-->
+                                    {!v.oRecord.Name}
+                               <!-- </span>-->
+                            </span>
+                            
+                            <span class="slds-media__body slds-Search-text">  
+                                <!--<span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">-->
+                                    {!v.oRecord.Community_Product_Description__c}
+                              <!--  </span>-->
+                            </span>
+                        </span>
+                    </li>
+                </div>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

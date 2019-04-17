@@ -1,0 +1,88 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 8/14/2018
+	Description: This lightning component is used to show the menu links panel in the community footer. 
+
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	8/14/2018			Sunil Kumar Sharma		Initial Creation 					US-0005633
+ 	1/29/2019			Vrushabh Katariya		Disposable Case link on Footer		US-0006553
+*********************************************************************************************************
+-->
+
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes" access="global">
+    <!-- SFDC Edit<ltng:require styles="{!$Resource.HologicSupportResources + '/HoLogicResources/Font_Awesome/css/font-awesome.css'}"/> -->
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    
+    <aura:attribute name="userInfo" type="Object"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="IsAssetDetailPage" type="boolean" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <aura:if isTrue="{!!$Browser.isPhone}">
+        <div class="menuDiv slds-grid slds-wrap container2 slds-p-top_x-large">
+            <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4">                                        
+                    <c:CommunityNavigation MenuType = "Product Information" /><br/>
+                    <c:CommunityNavigation MenuType = "Corporate Site"  />
+                </div>
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4"> 
+                    <c:CommunityNavigation MenuType = "Service Requests" isAssetDetailPage = "{!v.IsAssetDetailPage}"/>
+                </div>
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4">   
+                    <c:CommunityNavigation MenuType = "Community" />
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4">                                        
+                    <c:CommunityNavigation MenuType = "Products" />
+                </div>
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4"> 
+                    <c:CommunityNavigation MenuType = "Careers" />
+                </div>
+                <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4">   
+                    <c:CommunityNavigation MenuType = "About" />
+                </div>
+            </aura:if>
+            <div class="slds-col slds-m-bottom_x-large slds-size_1-of-1 slds-small-size_2-of-4 slds-medium-size_2-of-4 slds-large-size_1-of-4">  
+                <c:CommunityNavigation MenuType = "Contact Information" />
+                <c:CommunityNavigation MenuType = "Breast Health" />
+                <c:CommunityNavigation MenuType = "Skeletal Health" />
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!$Browser.isPhone}">
+        <lightning:accordion aura:id="accordion" activeSectionName="A">
+            <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                <lightning:accordionSection name="A" label="Product Information" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "Product Information" />   
+                </lightning:accordionSection>
+                <lightning:accordionSection name="B" label="Service Requests" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "Service Requests" isAssetDetailPage = "{!v.IsAssetDetailPage}"/>
+                </lightning:accordionSection>
+                <lightning:accordionSection name="C" label="Community" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "Community" />
+                </lightning:accordionSection>
+            </aura:if>
+            <aura:if isTrue="{!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+                <lightning:accordionSection name="A" label="Products" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "Products" />   
+                </lightning:accordionSection>
+                <lightning:accordionSection name="B" label="Careers" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "Careers" />
+                </lightning:accordionSection>
+                <lightning:accordionSection name="C" label="About" class="accordion-section">
+                    <c:CommunityNavigation MenuType = "About" />
+                </lightning:accordionSection>
+            </aura:if>
+            <lightning:accordionSection name="C" label="Contact Information" class="accordion-section">
+                <c:CommunityNavigation MenuType = "Contact Information" />
+                <c:CommunityNavigation MenuType = "Breast Health" />
+                <c:CommunityNavigation MenuType = "Skeletal Health" />                
+            </lightning:accordionSection>
+        </lightning:accordion>
+    </aura:if>
+</aura:component>

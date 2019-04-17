@@ -1,0 +1,54 @@
+<apex:page standardController="SBQQ__Quote__c" showHeader="true" sidebar="true" extensions="Ext_Contract_Selector_Quote" action="{!RunThat}">
+    <apex:sectionHeader title="{!SBQQ__Quote__c.Name}" subtitle="Contract Selector" />
+    <apex:form >
+        <apex:outputText value="{!SBQQ__Quote__c.Opportunity_Record_Type__c}{!SBQQ__Quote__c.Marketing_Program__c}{!SBQQ__Quote__c.Price_Agreement__c}{!SBQQ__Quote__c.SBQQ__Account__c}{!SBQQ__Quote__c.Contract_Auto_Assigned__c}{!SBQQ__Quote__c.Customer_Eligible_Contract__c}" rendered="false"></apex:outputText>
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:pageBlock rendered="{!!canSelect}">
+            <apex:pageMessage detail="This Quote must use Auto Contract Assignment Functionality" strength="3" title="Unable to Select Contract" severity="Warning"></apex:pageMessage>
+            <apex:commandButton action="{!returnToPrevious}" value="Return to Quote" immediate="true"/>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!canSelect}" id="pgBlock">
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton action="{!returnToPrevious}" value="Return to Quote" immediate="true"/>
+            <!--
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Select Contract"></apex:outputLabel>
+                <apex:selectList size="1" value="{!selectedContract}" label="Contract Picklist" required="true">
+                    <apex:selectOptions value="{!contractList}">
+                    </apex:selectOptions>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:commandButton action="{!saveContract}" value="Save Contract"/>
+            
+        -->
+        <apex:commandButton value="Previous" action="{!Previous}" rerender="pgTable,pgBlock"
+                                    status="status" disabled="{!DisablePrevious}" />
+                <apex:commandButton value="Next" action="{!Next}" reRender="pgTable,pgBlock"
+                                    status="status" disabled="{!DisableNext}"/>
+                <apex:actionStatus id="status" startText="Please Wait..."/>
+
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Click on a Contract Number to Select" columns="1" collapsible="false" >
+            <apex:pageBlockTable value="{!contractList}" var="c" style="width:100%" id="pgTable">
+                <apex:column headerValue="Contract Number">
+                    <apex:commandLink value="{!c.theContract.ContractNumber}" action="{!saveContract}">
+                        <apex:param value="{!c.theContract.Id}" assignTo="{!selectedContract}" name="selectedContract"></apex:param>
+                    </apex:commandLink>
+                </apex:column>
+                <apex:column headerValue="Contract Name" value="{!c.theContract.Name}"></apex:column>
+                <apex:column headerValue="Start Date" value="{!c.theContract.StartDate}"></apex:column>
+                <apex:column headerValue="End Date" value="{!c.theContract.Contract_End_Date__c}"></apex:column>
+                <apex:column headerValue="Account" value="{!c.theContract.Account.Name}"></apex:column>
+                <apex:column headerValue="Name" value="{!c.theContract.Name}"></apex:column>
+                <apex:column headerValue="Division" value="{!c.theContract.Division__c}"></apex:column>
+                <apex:column headerValue="Precedence" value="{!c.Precedence}"></apex:column>
+
+
+
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

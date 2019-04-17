@@ -1,0 +1,54 @@
+<!--------------------------------------------------------------------------------------------------------------
+    Author : Niraj
+    Company : Hexaware Technologies
+    Description : Service Report VF Container
+        
+
+    History:
+    <Date>         <Author Name>      <Brief Description of Change>     <Copa.do US#>
+    8/22/2018      Niraj            Initial Creation                     US-0005791
+---------------------------------------------------------------------------------------------------------------->
+<apex:page controller="ServiceHistoryReportVFController" showHeader="false">
+
+    <apex:includeLightning />
+    
+    <!-- Page code -->
+    <apex:form >
+        <apex:inputhidden id="hidData" value="{!PDFData}"/>
+    
+        <apex:actionfunction name="jsGeneratePDF" action="{!downloadPDF}" />
+        
+        <div id="lightning" />
+        
+    <script>
+        function saveData(data, callback){
+            var hidData = document.getElementById('{!$Component.hidData}');
+            hidData.value = JSON.stringify(data);
+            
+            //invoke PDF Generation
+            jsGeneratePDF();
+         
+            //invoke callback;
+            if(typeof callback == 'function') callback();
+        }
+        
+        
+        function loadComponents(){
+            console.log("Loading lightning component: ServiceReport");
+            
+            $Lightning.use("c:ServiceReportApp", function() {
+                $Lightning.createComponent("c:ServiceReport",
+                { 
+                    sendData : saveData
+                },
+                "lightning",
+                function(cmp) {
+                    // do some stuff
+                });
+            });
+        }
+        
+        loadComponents();
+    </script>
+    </apex:form>
+</apex:page>

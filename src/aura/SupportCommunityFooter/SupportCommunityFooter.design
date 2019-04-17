@@ -1,0 +1,3 @@
+<design:component>
+	<design:attribute name="IsAssetDetailPage" label="Is Asset Detail Page?" description="Check to Asset Detail Page" />
+</design:component>

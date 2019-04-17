@@ -1,0 +1,48 @@
+<!--
+********************************************************************************************************************
+    Author       : Vrushabh Katariya
+    Company      : Hexaware Technologies
+    Created Date : 1/10/2018 6:27 AM
+	Description  : To show Related list of Service Appointment on System Detail page
+
+    History:
+    <Date>         	<Author Name>            <Brief Description of Change>    <Copa.do US#>
+    1/10/2018	   	Vrushabh Katariya			Initial Creation				US-0006454	
+ 	1/19/2018		Vrushabh Katariya			PM schedule on Home page and 
+												My System detail Page			US-0006553	
+********************************************************************************************************************
+-->
+<aura:component controller="SARelatedListViewController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:isUrlAddressable" access="global">
+    
+    <aura:attribute name="SAFieldSetName" type="String" default="Community_SAListView"/>
+    <aura:attribute name="SAsObjectName" type="String" default="ServiceAppointment"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="SAList" type="List"/>
+    <aura:attribute name="showSAEmptyMessage" type="boolean" default="false"/>
+    <aura:attribute name="ServiceAppointmentList" type="ServiceAppointment[]"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div >
+    <aura:if isTrue="{!v.showSAEmptyMessage}">
+        <div class="TextFormat" style="text-align:center">
+            <br/>
+            {! $Label.c.Community_No_Service_Appointment } 
+            <br/>
+        </div>
+        <aura:set attribute="else">
+            <div style="height:500px; width:100%">
+            <lightning:datatable data="{! v.ServiceAppointmentList}" 
+                         columns="{! v.mycolumns }" 
+                         keyField="Id"
+                         hideCheckboxColumn="true"
+                         class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal datatablelinks "/>
+                <br/><br/>
+            </div>
+           
+        </aura:set>
+    </aura:if>
+        </div>
+</aura:component>

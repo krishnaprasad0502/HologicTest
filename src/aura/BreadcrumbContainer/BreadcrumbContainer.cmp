@@ -1,0 +1,29 @@
+<!--
+****************************************************************************************************************************
+    Author       : Sunil Kumar Sharma
+    Company      : Hexaware Technologies
+    Created Date : 10/29/2018 
+	Description  : The component is used to create breadcrumbs on commuity pages.
+
+    History:
+    <Date>         <Author Name>			<Brief Description of Change> 		<Copa.do US#>
+   10/29/2018	   Sunil Kumar Sharma	    Initial Creation					US-0006008
+	11/13/2018        Sunil Sharma            Updated for Discussion forums    US-0006076
+****************************************************************************************************************************  
+-->
+<aura:component controller="BreadcrumbContainerController" implements="force:hasRecordId,force:appHostable,forceCommunity:availableForAllPageTypes" access="global">
+    <!-- Attributes-->
+    <aura:attribute name="topicBreadcrumbs" type="list"/>
+    <aura:attribute name="recordId" type="String"/>
+    
+    <!-- Custom Setting -->
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <!-- handler methods--> 
+    <aura:handler name="init" value="{!this}" action="{!c.init }"/>
+    <lightning:breadcrumbs>
+        <aura:iteration items="{!v.topicBreadcrumbs }" var="crumbs">
+            <lightning:breadcrumb label="{! crumbs.topicLabel }" href="{! v.configSetting.SiteURL__c + crumbs.topicId }" name="{! crumbs.topicLabel }"/>
+        </aura:iteration>
+    </lightning:breadcrumbs>
+</aura:component>

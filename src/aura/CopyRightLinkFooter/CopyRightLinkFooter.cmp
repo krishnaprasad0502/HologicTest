@@ -1,0 +1,45 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 8/14/2018
+	Description: This lightning component is used to show the copyright and contact us panel in the community footer. 
+
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>	
+	8/14/2018			Sunil Kumar Sharma		Initial Creation 					US-0005633
+*********************************************************************************************************
+-->
+
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes" access="global">  
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <div class="copyRightDiv slds-grid slds-wrap slds-p-bottom_xx-large slds-p-vertical_xx-large"  >
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-6 cell-size-1" style="text-align:center"> 
+            <a class="copyRight " href="{!v.configSetting.Contact_Us__c}" target="_blank">
+                Contact
+            </a>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-6 cell-size-2" style="text-align:center"> 
+            <a class="copyRight " href="{!v.configSetting.Privacy_Policy__c}" target="_blank" data-drupal-link-system-path="node/30">
+                Privacy Policy
+            </a>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-6 cell-size-3" style="text-align:center">  
+            <a class="copyRight" href="{!v.configSetting.Terms_Condition__c}" target="_blank" data-drupal-link-system-path="node/31">
+                Terms &amp; Conditions
+            </a>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-6 cell-size-2" style="text-align:center">  
+            <a class="copyRight " href="{!v.configSetting.Patent_Info__c}" target="_blank" data-drupal-link-system-path="node/1291">
+                Patent Info
+            </a>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-6" style="text-align:center">  
+            <p style="color:#131F6b:font-size:13px !important">
+                ©&nbsp;Copyright 2019 Hologic Inc. All rights reserved.
+            </p>
+        </div>
+	</div>	
+</aura:component>

@@ -1,0 +1,9 @@
+<design:component>
+	<design:attribute name="MenuType" label="Menu Type" datasource="Quick Links,My Systems,Manuals,FAQ,Known Issues,Technical Tips,Training" default="My Systems" description="Select Manu Type" />
+    <design:attribute name="menuUrl" label="Menu Url" description="Enter Menu link URL" />
+    <design:attribute name="isMenuHeader" label="Is menu Header ?" description="Mark true if text is menu header" />
+	<design:attribute name="SobjType" label="Sobject Type" datasource="Product2,Asset" default="Product2" description="Select Sobject Type" />
+	<design:attribute name="sobjFieldName1" label="Field name 1" description="Select Field name 1" />
+	<design:attribute name="sobjFieldName2" label="Field name 2" description="Select Field name 2" />
+	
+</design:component>

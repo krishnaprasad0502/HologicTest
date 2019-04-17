@@ -1,0 +1,21 @@
+.THIS .case-form-style{
+	font-family: ProximaNova-Semibold,sans-serif !important;
+}
+.THIS .TextFormat{
+    color: #008AAD !important;
+    font-size: 13px !important;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight: 600;
+}
+
+.THIS .slds-table tr th a {
+     color: #008AAD !important;
+     font-weight: 600 !important;
+     font-family: ProximaNova-Semibold,sans-serif;
+}
+
+.THIS .slds-table tr td a {
+     color: #008AAD !important;
+     font-weight: 600 !important;
+     font-family: ProximaNova-Semibold,sans-serif;
+}

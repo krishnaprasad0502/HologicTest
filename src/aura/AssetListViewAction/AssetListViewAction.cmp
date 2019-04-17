@@ -1,0 +1,79 @@
+<!--
+****************************************************************************************************
+    Author       : Vrushabh Katariya
+    Company      : Hexaware Technologies
+    Description  : List of Actions to be displayed on Asset List View
+ Created Date : 10/23/2018 2:44 PM
+
+    History:
+    <Date>          <Author Name>			<Brief Description of Change>			<Copa.do US#>
+ 	10/23/2018		Vrushabh Katariya		Initial Creation						US-0006075 
+ 	04/12/2018	   Nikhil Mutyam			Code changes to to display a larger 
+ 											Modal when case deflection is switched 
+ 											on     									US-0006257
+****************************************************************************************************  
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global">
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="comp" type="Aura.Component"/>
+    <aura:attribute name="Type" type="string"/>
+    <aura:attribute name="SubType" type="string"/>
+    <aura:attribute name="Subject" type="string"/>
+    <aura:attribute name="Priority" type="string"/>
+    <aura:attribute name="isListViewAction" type="boolean" default="false"/>
+    
+    <!-- List of Buttons to be displayed on Listview -->
+    <div class="slds-grid slds-grid_align-end">
+        <div class="slds-col">
+        </div>
+        <div class="slds-size_1-of-1" align="right" style="margin-right: 8px">
+            <lightning:button label="Request Access to Additional Locations" title="Request Access to Additional Locations" onclick="{!c.GeneralInquiry}" class="ButtonStyle"/>
+        </div>
+    </div>
+    
+    <!--Case creation popup-->
+    <aura:if isTrue="{!v.isOpen}">
+        <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+            
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" 
+            class="{! $Label.c.Community_Show_Deflection == 'Yes' ? 'slds-modal slds-fade-in-open slds-modal_large' : 'slds-modal slds-fade-in-open'}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{!c.closeModel}"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        {!v.comp}
+                    </div>
+                </div>    
+            </section>
+            
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <aura:set attribute="else">
+                
+                <div class="PHONE comm-panels-container uiContainerManager siteforcePanelsContainer" data-aura-rendered-by="45:0" data-aura-class="uiContainerManager siteforcePanelsContainer">
+                    <div aria-labelledby="title_26:1314;a" tabindex="-1" role="dialog" data-aura-rendered-by="30:1314;a" class="uiPanel--medium uiPanel forceMobileOverlay open active" data-aura-class="uiPanel--medium uiPanel forceMobileOverlay" aria-hidden="false" style="opacity: 1; z-index: 2; visibility: visible;">
+                        <div class="container">
+                            <div class="panel-header">
+                                <h2 class="title slds-truncate" id="title_26:1314;a" data-aura-rendered-by="1:1321;a">New Case: Support</h2>
+                                <lightning:button label="Close" title="Close" onclick="{!c.closeModel}"/>
+                            </div> 
+                            <div class="panel-content scrollable">
+                                {!v.comp}
+                            </div>
+                            <div class="panel-header">
+                                &nbsp;
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                
+            </aura:set>    
+        </aura:if>        	
+    </aura:if>
+</aura:component>

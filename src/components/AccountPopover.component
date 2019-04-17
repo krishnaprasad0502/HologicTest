@@ -1,0 +1,40 @@
+<!------------------------------------------------------------
+Author:			Denise Bacher
+Company:		Salesforce.com
+Description:	Create html for account popover
+Inputs:			account - Account object
+				fields - list of FieldSetMembers to be displayed
+
+History:
+<Date>			<Authors Name>		<Brief Description of Change>
+05/10/2016		Denise Bacher		Initial Creation (US959)
+------------------------------------------------------------>
+<apex:component >
+	<apex:attribute name="account" description="Account used for popover" type="Account" required="true"/>
+	<apex:attribute name="fields" description="fields to display" type="Schema.FieldSetMember[]" required="true"/>
+	
+	<div id="aljs-{!account.Id}" class="slds-hide">
+		<div class="slds-popover__header">
+			<div class="slds-media slds-media--center">
+				<span class="slds-text-heading--small">{!account.Name}</span>
+			</div>
+		</div>
+		<div class="slds-popover__body slds-m-around--x-small">
+			<div class="slds-grid slds-wrap slds-grid--pull-padded">
+				<apex:repeat value="{!fields}" var="f">
+					<div class="slds-col--padded slds-size--1-of-1 slds-p-bottom--x-small">
+						<dl>
+							<dt>
+								<span class="slds-text-heading--label slds-truncate">{!f.label}</span>
+							</dt>
+							<dd>
+								<apex:outputField value="{!account[f.fieldPath]}" styleClass="slds-truncate"/>
+							</dd>
+						</dl>
+					</div>
+				</apex:repeat>
+			</div>
+		</div>
+	</div>
+
+</apex:component>

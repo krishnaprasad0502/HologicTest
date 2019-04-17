@@ -1,0 +1,48 @@
+<apex:page standardController="Account" extensions="addScheduleToAccount" >
+    <apex:form >
+
+        <apex:pageBlock title="Select Schedules to Add to the Account ({!accountName})">
+
+            <apex:outputPanel id="errorMessages" style="width: 100%;">
+                <apex:pageMessage severity="warning" strength="2" title="Warning!" rendered="{!errors.size > 0}">
+                    <apex:dataList value="{!errors}" var="specificError">
+                        {!specificError}
+                    </apex:dataList>
+                </apex:pageMessage>
+            </apex:outputPanel>
+
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Select" action="{!selectSchedules}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            
+
+            
+            <apex:pageBlockTable value="{!currentPage}" var="sched">
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!sched.selected}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">Contract Account</apex:facet>
+                    <apex:outputField value="{!sched.relatedContract.AccountId}" />
+                </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">Contract Number</apex:facet>
+                    <apex:outputField value="{!sched.relatedContract.ContractNumber}" />
+                </apex:column>   
+                <apex:column >
+                    <apex:facet name="header">Start Date</apex:facet>
+                    <apex:outputField value="{!sched.relatedContract.StartDate}" />
+                </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">End Date</apex:facet>
+                    <apex:outputField value="{!sched.relatedContract.Contract_End_Date__c}" />
+                </apex:column>                                               
+
+            </apex:pageBlockTable>
+     
+        </apex:pageBlock>
+        <br/>
+
+    </apex:form>
+</apex:page>

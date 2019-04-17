@@ -1,0 +1,7 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+        	Self Registration component for customers to Register.
+        </p>
+    </aura:description>
+</aura:documentation>

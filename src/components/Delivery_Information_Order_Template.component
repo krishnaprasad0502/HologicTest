@@ -1,0 +1,188 @@
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    VF Component used in Order DIF Generation Email Template.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+07/10/2018      Rob Strickler       Initial Creation, cloned from B&SH Install Case Email Template
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<apex:component controller="DeliveryInfoOrderDetails" access="global">
+
+    <apex:attribute name="incomingOrder" type="Order" description="The Related Order" assignTo="{!theOrder}"/>
+
+    <table>
+        <tr>
+            <td><b><apex:outputText >Date:</apex:outputText></b></td>
+            <td>
+                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                   <apex:param value="{!TODAY()}" />
+                </apex:outputText>
+            </td>
+        </tr>
+    </table>
+    
+    <br/><br/>
+
+    <table>
+        <tr>
+            <td><b><apex:outputText value="Site Name: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.Account.Name}"></apex:outputText></td>
+        </tr>
+        <tr>
+            <td><b><apex:outputText value="Address: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.Ship_To_Site_Location__r.Address_Line_1__c}"></apex:outputText></td>
+        </tr>
+        <tr>
+            <td><b><apex:outputText value="City, State, Zip: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.Ship_To_Site_Location__r.City__c}, {!theOrder.Ship_To_Site_Location__r.State__c}, {!theOrder.Ship_To_Site_Location__r.Zip_Code__c}"></apex:outputText></td>
+        </tr>
+        <tr>
+            <td><b><apex:outputText value="SO#: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.OrderReferenceNumber}"></apex:outputText></td>
+        </tr>
+    </table>
+
+    <br/>
+    <br/>
+    
+    <table>
+        <tr>
+            <td>
+                <b><apex:outputText value="Customer Contact: "></apex:outputText></b>
+                <apex:outputText value="{!theOrder.SBQQ__Quote__r.SBQQ__PrimaryContact__r.Name}"></apex:outputText>
+            </td>
+            <td>
+                <b><apex:outputText value="Phone: "></apex:outputText></b>
+                <apex:outputText value="{!theOrder.SBQQ__Quote__r.SBQQ__PrimaryContact__r.Phone}"></apex:outputText>
+            </td>
+            <td>
+                <b><apex:outputText value="Email: "></apex:outputText></b>
+                <apex:outputText value="{!theOrder.SBQQ__Quote__r.SBQQ__PrimaryContact__r.Email}"></apex:outputText>
+            </td>
+        </tr>
+    </table>
+    
+    <br/><br/>
+    
+    <table>
+        <tr>
+            <td colspan="2"><strong>FSE Name - Phone:</strong></td>
+        </tr>
+        <apex:repeat var="wo" value="{!theOrder.Work_Orders__r}">
+            <apex:outputPanel layout="none" rendered="{!wo.RecordType.Name == 'Install/Upgrade'}">
+                <tr>
+                    <td><apex:outputText value="{!wo.Owner.Name}"></apex:outputText></td>
+                    <td><apex:outputText value="{!wo.Owner.Phone}"></apex:outputText></td>
+                </tr>
+            </apex:outputPanel>
+        </apex:repeat>
+        
+        <tr>
+            <td colspan="2" style="margin-top: 1em;"><strong>IC Name - Phone:</strong></td>
+        </tr>
+        <tr>
+            <td><apex:outputText value="{!theOrder.Project_Manager__r.Name}"></apex:outputText></td>
+            <td><apex:outputText value="{!theOrder.Project_Manager__r.Phone}"></apex:outputText></td>
+        </tr>
+        
+        <tr>
+            <td colspan="2" style="margin-top: 1em;"><strong>Salesperson Name - Phone:</strong></td>
+        </tr>
+        <tr>
+            <td><apex:outputText value="{!theOrder.SBQQ__Quote__r.SBQQ__SalesRep__r.Name}"></apex:outputText></td>
+            <td><apex:outputText value="{!theOrder.SBQQ__Quote__r.SBQQ__SalesRep__r.Phone}"></apex:outputText></td>
+        </tr>
+    </table>
+
+    <br/><br/>
+    
+    <!--<STYLE type="text/css">-->
+    <!--    TH {font-size: 18px; font-face: arial;background: #CCCCCC; border-width: 1;  text-align: center }-->
+    <!--    TD  {font-size: 16px; font-face: verdana }-->
+    <!--    TABLE {border: solid #CCCCCC; border-width: 1}-->
+    <!--    TR {border: solid #CCCCCC; border-width: 1}-->
+    <!--</STYLE>-->
+
+    <table style="width:100%;">
+        <tr>
+            <td width="48%">
+                <table style="border:1px solid #CCC;width:100%;">
+                    <tr>
+                        <th style="font-size:18px;background:#CCC;text-align:center;" colspan="2">Equipment to be installed</th>
+                    </tr>
+                    <tr>
+                        <th style="font-size:18px;background:#CCC;text-align:center;">Model</th>
+                        <th style="font-size:18px;background:#CCC;text-align:center;">Upgrade SN&#39;s</th>
+                    </tr>
+                    <apex:repeat var="oi" value="{!theOrder.OrderItems}">
+                        <apex:outputPanel layout="none" rendered="{!oi.Product2.Trade_In_Product__c == false}">
+                            <tr>
+                                <td style="font-size:16px;">{!oi.PricebookEntry.Product2.Name}</td>
+                                <td style="font-size:16px;">{!oi.Asset_Serial_Number__c}</td>
+                            </tr>    
+                        </apex:outputPanel>
+                    </apex:repeat>
+                </table>
+            </td>
+            <td width="4%"></td>
+            <td width="48%">
+                <table style="border:1px solid #CCC;width:100%;">
+                    <tr>
+                        <th style="font-size:18px;background:#CCC;text-align:center;" colspan="2">Equipment for Trade-In/Pickup</th>
+                    </tr>
+                    <tr>
+                        <th style="font-size:18px;background:#CCC;text-align:center;">Model</th>
+                        <th style="font-size:18px;background:#CCC;text-align:center;">RMA Number/Scrap</th>
+                    </tr>
+                    <apex:repeat var="ti" value="{!theOrder.OrderItems}">
+                        <apex:outputPanel layout="none" rendered="{!ti.Product2.Trade_In_Product__c == true}">
+                            <tr style="border: solid #CCC;">
+                                <td style="font-size:16px;">{!ti.PricebookEntry.Product2.Name}</td>
+                                <td style="font-size:16px;">
+                                    <apex:outputText value="{!ti.RMA_Number_Scrap__c}"></apex:outputText>
+                                </td>
+                            </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <br/><br/>
+    
+    <table>
+        <tr style="marign-bottom:1em;">
+            <td><b><apex:outputText value="DeInstalled Asset:"></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.DeInstalled_Asset__r.Name}"></apex:outputText></td>
+        </tr>
+        <!--<b><apex:outputText value="Competitive Trade In: "></apex:outputText></b>-->
+        <!--<apex:outputText value="{!Case.Competitive_Trade_In__c}"></apex:outputText>-->
+        <tr style="marign-bottom:1em;">
+            <td><b><apex:outputText value="Delivery Date/Time: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!DeliveryTime}" /></td>
+        </tr>
+        <!--&nbsp;&nbsp;&nbsp;-->
+        <!--<b><apex:outputText value="Installation Date: "></apex:outputText></b>-->
+        <!--<apex:outputText value="{!confirmInstall}" ></apex:outputText>-->
+        <tr style="marign-bottom:1em;">
+            <td><b><apex:outputText value="Pickup Date/Time: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!PickupTime}"></apex:outputText></td>
+        </tr>
+        <!--<b><apex:outputText value="Box Truck: "></apex:outputText></b>-->
+        <!--<apex:outputText value="{!Case.Box_Truck__c}"/>-->
+        <!--<br/><br/>-->
+        <!--<input type="checkbox" name="BoxTruck" value="{!Case.Box_Truck__c}"/>-->
+        <!--<br/><br/>-->
+        <tr style="marign-bottom:1em;">
+            <td><b><apex:outputText value="Special Instructions: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.Special_Instructions__c}"></apex:outputText></td>
+        </tr>
+        <tr style="marign-bottom:1em;">
+            <td><b><apex:outputText value="Special Array Instructions: "></apex:outputText></b></td>
+            <td><apex:outputText value="{!theOrder.Special_Array_Instructions__c}"></apex:outputText></td>
+        </tr>
+    </table>
+
+</apex:component>

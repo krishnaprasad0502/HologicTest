@@ -1,0 +1,53 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Kasmoor Reddy
+Description:    VF page button on Opportunity object which displays the list of contacts associated to 
+                Opportunity.Account and Opportunity.AccountContactRelation with a checkbox and insert 
+                the selected Contacts in the AccountProfile object
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+05/24/2017      Kasmoor Reddy       Initial Creation (US2752)
+---------------------------------------------------------------------------------------------------------------->
+
+<apex:page standardController="Opportunity" extensions="ConvertContacts" >
+    <apex:form >
+        <apex:pageBlock id="Allcontacts" rendered="{!(if(render=true, false, true))}">
+            <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Next" action="{!Nextpage}" disabled="{!If(lstSetController.size = 0,true, false)}"/>
+                    <apex:commandButton value="Back To Opportunity" action="{!Back}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="List of contacts related to Opportunity:  {!OppName} " >
+                <apex:pageBlockTable value="{!lstSetController}" var="listofcont" styleClass="datatable" rendered="{!(lstSetController.size != 0)}"> 
+                    <apex:column >
+                       <apex:inputCheckbox value="{!listofcont.isSelected}"/>
+                    </apex:column>
+                    <apex:column headerValue="Contact Name" value="{!listofcont.cont.name}" />
+                    <apex:column headerValue="Account Name / Account Contact Relationship Name" value="{!listofcont.cont.Accountid}" />
+                </apex:pageBlockTable>
+                <apex:outputText rendered="{!(lstSetController.size = 0)}" value="There are no contacts to display related to this Opportunity and account." style="font-weight:600"/>
+               </apex:pageBlockSection>
+            <apex:outputPanel >
+           <apex:commandButton value="<<Previous" action="{!previous}" rendered="{!hasPrevious}" reRender="Allcontacts" />
+           <apex:commandButton value="Next >>" action="{!next}" rendered="{!hasNext}" reRender="Allcontacts" />
+        </apex:outputPanel> 
+        </apex:pageBlock>
+        <apex:pageBlock id="Buttons" rendered="{!render}">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save" Action="{!Save}" disabled="{!If(disablesave == false,true, false)}"/>
+                <apex:commandButton value="Back To Opportunity" action="{!Back}"/>
+            </apex:pageBlockButtons>
+            <apex:pageMessages />
+            <apex:pageBlockSection columns="1">
+                <apex:inputField value="{!AccProfileData.Division__c}" label="Division"/>
+                <apex:inputField value="{!AccProfileData.Type__c}" label="Type"/>
+                <apex:inputField value="{!AccProfileData.Primary_Lab_Affiliation__c}" label="Primary Lab Affiliation"/>
+                <apex:inputField value="{!AccProfileData.Secondary_Lab_Affiliation__c}" label="Secondary Lab Affiliation"/>
+                <apex:inputField value="{!AccProfileData.Conversion_Assay_Type__c}" label="Conversion Assay Type" />
+                <apex:inputField value="{!AccProfileData.Converted_From__c}" label="Converted From"/>
+                <apex:inputField value="{!AccProfileData.Converted_To__c}" label="Converted To"/>
+                <apex:inputField value="{!AccProfileData.Date__c}" label="Date"/>
+                <apex:inputField value="{!AccProfileData.Description__c}" label="Description"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:form>
+</apex:page>

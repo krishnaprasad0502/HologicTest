@@ -1,0 +1,5 @@
+<aura:documentation>
+	<aura:description>
+    	This component is created to show the support help text on About Us page.
+    </aura:description>
+</aura:documentation>

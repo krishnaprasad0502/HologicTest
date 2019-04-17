@@ -1,0 +1,90 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="CreatePaymentScheduleController" action="{!load}">
+    <apex:form >
+<input id="hiddenElement" type="hidden" />
+
+<script type="text/javascript">
+  window.onload = setFocus
+  function setFocus() {
+    document.getElementById("hiddenElement").focus();
+  }
+</script>       
+<apex:pageMessages />
+    <apex:sectionHeader title="Edit Payment Schedule" />
+    <apex:pageBlock >
+        <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Add" action="{!addPayment}"/>
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Quote Information" id="qinfo">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Quote Total" />
+                <apex:outputField value="{!theQuote.SBQQ__NetAmount__c}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Payment Total" />
+                <apex:outputField value="{!theQuote.SBQQ__TargetCustomerAmount__c}" />
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Payment Schedules" id="pmts">
+            <apex:pageBlockTable value="{!payments}" var="p">
+                <apex:column >
+                    <apex:commandLink action="{!deleteLine}" value="del" id="del">
+                          <apex:param name="index" assignTo="{!index}" value="{!p.counter}" />
+                    </apex:commandLink>
+                </apex:column>  
+                  /* Added Print Sequence Column */
+                   /* Rich Varga Apps Associates */
+                   /* HD-2858 */
+                   <apex:column >
+                    <apex:facet name="header">Print Sequence</apex:facet>
+                    <apex:inputField value="{!p.payment.Print_Sequence__c}" >
+                    </apex:inputField>                    
+                  
+                </apex:column>
+                                
+                <apex:column headerValue="Payment Start Date">
+                    <apex:inputField value="{!p.payment.Payment_Start_Date__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">Payment Frequency</apex:facet>
+                    <apex:inputField value="{!p.payment.Payment_Frequency__c}" >
+                        <apex:actionSupport event="onchange" reRender="pmts,qinfo" action="{!updateTotals}"> 
+                        </apex:actionSupport>
+                    </apex:inputField>
+               </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">Number of Payments</apex:facet>
+                    <apex:inputField value="{!p.payment.Number_of_Payments__c}" >
+                        <apex:actionSupport event="onchange" reRender="pmts,qinfo" action="{!updateTotals}"> 
+                        </apex:actionSupport>
+                    </apex:inputField>
+                </apex:column>   
+                <apex:column >
+                    <apex:facet name="header">Payment Amount</apex:facet>
+                    <apex:outputField value="{!p.payment.Payment_Amount__c}" />
+                </apex:column>  
+                 <apex:column >
+                    <apex:facet name="header">Payment Total</apex:facet>
+                    <apex:inputField value="{!p.payment.Payment_Total__c}" >
+                        <apex:actionSupport event="onchange" reRender="pmts,qinfo" action="{!updateTotals}"> 
+                        </apex:actionSupport>
+                    </apex:inputField>                    
+                  
+                </apex:column>  
+                <apex:column >
+                    <apex:facet name="header">Payment Notes</apex:facet>
+                    <apex:inputField value="{!p.payment.Payment_Notes__c}" >
+                    </apex:inputField>                    
+                  
+                </apex:column>  
+                   
+                                               
+
+            </apex:pageBlockTable>
+ 
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,176 @@
+.THIS .HO_Searchbutton {
+    
+    background-color:#2B2967;
+    border-color:#2B2967;
+}
+
+.THIS .HO_Navbutton {
+    
+    background-color:#2B2967;
+    border-color:#2B2967;
+}
+
+
+.THIS .HO_ArticleLink {
+    
+    color: #008AAD !important;
+    opacity: 100%;
+    font-size: 15px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 17px;
+    font-weight:bold;
+    padding-top:8px;
+}
+
+.THIS .HO_ArticleType {    
+    color: #333;
+    opacity: 100%;
+	font-size: 15px;
+	font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 17px;   
+}
+
+.THIS .HO_DataCatTree {
+    color: #333;
+    opacity: 100%;
+	font-size: 15px;
+	font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 17px;      
+}
+
+.THIS .HO_ArticleSummary{
+    
+    color: #333333 !important;
+	opacity: 100%;
+	font-size: 13px;
+	font-family: ProximaNova-rg,sans-serif;
+    line-height: 18px;
+    font-weight: 300;
+    padding-top: 5px;
+}
+
+/*	US-0006169 Changes START
+	commented Font Weight to bold for Article Date
+*/
+.THIS .HO_ArticleDate{
+    color: #131F6B !important;
+	opacity: 100%;
+	font-size: 13px;
+	font-family: ProximaNova-rg,sans-serif;
+    line-height: 16px;
+    font-weight:300;
+    padding-top: 10px;
+}
+
+.THIS .HO_Filters{    
+    /* background-color: #E3E4E6; */
+    border: 1px solid rgb(212, 212, 212);
+}
+
+.THIS .HO_ArticleTypeText{
+    color: #131F6B; 
+    font-size: 14px;
+	font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 17px;
+    font-weight:600; 
+    padding: 5px 0;
+}
+
+.THIS .slds-form-element__label {
+    color: #333 !important;
+    font-size: 15px !important;
+	font-family: ProximaNova-Semibold,sans-serif;
+    font-weight: normal;
+}
+
+.THIS .slds-tree_container{
+    color: #333 !important;
+    font-size: 15px !important;
+	font-family: ProximaNova-Semibold,sans-serif; 
+}
+
+.THIS .HO_DisplayTitle {
+    color: #131f6b;
+    opacity: 100%;  
+    font-size: 22px;
+    font-family: ProximaNova-bold,sans-serif;
+    line-height: 16px;
+    font-weight: bold;   
+}
+
+.THIS .HO_ArticleType .slds-form-element__control .slds-checkbox {
+    padding-bottom: 5px;
+}
+
+.THIS .slds-input-has-icon .slds-input__icon {
+    width: 50px !important;
+    height: 40.5px !important;
+    margin-top:5px !important;
+    top:0% !important ;
+    border-radius: 0rem;
+    border-left:1px solid #131F6B;
+    right:0px !important ;
+    vertical-align:middle;
+}
+
+.THIS .slds-lookup__search-input{
+    min-height: calc(3rem + 2px);
+    border-radius: 0rem;
+    font-size:17px ;
+    border: 0px solid #eeeeee !important;
+}
+.THIS .slds-lookup__search-input::-webkit-input-placeholder { /* WebKit browsers */
+  font-size: 1em;
+}
+
+.THIS .HO_DataCatTree .slds-button_icon{
+     color: #008aad;
+}
+
+.THIS .slds-checkbox_faux{
+        border-color: #008aad;
+}
+
+
+@media screen and (min-width: 768px){
+    .THIS .slds-p-horizontal_large{
+        padding-left:70px !important ;
+    }
+    .THIS .article-container{
+        border-left:1px solid #eeeeee;
+    }
+    .THIS .article-sub-container{
+        padding-top:20px;
+        padding-left:30px;
+        padding-right:30px;
+    }
+    .THIS .HO_DisplayTitle{
+        padding-left: 20px;
+    }
+}
+@media (min-width: 992px) {
+    .THIS .slds-p-horizontal_large{
+        padding-left:70px !important ;
+    }
+    .THIS .article-container{
+        border-left:1px solid #eeeeee;
+    }
+    .THIS .article-sub-container{
+        padding-top:20px;
+        padding-left:30px;
+        padding-right:30px;
+    }
+    .THIS .HO_DisplayTitle{
+        padding-left: 20px;
+    }
+}
+@media only screen and (max-width: 480px) {
+    .THIS .searchBox {
+        padding: 0 16px;
+    }    
+}
+
+.THIS .siteforceContentArea .comm-layout-column {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}

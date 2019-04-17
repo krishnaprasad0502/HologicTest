@@ -1,0 +1,403 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Krishna Prasad
+Description:    Displays product and craete Olis with ware house
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+5/8/2017       Krishna Prasad        Initial Creation(US-0002725)
+5/30/2017      Krishna Prasad        Select ware house for NON-RMA Lines(enhancement for product search by default)
+6/27/2018      Rob Strickler         Update display for returned-for-repair items
+
+---------------------------------------------------------------------------------------------------------------->
+
+<apex:page standardController="Order"
+			extensions="OrderItemProductSearchWithWarehouse"
+			showHeader="true"
+			sidebar="false"
+			tabStyle="Order"
+			title="Order Item Selector"
+			lightningStylesheets="true">
+
+<script type = "text/javascript">
+	window.onload=function() {        
+		orderTypeSelected();
+	};
+</script>
+
+<apex:sectionHeader title="New Order" subtitle="with Order Items" />
+	<apex:form >
+		<apex:pageBlock title="Order Details" mode="edit" > 
+			<apex:pageMessages id="showmsg"></apex:pageMessages>
+				<div align="center" draggable="false" >
+					<apex:commandButton action="{!backToOrder}" value="Back To Order" />
+				</div>
+				<apex:facet name="header" >
+					<apex:outputField value="{!order.Name}"/>
+				</apex:facet>
+				<apex:pageBlockSection title="Order Details" collapsible="false" >
+					<apex:outputField value="{!order.AccountId}" />
+					<apex:outputField value="{!order.Status}"/> 
+					<apex:outputField value="{!order.Type}" >
+						<apex:actionfunction action="{!Refresh}" rerender="additempanel" name="orderTypeSelected" >
+							<apex:param name="typeSelected" assignTo="{!TypeSelected}" value="true" />
+						</apex:actionfunction>
+					</apex:outputField>
+					<apex:outputField value="{!order.RecordTypeId}" />
+					<apex:outputField value="{!order.EffectiveDate}" />
+					<apex:outputField value="{!order.EndDate}" />
+					<apex:outputField value="{!order.case__r.productid}" />
+					<apex:outputField value="{!order.case__r.Assetid}" />
+				</apex:pageBlockSection>
+            
+				<apex:outputPanel id="additempanel" >
+					<apex:pageBlockSection id="searchsection" title="Product Search" columns="1" rendered="{!TypeSelected}" >
+						<apex:panelGrid id="searchpanel" columns="3"  cellpadding="2px" cellspacing="2px" frame="box" >
+							<apex:outputPanel layout="inline" >
+								<apex:outputLabel for="pricebookselector" value="Select Pricebook: " style="font-weight: bold;" />
+								<apex:selectList id="pricebookselector" value="{!SelectedPricebook}" multiselect="false" size="1" disabled="true" >
+									<apex:selectOptions value="{!PricebookOptions}" />
+								</apex:selectList>
+							</apex:outputPanel>
+							<apex:outputPanel layout="inline" >
+								<apex:inputText value="{!ProductSearchString}" onkeydown="if(event.keyCode==13){this.blur();actionFunction();}"  />
+							</apex:outputPanel>
+							<apex:outputPanel layout="inline" >
+								<apex:outputPanel layout="inline" >
+									<apex:commandButton action="{!SearchProducts}" value="Search" rerender="searchsection,itemproductselector,showmsg" status="searchstatus" >
+										<apex:param assignTo="{!DisplayStatus}" value="true" />
+									</apex:commandButton>
+								</apex:outputPanel>
+								<apex:outputPanel layout="inline" >
+									<apex:commandButton action="{!ResetSearch}" value="Reset" rerender="searchsection,itemproductselector" >
+										<apex:param assignTo="{!DisplayStatus}" value="false" />
+									</apex:commandButton>
+								</apex:outputPanel>
+							</apex:outputPanel>  
+						</apex:panelGrid>
+
+						<apex:actionStatus id="searchstatus" rendered="{!DisplayStatus}">
+							<apex:facet name="start" >
+								<apex:outputText value="Searching..." />
+							</apex:facet>
+							<apex:facet name="stop" >
+								<apex:outputPanel layout="block" >
+									<apex:outputPanel layout="block" rendered="{!ResultCount > 0}" >
+										<apex:outputPanel id="searchresults" layout="block" style="height: 250px; overflow: scroll" >
+											<apex:pageBlockTable value="{!PricebookProducts}" var="p" >
+												<apex:facet name="footer" >
+													<apex:outputText value="{!ResultCount} active items returned" style="font-style: oblique;" />
+												</apex:facet>
+												<apex:column id="addaction" >
+													<apex:commandLink action="{!AddToOrder}" 
+														value="Create" 
+														rerender="orderitemsection,searchpanel" >
+															<apex:param name="productid" assignTo="{!SelectedAddProduct}" value="{!p.id}" />
+													</apex:commandLink>
+												</apex:column>
+												<apex:column id="addLineaction" >
+													<apex:commandLink action="{!AddToOrder}" 
+														value="Additional Line" 
+														rerender="orderitemsection,searchpanel" >
+														<apex:param name="productid" assignTo="{!SelectedAddProduct}" value="{!p.id}" />
+														<apex:param name="productid2" assignTo="{!SelectedAddProductLine}" value="true" />
+													</apex:commandLink>
+												</apex:column>
+												<apex:column headerValue="Product Name" >
+													<apex:outputField value="{!p.Product2.Name}" />
+												</apex:column>
+												<apex:column headerValue="Product Code" >
+													<apex:outputField value="{!p.Product2.ProductCode}" />
+												</apex:column>
+												<apex:column headerValue="Product Description" >
+													<apex:outputField value="{!p.UnitPrice}" />
+												</apex:column>
+												<apex:column headerValue="Product Description" >
+													<apex:outputField value="{!p.Product2.Description}" />
+												</apex:column>
+											</apex:pageBlockTable>
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<apex:outputText value="{!ResultCount} active items returned"  rendered="{!ResultCount <= 0}" />
+								</apex:outputPanel>
+							</apex:facet>
+						</apex:actionStatus>
+					</apex:pageBlockSection>
+
+					<apex:pageBlockSection id="orderitemsection" title="Order Items" columns="1" rendered="{!TypeSelected}" >
+						<apex:pageBlock id="orderitems" >
+							<apex:pageBlockButtons location="both" >
+								<apex:commandButton action="{!SaveOrderItems}" value="Save"  reRender="orderitemsection" disabled="{!If(orderLineblock == true,true, false)}"/>
+								<!--<apex:commandButton action="{!CancelOrderItems}" value="Cancel" reRender="orderitems,searchpanel,searchresults" />-->
+							</apex:pageBlockButtons>
+
+							<apex:pagemessages /> 
+
+							<apex:pageBlockTable value="{!OrderItems}" var="item" columns="10" rules="all" frame="vsides" style="text-align: center" >
+								<apex:column width="5%" >
+									<apex:panelGrid columns="3" cellpadding="2px" cellspacing="2px" rules="cols" >
+										<apex:commandLink action="{!RemoveFromOrder}" value="Remove" rerender="orderitems"  rendered="{!If(orderLineblock == true,false, true)}">
+											<apex:param name="rItemkey" assignTo="{!RemoveItemKey}" value="{!item.key}" />
+										</apex:commandLink>
+									</apex:panelGrid>
+								</apex:column>
+								<apex:column width="5%" >
+									<apex:panelGrid columns="3" cellpadding="2px" cellspacing="2px" rules="cols" >
+										<!--  <apex:outputLink value="/apex/WarehouseSelection_oli?Name={!item.pBe.Product2.Name}&pbeid={!item.key}" target="_blank"> sel </apex:outputLink>-->
+										<!--   <apex:commandbutton action="{!selectwarehouseaction}" value="Select Warehouse">
+											<apex:param name="rItemkey2" assignTo="{!pbeid}" value="{!item.oitem.id}" />
+										</apex:commandbutton>-->
+										<!-- 5/30/2017      Krishna Prasad        Select ware house for NON-RMA Lines(enhancement for product search by default)-->
+										<apex:commandlink action="{!selectwarehouseaction}" value="Select Warehouse" rendered="{!AND(item.oitem.id !=null,item.oitem.Line_Type__c !='RMA',item.oitem.Line_Type__c !='RMA Loaner')}"   >
+											<apex:param name="rItemkey2" assignTo="{!pbeid}" value="{!item.oitem.id}" />
+										</apex:commandlink>
+									</apex:panelGrid>
+								</apex:column>
+
+								<!-- <apex:column>
+									<apex:outputField value="{!orderItemDeatilsMap[item.oitem.id].Warehouse__c }" rendered="{!item.oitem.id !=null}"  />
+								</apex:column>-->
+								<apex:column headerValue="Product Name" width="25%" >
+									<apex:outputPanel id="productname" >
+										<apex:outputPanel layout="inline" rendered="{!item.hasRuleEdit}" >
+											<apex:selectList id="itemproductselector" value="{!SelectedItemPricebookEntry}" size="1" multiselect="false" >
+												<apex:selectOptions value="{!PricebookEntry}" />
+											</apex:selectList>
+											<apex:commandLink action="{!UpdateOrderItem}" value="Set" rerender="{!$Component.productname}" rendered="{!If(orderLineblock == true,false, true)}">
+												<apex:param name="selecteditem" assignTo="{!SelectedItem}" value="{!item.key}" />
+											</apex:commandLink>
+										</apex:outputPanel>
+										<apex:outputField value="{!item.pBe.Product2.Name}" rendered="{!AND(item.hasRule,NOT(item.hasRuleEdit))}"  />
+										<apex:outputField value="{!item.pBe.Product2.Name}" rendered="{!NOT(item.hasRule)}"  />
+									</apex:outputPanel>
+								</apex:column>
+								<apex:column id="unitcolumn" headerValue="List Price" width="15%" >
+									<apex:outputField id="unitprice" value="{!item.pBe.UnitPrice}" />
+								</apex:column>
+								<apex:column id="unitAsset" headerValue="Asset" width="15%" >
+									<!--<apex:inputField id="unitAssetDetail" value="{!item.oItem.Asset__c}" />-->
+									<apex:inputField id="unitAssetDetail" value="{!item.oItem.SBQQ__Asset__c}" />
+								</apex:column>
+								<apex:column id="unitShippingInstructions" headerValue="Shipping Instructions" width="15%" >
+									<apex:inputField id="ShippingInstructionsDetail" value="{!item.oItem.Shipping_Instructions__c }" />
+								</apex:column>
+								<apex:column headerValue="Quantity" width="25%" >
+									<apex:panelGrid id="iqty" columns="3" cellpadding="2px" cellspacing="2px" >
+										<apex:commandButton value=" -  " action="{!item.decrementQty}" reRender="iqty" disabled="{!item.oItem.Quantity == 1}" />
+										<apex:inputField value="{!item.oItem.Quantity}" />
+										<apex:commandButton value=" + " action="{!item.incrementQty}" reRender="iqty" />
+									</apex:panelGrid>
+								</apex:column>
+								<apex:column headerValue="Line Type" width="15%"  >
+									<apex:inputField value="{!item.oItem.Line_Type__c}" rendered="{!NOT(item.hasRule)}" Required="true" />
+									<apex:outputField value="{!item.oItem.Line_Type__c}" rendered="{!item.hasRule}" />
+								</apex:column>
+								<apex:column headerValue="Unit Price" width="15%" >
+									<apex:inputField value="{!item.oItem.UnitPrice}"  />
+								</apex:column>
+									<apex:column headerValue="Warehouse" width="15%" >
+									<apex:outputLabel value="{!item.oItem.Warehouse__c}"/>
+								</apex:column>
+								{!Inventories}
+							</apex:pageBlockTable>
+						</apex:pageBlock>
+					</apex:pageBlockSection>
+				</apex:outputPanel>
+			</apex:pageBlock>
+
+			<!--warehouse vf code- -------------------->
+    
+			<apex:pageMessages id="errors" />
+
+			<apex:outputPanel id="outerPanel">
+				<apex:pageblock title="Order Line Summary" rendered="{!(OrItems.size != 0)}">
+					<apex:pageblockTable id="OrderLineSummary" value="{!OrItems}" var="oLinedetail">
+						<apex:column headerValue="Product Name" >
+							{!oLinedetail.olItem.product2.name}
+						</apex:column>
+						<apex:column headerValue="Ware house Name" >
+							{!oLinedetail.olItem.Warehouse__c}
+						</apex:column>
+						<apex:column headerValue="Serial Number" >
+							{!oLinedetail.olItem.Serial_Number__c}
+						</apex:column>
+						<apex:column headerValue="Line Type" >
+							{!oLinedetail.olItem.Line_Type__c}
+						</apex:column>
+						<apex:column headerValue="Asset" >
+							<!-- {!oLinedetail.olItem.Asset__r.name} -->
+							{!oLinedetail.olItem.SBQQ__Asset__r.Name}
+						</apex:column>
+						<apex:column headerValue="Shipping Instructions" >
+							{!oLinedetail.olItem.Shipping_Instructions__c}
+						</apex:column>
+					</apex:pageblockTable>
+				</apex:pageblock>
+
+				<apex:pageBlock mode="edit" rendered="{!hidewarehousepageblock}" id="addWareHouse">
+					<table width="100%" border="0">
+						<tr>
+							<td width="200" valign="top">
+								<apex:pageBlock title="Searchby" mode="edit" id="criteria" rendered="{!(displaysumvalues.size != 0)}">
+									<table cellpadding="2" cellspacing="2">
+										<tr>
+											<td style="font-weight:bold;">
+												Warehouse<br/>
+												<apex:inputText value="{!warehouse}" label="Input" onkeydown="if(event.keyCode==13){this.blur();actionFunction();}"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span style="color:red">*Enter Warehouse in Uppercase</span>
+											</td>
+										</tr>
+										<tr>
+											<td style="font-weight:bold;">
+												Lot Number<br/>
+												<apex:inputText value="{!LotNumber}" label="Input" onkeydown="if(event.keyCode==13){this.blur();actionFunction();}"/>
+											</td>
+										</tr>
+										<tr>
+											<td style="font-weight:bold;">
+												Serial Number<br/>
+												<apex:inputText value="{!SerialNumber}" label="Input" onkeydown="if(event.keyCode==13){this.blur();actionFunction();}"/>
+											</td>
+										</tr>
+									</table>
+									
+									<br></br>
+									
+									<div align="center" draggable="false" >
+										<apex:commandButton action="{!runSearch}" value="Search" id="theButton2" style="float:right">
+										<apex:param name="clearPagination" assignTo="{!clearPagination}" value="true"/>
+									</apex:commandButton>
+								</div>
+							</apex:pageBlock>
+						</td>
+						<td valign="top">
+							<apex:pageblock title="Summary">
+								<apex:pageblockTable id="suminvents" value="{!displaysumvalues}" var="suminven" rendered="{!(displaysumvalues.size != 0)}">
+									<apex:column >
+										<apex:actionsupport action="{!inventselect}" event="onclick" Rerender="ResultPanel,commandButtonPanel"> 
+											<input type="radio" name="selectone"/>
+											<apex:param name="selectid" value="{!suminven.warehouseid}">
+										</apex:param>
+									</apex:actionsupport>
+								</apex:column>
+								<apex:column headervalue="Item Number">
+									<apex:outputText value="{!suminven.itemnumber}"></apex:outputText>
+								</apex:column>
+								<apex:column headervalue="Org">
+									<apex:outputText value="{!suminven.org}"></apex:outputText>
+								</apex:column>
+								<apex:column headervalue="Description">
+									<apex:outputText value="{!suminven.description}"></apex:outputText>
+								</apex:column>
+								<apex:column headervalue="Quantity">
+									<apex:outputText value="{!suminven.SumofQuantity}"></apex:outputText>
+								</apex:column>
+								<apex:column headervalue="Reservation Qty">
+									<apex:outputText value="{!suminven.SumofReservedQuantity}"></apex:outputText>
+								</apex:column>
+								<apex:column headervalue="Transaction Qty">
+									<apex:outputText value="{!suminven.SumofTransactQuantity}"></apex:outputText>
+								</apex:column>
+							</apex:pageblockTable>
+
+							<apex:outputText rendered="{!(displaysumvalues.size = 0)}" value="There are no warehouse items to display related to this order item" style="font-weight:600;color:red"/>
+
+								<div align="Center">
+									<apex:outputPanel id="commandButtonPanel" style="float:centre" rendered="{!(displaysumvalues.size != 0)}">
+										<!--<apex:commandButton action="{!saveInventory}" value="Save" id="theButton" style="float:centre" rendered="{!IF(selectvalue == false,true,false)}"/>-->
+										<apex:commandButton action="{!saveInventory}" value="Save" id="theButton" disabled="{!If(selectvalue == true,false, true)}" reRender="outerPanel"/>
+										<apex:commandButton action="{!cancel}" value="Cancel" id="theButton1" reRender="outerPanel"/>
+									</apex:outputPanel>
+								</div>
+							</apex:pageblock>
+							<apex:pageblock id="allinvents" title="Available Inventory Quantity onhand" rendered="{!(displaysumvalues.size != 0)}">
+								<apex:pageblocktable id="allinvents" value="{!Inventories}" var="allinven" style="{!IF(block== false, 'display:none', 'display:block')}">
+									<apex:column headervalue="Set as Primary">
+										<apex:actionsupport action="{!selectinventory}" event="onclick" Rerender="ResultPanel,commandButtonPanel">
+										<input type="radio" name="selectone"/>
+										<apex:param name="invenid" value="{!allinven.Id}"></apex:param>
+									</apex:actionsupport>
+								</apex:column>
+								<apex:column headervalue="Item Number">
+									<apex:outputfield value="{!allinven.ItemNumber__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Description">
+									<apex:outputfield value="{!allinven.Description__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Org">
+									<apex:facet name="header">
+										<apex:commandLink value="Warehouse" action="{!toggleSort}" rerender="allinvents">
+											<apex:param name="sortField" value="warehouse" assignTo="{!sortField}"/>
+										</apex:commandLink>
+									</apex:facet>
+
+									<apex:outputfield value="{!allinven.Org__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Subinventory">
+									<apex:outputfield value="{!allinven.Subinventory__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Locator">
+									<apex:outputfield value="{!allinven.Locator__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Quantity">
+									<apex:outputfield value="{!allinven.Quantity__c}">
+								</apex:outputfield></apex:column>   
+								<apex:column headervalue="Reservation Qty">
+									<apex:outputfield value="{!allinven.ReservationQuantity__c}">
+								</apex:outputfield></apex:column>
+								<apex:column headervalue="Transaction Qty">
+									<apex:outputfield value="{!allinven.TransactQuantity__c}">
+								</apex:outputfield></apex:column>
+								<apex:column headervalue="Lot Number">
+									<apex:facet name="header">
+										<apex:commandLink value="LotNumber" action="{!toggleSort}" rerender="allinvents">
+											<apex:param name="sortField" value="lotnumber" assignTo="{!sortField}"/>
+										</apex:commandLink>
+									</apex:facet>
+									<apex:outputfield value="{!allinven.LotNumber__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Expiration Date">
+									<apex:outputfield value="{!allinven.ExpirationDate__c}"></apex:outputfield> 
+								</apex:column>
+								<apex:column headervalue="Lot Status">
+									<apex:outputfield value="{!allinven.LotStatus__c}"></apex:outputfield>
+								</apex:column>
+								<apex:column headervalue="Master Lot">
+									<apex:outputfield value="{!allinven.MasterLot__c}"></apex:outputfield> 
+								</apex:column>
+								<apex:column headervalue="Serial Number">
+									<apex:facet name="header">
+										<apex:commandLink value="SerialNumber" action="{!toggleSort}" rerender="allinvents">
+											<apex:param name="sortField" value="serialnumber" assignTo="{!sortField}"/>
+										</apex:commandLink>
+									</apex:facet>
+									<apex:outputfield value="{!allinven.SerialNumber__c}"></apex:outputfield> 
+								</apex:column>
+								<apex:column headervalue="Serial Status">
+									<apex:outputfield value="{!allinven.SerialStatus__c}"></apex:outputfield>
+								</apex:column>
+							</apex:pageblocktable>
+
+							<apex:pageBlockButtons location="bottom" style="{!IF(block== false, 'display:none', 'display:block')};float:right">
+								<apex:commandLink value="<<- Previous" action="{!setPrevious}" rendered="{!pagination >= 25}" rerender="allinvents,debug" immediate="true" id="previous"/>
+								<apex:outputText value=" || " rendered="{!pagination >=25 && pagination < totalinvent && inventCount >= 25}"/>
+								<apex:commandLink value="Next ->>" action="{!setNext}" rerender="allinvents,debug" rendered="{!pagination < totalinvent && inventCount >= 25}" immediate="true" id="next" />
+							</apex:pageBlockButtons>
+						</apex:pageblock>
+					</td>
+				</tr>
+			</table>
+		</apex:pageblock>
+
+		<div align="center" draggable="false" >
+			<apex:commandButton action="{!backToOrder}" value="Back To Order" />
+		</div>
+
+	</apex:outputPanel>
+
+	<!--warehouse vf code end ---------------------------------------------------------------->
+	</apex:form>
+</apex:page>

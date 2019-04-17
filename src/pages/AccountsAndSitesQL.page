@@ -1,0 +1,14 @@
+<apex:page standardController="SBQQ__QuoteLine__c">
+
+<input id="hiddenElement" type="hidden" />
+
+<script type="text/javascript">
+  window.onload = setFocus
+  function setFocus() {
+    document.getElementById("hiddenElement").focus();
+  }
+</script>    
+
+<c:AccountsAndSites />
+
+</apex:page>

@@ -1,0 +1,32 @@
+.THIS .login-image{
+    
+}
+.THIS .salesforceIdentityLoginForm2 .inverseTextColor{
+    color: #2b2967!important ;
+}
+.THIS .hero-text{
+    font-size:24px;
+    font-family: 'ProximaNova-Semibold',sans-serif ;
+    font-weight:600 ;
+    color: #131f6b;
+}
+
+.THIS .slds-grid .hero-div{
+    width:80% !important ;
+    margin: auto !important ;
+    padding-top:30px !important ;
+    text-align:center ;
+    padding-bottom: 10px ;
+}
+
+.THIS .slds-grid .hero-div-mobile{
+    width:50% !important ;
+    margin: auto !important ;
+    text-align:center ;
+    padding-bottom: 10px ;
+}
+.THIS .slds-grid .hero-sub-div{
+    
+    width:100% ;
+    text-align:center ;
+}

@@ -1,0 +1,41 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 8/14/2018
+	Description: This lightning component is used to show the complete footer panel for the community. 
+
+	Controller:CommunityNavigationController
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >	<Copa.do US#>
+	8/14/2018			Sunil Kumar Sharma		Initial Creation 				US-0005633
+	02/11/2018			Nomita Walke			Added Site URL to all navigation.	US-0006062
+	12/17/2018			Nomita Walke			Fixed error FontAwesome load. 	US-0006345
+ 	1/29/2019			Vrushabh Katariya		Disposable Case link on Footer		US-0006553
+*********************************************************************************************************
+-->
+
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+  	<!--SFDC Edit<ltng:require styles="{!$Resource.HologicSupportResources + '/HoLogicResources/Font_Awesome/css/font-awesome.css'}"/> -->  
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    <!-- Attribute Declaration-->
+    <aura:attribute name="userInfo" type="Object"/> 
+    <aura:attribute name="configSetting" type="Object"/>
+	<aura:attribute name="IsAssetDetailPage" type="boolean" default= "false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    <div class= "container" style= "background-color: #EEEEEE;">    
+        <aura:if isTrue="{!!equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c) }">
+            <div class= "container1" style= "border-bottom: solid 3px #FFFFFF;height: 70px;padding-top: 20px;">	
+                <c:SocialLinkFooter />
+            </div>
+        </aura:if>
+        <div class= "container2">        
+            <c:MenuLinkFooter IsAssetDetailPage="{!v.IsAssetDetailPage}"/>
+        </div>
+        <div>        
+            <c:CopyRightLinkFooter />
+        </div>
+    </div>
+</aura:component>

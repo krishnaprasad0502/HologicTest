@@ -1,0 +1,32 @@
+.THIS .ButtonStyle{
+    width:120px;
+}
+.THIS .ButtonStyle1{
+    width:150px;
+}
+
+.THIS .slds-textarea {
+    font-size: 14px !important;
+    font-family: ProximaNova-rg,sans-serif !important;
+}
+.THIS button.slds-button_brand:hover{
+    background-color:transparent;
+    color:#008aad;
+    border-color:#285e8e;
+    cursor:pointer;
+}
+.THIS .ButtonStyle2:hover{
+    background-color:transparent !important;
+    color:#008aad;
+    border-color:#285e8e;
+    cursor:pointer;
+}
+.THIS button.slds-button_neutral{
+    background-color: #008aad;
+}
+.THIS button.slds-button_brand{
+    background-color: #008aad;
+    font-weight: 600;
+    font-family: ProximaNova-Semibold,sans-serif !important;
+    font-size: 12px;
+}

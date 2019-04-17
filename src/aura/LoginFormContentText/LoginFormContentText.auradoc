@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>
+    	This component is created to show the support help text on community login screen.
+    </aura:description>
+	
+</aura:documentation>

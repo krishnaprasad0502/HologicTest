@@ -1,0 +1,68 @@
+<!--
+********************************************************************************************************************
+    Author       : Sunil Kumar Sharma
+    Company      : Hexaware Technologies
+    Created Date : 02/11/2019 
+ 	Description  : This component is used to enable /disable view all cases on account relationship object.  
+
+    History:
+    <Date>         <Author Name>            <Brief Description of Change>    <Copa.do US#>
+    02/11/2018	   Sunil					Initial Creation				  US-0006703	
+********************************************************************************************************************
+-->
+<aura:component controller="UpdateViewCaseController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="callBackMessage" type="String" />
+    
+    <!--declare aura attributes-->
+    <aura:attribute name="objInfoForPicklistValues" type="AccountContactRelation" default="{sobjectType : 'AccountContactRelation'}" description="object information to fetch picklist values"/>
+    <aura:attribute name="ratingPicklistOpts" type="string[]" description="store picklist options values"/> 
+    <aura:attribute name="showSaveCancelBtn" type="boolean"/>
+    <aura:attribute name="showErrorClass" type="boolean" default="false"/>
+    <aura:attribute name="sNo" type="string" />
+    <aura:attribute name="singleRec" type="sobject" default="{'sobjectType' : 'AccountContactRelation',
+                                                             'Account.Name' : '',
+                                                             'Community_View_All_Cases__c' : ''
+                                                             }"/>
+    <aura:attribute name="ratingEditMode" type="boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--Table Row Start-->  
+    <tr>
+        <td><div class="slds-truncate">{!v.sNo}</div></td>
+        
+        <td>
+            <div class="slds-truncate">{!v.singleRec.Account.Name}</div>
+        </td>
+        
+        <td ondblclick="{!c.inlineEditRating}" class="slds-cell-edit">
+            <span class="slds-grid slds-grid_align-spread">
+                <!-- show input and output section based on boolean flag --> 
+                <aura:if isTrue="{!v.ratingEditMode == false}">
+                    <span class="slds-truncate" title="">{!v.singleRec.Community_View_All_Cases__c}</span>
+                    <button onclick="{!c.inlineEditRating}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small" tabindex="0" title="View All Cases">
+                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit"/>
+                    </button>
+                    
+                    <!-- Inline Edit Section in else case-->  
+                    <aura:set attribute="else">
+                        <section  tabindex="0" class="slds-popover slds-popover_edit" role="dialog" style="position: absolute; top: 0px">
+                            <div class="slds-popover__body">
+                                <div class="slds-form-element slds-grid slds-wrap">
+                                    <div class="slds-form-element__control slds-grow">
+                                        <ui:inputSelect aura:id="accRating"
+                                                        class="slds-select inputFieldWidth"
+                                                        blur="{!c.closeRatingBox}"
+                                                        change="{!c.onRatingChange}"
+                                                        value="{!v.singleRec.Community_View_All_Cases__c}"
+                                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <span id="form-end" tabindex="0"></span>
+                        </section>  
+                    </aura:set>  
+                </aura:if> 
+            </span>
+        </td> 
+    </tr>
+</aura:component>

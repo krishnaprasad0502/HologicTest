@@ -1,0 +1,190 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Distributes waypoints across teams based on the allocation.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+12/03/2018      Mani Sundaresan       Initial Creation ()
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Swarm_Zone__c" extensions="waypointAssignment" lightningStylesheets="true" standardStylesheets="false" docType="html-5.0">
+    <!-- Lightning Design System-->
+    <apex:slds />
+    
+    <apex:form id="frm" >
+        <center><b><apex:outputText value="Waypoint Distribution" styleClass="head1"></apex:outputText></b></center>
+        <apex:pageBlock id="pgblk1" >
+            <apex:pageMessages id="msg"/>
+            <apex:outputPanel styleClass="grey" layout="block" id="pgblk">
+                <div align="center">
+                    <apex:actionStatus id="loading" style="align:center;">
+                        <apex:facet name="start">
+                            <apex:image value="{!URLFOR($Resource.LoadingImage)}" title="Processing..."/>
+                        </apex:facet>
+                        <apex:facet name="stop">     
+                            <apex:outputPanel id="oPanel" >
+                                <!---------------------- Displaying Swarm Zone Details-------------------------------->
+                                <div align="left">
+                                    <apex:pageBlockSection collapsible="false" title="Swarm Zone and Team Details" >
+                                        <apex:outputField value="{!sz.Name}"/>
+                                        <apex:outputField value="{!sz.Swarm_Territory__r.Name}"/>
+                                        <apex:inputField value="{!sz.Start_Call_Date__c}"/>
+                                        <apex:inputField value="{!sz.Start_Optimal_Date__c}"/>
+                                        <apex:outputField value="{!sz.Num_of_Waypoints__c}"/>
+                                    </apex:pageBlockSection></div><br/>
+                                <!----------------------------------------------------------------------------------->
+                                <!-------------------- Swarm Team Details - Editable--------------------------------->
+                                <apex:pageBlockTable value="{!szt}" var="team" columns="7" id="pgtbl" style="width:100%" styleClass="slds-table slds-table_cell-buffer">
+                                    <apex:variable value="{!0}" var="cnt"/>
+                                    <apex:column style="width:350px">
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>User</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.User__c}"/>
+                                        <apex:param value="{!rowNum+1}" />  
+                                    </apex:column>
+                                    <apex:column style="width:50px">
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Sequence#</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Sequence__c}"/>
+                                    </apex:column>
+                                    <apex:column >
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Monday</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Day_Monday__c}" style="width:95%"/>
+                                    </apex:column>
+                                    <apex:column >
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Tuesday</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Day_Tuesday__c}" style="width:95%"/>
+                                    </apex:column>
+                                    <apex:column >
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Wednesday</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Day_Wednesday__c}" style="width:95%"/>
+                                    </apex:column>
+                                    <apex:column >
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Thursday</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Day_Thursday__c}" style="width:95%"/>
+                                    </apex:column>
+                                    <apex:column >
+                                        <div class="slds-truncate">
+                                            <apex:facet name="header"><center>Friday</center></apex:facet>
+                                        </div>
+                                        <apex:inputField value="{!team.Day_Friday__c}" style="width:95%"/>&nbsp;
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:commandLink style="font-size:15px; font-weight:bold; text-align:center;color:red;" value="X" action="{!delRow}" reRender="pgtbl">
+                                            <apex:param name="index" value="{!cnt}"/>
+                                        </apex:commandLink>
+                                        <apex:variable var="cnt" value="{!cnt+1}"/>
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                                <!----------------------------------------------------------------------------------->
+                            </apex:outputPanel>
+                        </apex:facet>   
+                    </apex:actionStatus>
+                </div>
+            </apex:outputPanel>
+            <!--------------Custom link to add new team members--------------------------------->
+            <apex:commandLink value="Add Row" action="{!addRow}"  reRender="pgtbl"/><br/><br/>
+            <!---------------------------------------------------------------------------------->
+            <!------------------------------------------Custom buttons----------------------------------------------->
+            <apex:outputPanel id="btns" >
+                <div style="text-align: center">
+                    <apex:commandButton value="Allocate" action="{!waypointDistribution}" status="loading" reRender="msg,wyptblk,pgblk,btns,report"/>
+                    &nbsp;&nbsp;
+                    <apex:commandButton value="Cancel" action="{!cancel}" rendered="{!NOT(allocated)}"/>
+                    <apex:commandButton value="Back to Swarm Zone!" action="{!cancel}" rendered="{!allocated}"/>
+                </div>
+            </apex:outputPanel><br/><br/>
+            <!------------------------------------------------------------------------------------------------------->
+            
+            <!----------------------------------Display Report Chart------------------------------------------------>
+             <apex:outputPanel id="report" >
+                 <analytics:reportChart ReportId="{!$Setup.Configuration_Settings__c.Swarm_Zone_Lightning_Page_Report__c}" showRefreshButton="true" size="huge" cacheResults="false" filter="{column:'FK_CUSTENT_ID', operator:'equals', value:'{!sz.Id}'}" />
+             </apex:outputPanel>
+            <!--------------------------------- Swarm Waypoints List Display ---------------------------------------->
+            <!--<apex:outputPanel styleClass="grey" layout="block" id="wyptblk">-->
+            <!--    <apex:pageBlockSection id="sec1" title="Swarm Waypoints" columns="1" collapsible="true">
+                    <apex:outputPanel layout="block" style="overflow:auto;height:350px" id="op2">
+                        <apex:pageblockTable value="{!swpList}" var="waypoint" id="wypt" style="width:100%" styleClass="slds-table slds-table_cell-buffer">
+                            <apex:column >
+                                <div class="slds-truncate">
+                                    <apex:facet name="header">Name</apex:facet>
+                                </div>
+                                <apex:outputField value="{!waypoint.Name}"/>
+                            </apex:column>
+                            <apex:column >
+                                <div class="slds-truncate">
+                                    <apex:facet name="header">Order</apex:facet>
+                                </div>
+                                <apex:outputField value="{!waypoint.Order__c}"/>
+                            </apex:column>
+                            <apex:column >
+                                <div class="slds-truncate">
+                                    <apex:facet name="header">Target Call Date</apex:facet>
+                                </div>
+                                <apex:outputField value="{!waypoint.Target_Call_Date__c}"/>
+                            </apex:column>
+                            <apex:column >
+                                <div class="slds-truncate">
+                                    <apex:facet name="header">Optimal Date</apex:facet>
+                                </div>
+                                <apex:outputField value="{!waypoint.Optimal_Date__c}"/>
+                            </apex:column>
+                            <apex:column >
+                                <div class="slds-truncate">
+                                    <apex:facet name="header">Owner</apex:facet>
+                                </div>
+                                <apex:outputField value="{!waypoint.Owner.Name}"/>
+                            </apex:column>
+                            
+                        </apex:pageblockTable>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                <script>twistSection(document.getElementById('{!$Component.frm.pgblk1.sec1}').getElementsByTagName('img')[0]);</script> -->
+            <!--</apex:outputPanel>-->
+            <!------------------------------------------------------------------------------------------------------->
+        </apex:pageBlock>
+    </apex:form>
+    
+    <!----------------------------------------------------------------CSS section------------------------------------>
+    <style type="text/css">
+        .bPageBlock .pbTitle {
+        width: 100%;    
+        text-align: center;
+        }
+        body .bPageBlock .pbBody .grey .pbSubheader{
+        background-color:#c0c0c0;
+        }
+        .spinner{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-image: url("{!URLFOR($Resource.LoadingImage)}");
+        background-size: 16px;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        z-index: 9999999;
+        opacity: 1;
+        }
+        .hideDropdown select{
+        visibility: hidden !important;
+        display: inline-flex !important;
+        }
+        .head1 {
+        font-size: 25px;
+        }
+    </style>
+    <!----------------------------------------------------------Javascript Section---------------------------------->
+    
+    <!-------------------------------------------------------------------------------------------------------------->
+    
+</apex:page>

@@ -1,0 +1,10 @@
+.THIS .ButtonStyle{
+    width:95% ;
+    
+    font-size: 10px;
+}
+
+.THIS a.clickable{
+       cursor: pointer;
+       cursor: hand;
+   }

@@ -1,0 +1,54 @@
+<!--
+********************************************************************************************************************
+    Author       : Sunil Kumar Sharma
+    Company      : Hexaware Technologies
+    Created Date : 02/11/2019 
+ 	Description  : This component is used to enable /disable view all cases on account relationship object.  
+
+    History:
+    <Date>         <Author Name>            <Brief Description of Change>    <Copa.do US#>
+    02/11/2018	   Sunil					Initial Creation				  US-0006703	
+********************************************************************************************************************
+-->
+
+<aura:component controller="UpdateViewCaseController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <!--Init handler which is call initRecords js function on component Load-->  
+    <aura:handler name="init" value="{!this}" action="{!c.initRecords}"/>
+    
+    <!--declare aura attributes-->
+    <aura:attribute name="AccountList" type="AccountContactRelation[]" description="store account records list"/>
+    <aura:attribute name="showSaveCancelBtn" type="boolean" default="false" description="flag for rendered save and cancel buttons in aura:if "/>
+    <aura:attribute name="recordId" type="Id" />
+    
+    <div class="slds-m-around_large">
+        <!-- use aura:if for show/hide buttons --> 
+        
+        
+        <!--Data Table-->     
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr class="slds-text-title--caps">
+                    <th scope="col"><div class="slds-truncate" title="Id">S.No</div></th> 
+                    <th scope="col"><div class="slds-truncate" title="Account Name">Account Name</div></th>
+                    <th scope="col"><div class="slds-truncate" title="Website">View All Cases</div></th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <aura:iteration items="{!v.AccountList}" var="acc" indexVar="sNo">
+                    
+                    <c:UpdateViewCases singleRec="{!acc}"
+                                     showSaveCancelBtn="{!v.showSaveCancelBtn}"
+                                     sNo="{!sNo + 1}" />
+                </aura:iteration>
+            </tbody> 
+        </table>
+        <aura:if isTrue="{!v.showSaveCancelBtn}">
+            <!--button for save and cancel Record after Inline Edit-->
+            <lightning:buttonGroup class="slds-m-around_medium">
+                <lightning:button label="Cancel" onclick="{!c.cancel}"/>
+                <lightning:button label="Save" onclick="{!c.Save}" />
+            </lightning:buttonGroup>
+        </aura:if> 
+    </div>
+</aura:component>

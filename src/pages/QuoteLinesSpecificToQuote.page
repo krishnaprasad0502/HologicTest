@@ -1,0 +1,63 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="QuoteLinesSpecificToQuoteClass">
+  <apex:form > <apex:pageBlock id="searchResults5" >
+    <apex:pageBlockTable value="{!QuoteLineList}" var="QL" rendered="{!QuoteLineList.size>0}" >
+        <apex:column headerValue="Name"> <apex:outputLink value="/{!QL.id}">{!QL.name}</apex:outputLink></apex:column>
+        
+         <apex:column headervalue="Include In Order">
+            <apex:actionRegion >
+		              <apex:outputField value="{!QL.Include_In_Order__c}">
+                	 	      <apex:inlineEditSupport event="ondblClick" showOnEdit="saveButton,cancelButton" resetFunction="resetInlineEdit"/>
+		              </apex:outputField>
+		        </apex:actionRegion>
+        </apex:column>
+        <apex:column headervalue="Received By Integration">
+            <apex:actionRegion >
+		              <apex:outputField value="{!QL.Received_By_Integration__c}">
+                	 	      <apex:inlineEditSupport event="ondblClick" showOnEdit="saveButton,cancelButton" resetFunction="resetInlineEdit"/>
+		              </apex:outputField>
+		        </apex:actionRegion>
+        </apex:column>
+        <!--<apex:column headervalue="Integration Message">
+           <apex:outputText value="{!left(QL.Integration_Message__c,30)}"/>
+        </apex:column>-->
+        <apex:column value="{!QL.Integration_Message__c}"/>
+        <apex:column value="{!QL.Agreed_Price_Line__c}"/>
+        <apex:column value="{!QL.SBQQ__Product__c}"/>
+        <!--<apex:column headervalue="Sold to Account ">
+            <apex:outputText value="{!Quoteaccnumber}"/> 
+            
+        </apex:column>-->
+         <apex:column headervalue="Sold to Account">
+            <apex:outputField value="{!SBQQ__Quote__c.SBQQ__Account__r.Parent_Account_Number__c }">
+            </apex:outputField>
+        </apex:column>
+        <apex:column headervalue="Invoice Account Number">
+            <apex:outputField value="{!QL.BillTo_Site__r.Account__r.Parent_Account_Number__c}">
+            </apex:outputField>
+        </apex:column>
+        <!--<apex:column value="{!QL.BillTo_Site__r.Account__r.Parent_Account_Number__c}"/>-->
+        <apex:column value="{!QL.BillTo_Site__c}"/>
+        <apex:column value="{!QL.BillTo_Site__r.Oracle_Party_Site_Number__c}"/>
+        <apex:column headervalue="Shipto Account Number">
+            <apex:outputField value="{!QL.ShipTo_Site__r.Account__r.Parent_Account_Number__c}">
+            </apex:outputField>
+        </apex:column>
+        <!--<apex:column value="{!QL.ShipTo_Site__r.Account__r.Parent_Account_Number__c}"/>-->
+        <apex:column value="{!QL.ShipTo_Site__c}"/>
+        <apex:column value="{!QL.ShipTo_Site__r.Oracle_Party_Site_Number__c}"/>
+             
+        </apex:pageBlockTable>
+      
+                <apex:commandButton action="{!SaveQuoteLines}" id="saveButton" value="Save" rendered="{!QuoteLineList.size>0}"/>
+                <apex:commandButton oncomplete="window.location.href=window.location.href" id="cancelButton" value="Cancel" rendered="{!QuoteLineList.size>0}"/>
+       <apex:commandButton value="Previous" rendered="{!QuoteLineList.size>0}" rerender="searchResults5" action="{!previous}" disabled="{!prev}" id="previous" />
+<apex:commandButton value="Next" rendered="{!QuoteLineList.size>0}" rerender="searchResults5" action="{!next}" disabled="{!nxt}" id="next"/> 
+      <apex:commandButton value="Back To Quote" action="{!ReturnToQuote}" /> 
+      
+      <apex:pageBlockSection rendered="{!QuoteLineList.size<=0}">
+        <b> There are No Quote Lines to Display for the Selected Quote.</b>
+        </apex:pageBlockSection>
+    
+    </apex:pageBlock>
+      </apex:form> 
+</apex:page>

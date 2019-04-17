@@ -1,0 +1,12 @@
+<!------------------------------------------------------------
+Author:         Krishna Prasad
+Company:        Apps Associates
+Description:    Validating the order whether it contains pricebook or not.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+05/05/2017      Krishna Prasad       Initial Creation(US-0002725)
+------------------------------------------------------------>
+<apex:page standardController="Order" extensions="OrderItemProductSearchWithWarehouse" showHeader="true" sidebar="false" action="{!pageredirect}">
+
+</apex:page>

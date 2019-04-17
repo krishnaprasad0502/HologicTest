@@ -1,0 +1,183 @@
+.THIS #sfdc_username_container{
+    margin-bottom:10px;
+    padding: 12px;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS #sfdc_nickname_container{
+    margin-bottom:10px;
+    padding: 12px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS #sfdc_email_container{
+    margin-bottom:10px;
+    padding: 12px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS #sfdc_extrafield_container{
+    margin-bottom:10px;
+    padding: 12px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS #sfdc_user{
+    float:left;
+    width:23px;
+    height:25px;
+    padding-top:1px;
+    padding-left:2px;
+    margin:0px;
+
+}
+
+.THIS #sfdc_lock{
+    float:left;
+    width:23px;
+    height:25px;
+    padding-top:1px;
+    padding-left:2px;
+    margin:0px;
+}
+
+.THIS  .login-icon {
+    color:#ccc;font-size:22px;
+}
+
+.THIS #sfdc_password_container{
+    margin-bottom:10px;
+    padding: 12px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS #sfdc_confirm_password_container{
+    padding: 12px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.THIS  button.sfdc_button {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: white;
+    background-color: #359cb6;
+    border-color: #357ebd;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.42857143;
+    border-radius: 2px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.THIS .slds-select{
+    height:40px !important;
+    font:400 13.3333px ProximaNova-Semibold,sans-serif;
+}
+
+.THIS  button:hover {
+    background-color:#008aad;
+    border-color:#008aad;
+    cursor:pointer;
+}
+
+.THIS  input {
+    border: 0px solid transparent;
+    width: 100%;
+    border: 1px solid #CCC;
+    -webkit-appearance: none;
+    font-size: 17px;
+    height:40px;
+}
+
+.THIS #sfdc_forgot{
+    font-family: 'Open Sans', 'sans-serif';
+    font-weight:300;
+    font-size: 14px;
+    margin-top: 10px
+}
+
+.THIS  #error {
+    text-align: center;
+    color:#FF0000;
+}
+
+.THIS  a {
+    color:#008AAD;
+    text-decoration: none;
+}
+.THIS  a:hover {
+    color:#008AAD;
+    text-decoration: none;
+}
+
+.THIS input[type="checkbox"] {
+	margin: 7px 10px 0 0;
+    width: auto;
+    vertical-align: middle;
+    width: 15px;
+    height: 15px;
+    float: left;
+}
+
+.THIS input[type="checkbox"]:checked {
+    border: 1px solid ;
+}
+
+.THIS input[type="checkbox"]:checked:after {
+    
+    display: block;
+    position: relative;
+    content: '';
+    left: 2px;
+    top: 2px;
+    height: 6px;
+    width: 10px;
+    border-bottom: 2px solid #354452;
+    border-left: 2px solid #354452;
+    transform:rotate(-45deg);
+}
+
+.THIS input[type="checkbox"].disabled {
+    opacity: 0.35;
+}
+
+.THIS input[type="checkbox"] + label {
+    vertical-align: middle;
+    width: 97%;
+    float: left;
+}
+.THIS .slds-form_stacked{
+    line-height:5px;
+}
+.THIS .slds-form-element__label{
+    color:#333333 !important;
+}
+.THIS button.sfdc_page_button_disable{
+    background-color: #ADABAB;
+    pointer-events: none;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}

@@ -1,0 +1,94 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordid"
+                controller="Case_Address_Scratchpad">
+    
+    <aura:attribute name="case" type="Case"/>
+    <aura:attribute name="error" type="String"/>
+
+    <aura:attribute name="hasCustomerInfo" type="Boolean" default="false"/>
+    <aura:attribute name="customerInfo" type="Object"/>
+    <aura:attribute name="customerName" type="String" default="-"/>
+    <aura:attribute name="customerAddress" type="String" default="-"/>
+    <aura:attribute name="customerCity" type="String" default="-"/>
+    <aura:attribute name="customerState" type="String" default="-"/>
+    <aura:attribute name="customerZip" type="String" default="-"/>
+    <aura:attribute name="customerCountry" type="String" default="-"/>
+
+    <aura:attribute name="hasLocationInfo" type="Boolean" default="false"/>
+    <aura:attribute name="locationInfo" type="Object"/>
+    <aura:attribute name="locationName" type="String" default="-"/>
+    <aura:attribute name="locationAddress" type="String" default="-"/>
+    <aura:attribute name="locationCity" type="String" default="-"/>
+    <aura:attribute name="locationState" type="String" default="-"/>
+    <aura:attribute name="locationZip" type="String" default="-"/>
+    <aura:attribute name="locationCountry" type="String" default="-"/>
+
+    <aura:attribute name="headerSiteName" type="String" default="-"/>
+    <aura:attribute name="headerName" type="String" default="-"/>
+    <aura:attribute name="headerPhone" type="String" default="-"/>
+    <aura:attribute name="headerDate" type="String" default="-"/>
+    <aura:attribute name="headerCaseNumber" type="String" default="-"/>
+    <aura:attribute name="headerModel" type="String" default="-"/>
+    <aura:attribute name="headerSerialNumber" type="String" default="-"/>
+    <aura:attribute name="headerIntro" type="String" default="---"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-p-horizontal--small">
+        <p class="slds-text-heading--small address addressType">Header:</p>
+        <p class="address addressInfo">
+            <strong>To</strong>: {!v.headerName}
+        </p>
+        <p class="address addressInfo intro">
+            <strong>Site Name</strong>: {!v.headerSiteName}
+            <br/><strong>Phone</strong>: <ui:outputPhone value="{!v.headerPhone}"/>
+            <br/><strong>Date</strong>: {!v.headerDate}	
+        </p>
+        <p class="address addressInfo intro">
+            <strong>Case#</strong>: {!v.headerCaseNumber}
+            <br/><strong>Model</strong>: {!v.headerModel}
+            <br/><strong>Serial#</strong>: {!v.headerSerialNumber}
+        </p>
+        <p class="address addressInfo intro">
+            Hologic, Inc. (“Hologic”) requires a hard copy Purchase Order (“PO”) referencing the Case {!v.headerCaseNumber} listed above or this form completed in its entirety to initiate billable services. Upon receipt of either, your request for service will be initiated. Services will be billed at the prevailing rate on the date service is provided. Customer's signature below or Hologic's receipt of Customer's PO indicates acceptance of the Hologic Terms and Conditions set forth herein. Customer agrees that any terms and conditions contained in any Customer documentation including Customer's PO are hereby rejected and of no force and effect.            
+        </p>
+
+        
+        <p class="slds-text-heading--small address addressType">Bill to:</p>
+        <p class="address addressInfo">
+            <aura:if isTrue="{!v.hasCustomerInfo}">
+                {!v.customerName}
+                <br/>{!v.customerAddress}
+                <br/>{!v.customerCity}&nbsp;
+                    {!v.customerState}&nbsp; 
+                    {!v.customerZip}
+                <br/>{!v.customerCountry}
+            	<aura:set attribute="else">
+	            	<em>No billing address information is available.</em>
+                </aura:set>
+            </aura:if>
+        </p>
+        
+        <p class="slds-text-heading--small address addressType"><strong>Unit Location:</strong></p>
+        <p class="address addressInfo">
+            <aura:if isTrue="{!v.hasLocationInfo}">
+                {!v.locationName}
+                <br/>{!v.locationAddress}
+                <br/>{!v.locationCity}&nbsp;
+                    {!v.locationState}&nbsp;
+                    {!v.locationZip}
+                <br/>{!v.locationCountry}
+                <aura:set attribute="else">
+	            	<em>No unit location information is available.</em>
+                </aura:set>                    
+            </aura:if>
+        </p>
+    </div>
+    
+    <!-- Display Lightning Data Service errors, if any -->
+    <aura:if isTrue="{!not(empty(v.error))}">
+        <div class="recordError">
+            <lightning:icon iconName="utility:warning" size="xx-small" alternativeText="Query error"/> {!v.error}
+        </div>
+    </aura:if>
+ 
+</aura:component>

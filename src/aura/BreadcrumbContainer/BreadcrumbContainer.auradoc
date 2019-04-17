@@ -1,0 +1,5 @@
+<aura:documentation>
+	<aura:description>
+        This component is used to show the breadcrumbs on community discussion forum pages.
+    </aura:description>
+</aura:documentation>

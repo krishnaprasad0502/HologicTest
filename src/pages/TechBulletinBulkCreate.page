@@ -1,0 +1,10 @@
+<apex:page controller="TechBulletinBulkCreate" action="{!determineCreateType}">
+    <apex:form style="padding: 20px;">
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!remainingCount > 0}">
+        	<apex:commandButton action="{!determineCreateType}" value="Create more" style="margin: 20px 0 0 20px;"/>
+        	<br/>
+        </apex:outputPanel>
+        <apex:commandButton action="{!redirect}" value="Return to Tech Bulletin" style="margin: 20px;"/>
+    </apex:form>
+</apex:page>

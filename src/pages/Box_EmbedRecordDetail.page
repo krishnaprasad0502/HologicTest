@@ -1,0 +1,53 @@
+<!--
+/**********************************************************************************************************************
+    Author 		 : Nikhil Mutyam
+    Company 	 : Hexaware Technologies
+	Created Date : 8/13/2018 7:30 AM
+    Description  : Visualforce page to display embedded box folder for the Article detail page.
+
+    History:
+    <Date>         	<Author Name>       	<Brief Description of Change> 	<Copa.do US#>
+	10/9/2018 	    Nikhil Mutyam			Initial Creation				US-0005861
+	12/10/2018		Sunil Sharma			Fix to show attachments in IE	US-0006258
+**********************************************************************************************************************/
+-->
+
+<apex:page sidebar="false" showHeader="false" controller="Box_EmbedRecordDetailController" standardStylesheets="false" action="{!FetchBoxDetails}" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <script src="https://cdn01.boxcdn.net/polyfills/core-js/2.5.3/core.min.js"></script>
+    <style type="text/css">
+        .be-search{
+        	display:none;
+        }
+        .be-logo{
+        	display:none;
+        }
+        .be-header{
+        	display:none;
+        }
+        .be-breadcrumb{
+        	display:none;
+        }
+    </style>
+    <head>    
+        <apex:stylesheet value="{!URLFOR($Resource.Community_Box_Styling, '/BoxStyling/explorer.css')}"/>
+        <script src="{!URLFOR($Resource.Community_Box_Styling, '/BoxStyling/explorer.js')}" type="text/javascript"/>
+    </head>  
+
+    <title>Box Content Explorer Demo</title>
+    <body>
+        <apex:pageBlock Id="PBlock1" rendered="{!displayError}">
+<!--             <apex:pageMessage summary="{!$Label.Community_Box_Folder_Error}" severity="error" strength="3" /> -->
+        </apex:pageBlock>  
+        <apex:pageBlock Id="PBlock2" rendered="{!!displayError}">    
+        	<div class="container" style="height:600px"></div>
+            <script>
+                var folderId = '{!FolderId}';
+                var accessToken = '{!AToken}';
+                var contentExplorer = new Box.ContentExplorer();
+                contentExplorer.show(folderId, accessToken, {
+                    container: '.container'
+                });
+            </script>
+		</apex:pageBlock>    
+    </body>    
+</apex:page>

@@ -1,0 +1,15 @@
+<design:component>
+	<design:attribute name="MenuType" label="Menu Type" datasource="PRODUCT INFORMATION, SERVICE REQUESTS,SERVICES, COMMUNITY, ABOUT HOLOGIC SUPPORT, CONTACT INFORMATION, REPORTS, QUICK LINKS,Breast Health,Skeletal Health, CONTACT US,Knowledgebase,Products,Careers,About,Corporate Site,ADMINISTRATION" default="PRODUCT INFORMATION" description="Select Manu Type" />
+    <design:attribute name="MarginTop" label="Margin Top" description="Apply Margin Top for Menu Headers" />
+	<design:attribute name="CustomHeaderText" label="Custom Header Name" description="Show Custom header name" />
+	<design:attribute name="ShowCustomHeader" label="Show Custom Header" description="Show Custom header name" />
+	<design:attribute name="IsFooterMenu" label="Is Footer Menu" description="True if menu is used in footer" />
+	<design:attribute name="IsHeaderMenu" label="Is Header Menu" description="True if menu is used in header." />
+	<design:attribute name="IsHeroMenu" label="Is Hero Menu" description="True if menu is used in hero section." />
+    <design:attribute name="ShowQuickLinks" label="Show Quick Links" description="Check to See Quick Links Header" />
+    <design:attribute name="ParameterLabel" Label="Parameter Label" description="paramter label of data category" />
+    <design:attribute name="ParameterValue" Label="Parameter Value" description="paramter value of data category" />
+    <design:attribute name="PageType" label="Page Type" datasource="AssetDetail, CaseDetail, ProductDetail" default="" description="Select Page Type" />
+    <design:attribute name="CaseListViewURL" Label="Case List View URL" default="#" description="Enter Case List View URL"/>
+    <design:attribute name="SAListViewURL" Label="Service Appointment List View URL" default="#" description="Enter SA List View URL" />
+</design:component>

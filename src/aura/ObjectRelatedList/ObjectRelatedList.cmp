@@ -1,0 +1,29 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 12/10/2018
+	Description  : This lightning component is used to show the asset list based on the product community product description. 
+
+	Controller:ObjectRelatedListController
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >   		<Copa.do US#>
+	12/10/2018			Sunil Kumar Sharma		Initial Creation 						US-0006257 
+*********************************************************************************************************
+-->
+<aura:component controller="ObjectRelatedListController"  implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<aura:attribute type="Asset[]" name="assetList"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="communityDescription" type="String"/>
+    <aura:attribute name="mydata" type="Object"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.fetchAssets}"/>
+    
+    <lightning:datatable data="{! v.assetList}" 
+                         columns="{! v.mycolumns }" 
+                         keyField="Id"
+                         hideCheckboxColumn="true"
+                         class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal"/>
+</aura:component>

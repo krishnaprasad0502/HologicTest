@@ -1,0 +1,19 @@
+.THIS .header1{
+    font-size:22px;
+    font-family: 'ProximaNova-Bold',sans-serif ;
+    font-weight: bold;
+    color: #131f6b
+}
+.THIS .header2{
+    font-size:15px;
+    font-family: 'ProximaNova-Bold',sans-serif ;
+    font-weight: bold;
+    color: #131f6b;
+    padding-bottom: 8px;
+}
+.THIS .content-text{
+    font-size:13px;
+    font-family: 'ProximaNova-rg',sans-serif ;
+    color: #131f6b
+    
+}

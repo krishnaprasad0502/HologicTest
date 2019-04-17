@@ -1,0 +1,89 @@
+@media(max-width:500px){
+    .THIS .hidden{
+        display : none !important;
+    }
+}
+
+.THIS .headlineTitleText {
+    color: #131F6B !important;
+    font-size: 22px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight: bold;
+    line-height: 15px;
+}
+
+.THIS .stepTitle {
+    color: #131F6B !important;
+    font-size: 15px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 15px;
+}
+
+.THIS .tableHeaders {
+    color: #131F6B !important;
+    font-family: ProximaNova-bold,sans-serif !important;
+    font-size: 12px;
+    line-height: 13px;
+    font-weight: bold;
+}
+
+.THIS button:hover {
+    background-color: transparent;
+    color: #008aad;
+    border-color: #285e8e;
+    cursor: pointer;
+}
+
+.THIS button.reportButton {
+    background-color: #008aad;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    color: #ffffff;
+    border: solid 1px;
+    display: inline-block;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 5px;
+}
+
+.THIS .tableData{
+    color: #333333 !important;
+    opacity: 100%;
+    font-size: 13px;
+    font-family: ProximaNova-Light,sans-serif;
+}
+
+.THIS .slds-input-has-icon .slds-input__icon {
+    width: 33px !important;
+    height: 32.5px !important;
+    margin-top:0px !important;
+    top:0% !important ;
+    background-color:#008aad!important ;
+    color:white ;
+    border-radius: 0rem;
+    border-top:2px bold ;
+    right:0px !important ;
+}
+
+.THIS .slds-lookup__search-input{
+    min-height: calc(2rem + 2px);
+    border-radius: 0rem;
+    font-size:13px ;
+    border-top: 2px solid #d4d4d4 !important;
+    border-left: 2px solid #d4d4d4 !important;
+}
+.THIS .slds-lookup__search-input::-webkit-input-placeholder { /* WebKit browsers */
+  font-size: 1em;
+}
+
+.THIS hr {
+    margin: 0.1rem 0;
+}
+
+.THIS .report-buttons{
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  margin-right:30px;
+}

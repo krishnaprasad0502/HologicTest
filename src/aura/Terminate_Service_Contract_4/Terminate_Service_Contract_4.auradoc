@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>Documentation</aura:description>
+	<aura:example name="TerminateContractButton" ref="Terminate_Service_Contract_Button" label="Label">
+		A single-use button, redirecting the user to the legacy Service Contract Termination APEX page.
+	</aura:example>
+</aura:documentation>

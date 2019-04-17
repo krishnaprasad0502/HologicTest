@@ -1,0 +1,118 @@
+<!--
+********************************************************************************************************************
+	Author 		 : Sunil Kumar Sharma
+    Company 	 : Hexaware Technologies
+    Created Date : 9/4/2018 4:43 AM
+	Description  : Custom Theme Layout for Login page.
+
+    History:
+    <Date>			<Author Name>                      	<Brief Description of Change> 		<Copa.do US#>
+	9/4/2018    	Sunil Kumar Sharma					Initial Creation					US-0005630 
+ 	02/11/2018		Nomita Walke					Added Base/Site URL to all navigation.	US-0006062
+	16/11/2018		Nomita Walke			Updated code to fetch Hero image using javascript.  US-0006171
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+********************************************************************************************************************
+-->
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes,forceCommunity:layout,forceCommunity:themeLayout" access="global" >
+	
+    <!-- Attribute Declaration -->
+    <aura:attribute name="Column1" type="Aura.Component[]"/>
+    <aura:attribute name="Column2" type="Aura.Component[]"/>
+    <aura:attribute name="Column3" type="Aura.Component[]"/>
+    <aura:attribute name="Column4" type="Aura.Component[]"/>
+    <aura:attribute name="Column5" type="Aura.Component[]"/>
+    <aura:attribute name="Column6" type="Aura.Component[]"/>
+    <aura:attribute name="Column7" type="Aura.Component[]"/>
+    <aura:attribute name="search" type="Aura.Component[]"/>
+    <aura:attribute name="backGroundStyle" type="String"/>
+    <aura:attribute name="height" type="String"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="heroImageUrl" type="String"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }" />
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column1}
+    	</div>
+    </div>  
+    
+	<div class="slds-grid slds-wrap" style="width:90%;margin:auto">
+        <div class=" login-image slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--2-of-3 slds-p-bottom--small" style="{!'background: url('+v.heroImageUrl+') top center /cover;height:300px;background-repeat:no-repeat;background-size:cover;background-position:center; '}">                    
+            <aura:if isTrue="{!!($Browser.isPhone)}">
+                <div class="slds-grid "  >
+                    <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-div">
+                        <label style="font-family: ProximaNova-Semibold,sans-serif;font-size:55px;
+                                      font-weight:600;color:#131F6B !important;line-height: 55px;"> 
+                            HOLOGIC SUPPORT 
+                        </label>
+                    </div>
+                </div>
+                <div class="slds-grid "  >
+                    <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-sub-div">
+                        <label style="font-family: ProximaNova-rg,sans-serif;font-size:18px;font-weight:300;
+                                      color:#131F6B !important; "> 
+                            Personalized support when you need it
+                        </label>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-grid "  >
+                        <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-div-mobile">
+                            <label style="font-family: ProximaNova-Semibold,sans-serif;font-size:35px;
+                                          font-weight:300;color:#131F6B !important;line-height: 55px;"> 
+                                MY HOLOGIC SUPPORT 
+                            </label>
+                        </div>
+                    </div>
+                    <div class="slds-grid "  >
+                        <div class="slds-col slds-size--1-of-1 slds-p-bottom--small hero-sub-div">
+                            <label style="font-family: ProximaNova-rg,sans-serif;font-size:18px;font-weight:300;
+                                          color:#131F6B !important; "> 
+                                Personalized support when you need it 
+                            </label>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+    	</div>
+        <aura:if isTrue="{!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small" 
+                 style="margin-top:auto;margin-bottom:auto;padding-top:5px;">
+                {!v.Column3}
+            </div>  
+            <aura:set attribute="else">
+                <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-p-bottom--small" 
+                     style="margin-top:auto;margin-bottom:auto;padding-top:5px;">
+                    {!v.Column3}
+                </div> 	
+            </aura:set>
+        </aura:if>
+    </div>
+    <aura:if isTrue="{!$Browser.isPhone || $Browser.isTablet || $Browser.isIPad}">
+        <div class="slds-grid slds-wrap" style="background: #F5F5F5;text-align:center">
+            <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-vertical_large">
+                <label class="hero-text">Hologic Support offers easy access to helpful tips and solutions for your products.</label>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-grid slds-wrap" style="background: #F5F5F5;padding-left:220px">
+                <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-vertical_large">
+                    <label class="hero-text">Hologic Support offers easy access to helpful tips and solutions for your products.</label>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+	<div class="slds-grid slds-wrap" style="max-width: 950px;margin: auto;">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--3-of-3 slds-large-size--3-of-3 slds-p-bottom--small">
+    		{!v.Column4}
+    	</div>       
+    </div> 
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column6}
+    	</div>
+    </div>
+</aura:component>

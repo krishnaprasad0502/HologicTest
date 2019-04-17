@@ -1,0 +1,452 @@
+<!------------------------------------------------------------
+Author:         Amarendra Nagireddy
+Company:        Apps Associates
+Description:    Creating the case from the Asset by using the button.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+04/17/2017      Amarendra Nagireddy       Initial Creation(US-0002505)
+05/29/2017      Amarendra Nagireddy      Added command button to reset user selected contact form list of contacts
+------------------------------------------------------------>
+<apex:page controller="CreateCaseController" sidebar="false" action="{!getTotalContact}" cache="true">
+
+  <apex:form html-novalidate="true">
+       <apex:pageMessages id="errors" />
+       <!--display duplicate records--------------------------------------------------->
+        <apex:pageBlock title="Duplicate Records" rendered="{!hasDuplicateResult}">
+             <!--<apex:pageMessages />-->
+             <apex:pageblockButtons >
+             
+              <!--<apex:commandButton value="Save(Ignore Alert)" action="{!createRecords}">
+                <apex:param assignTo="{!createduplicatecontact}" value="true" name="createduplicatecontact"/>
+              </apex:commandButton>-->
+              <apex:commandLink action="{!createRecords}" value="Create Case with Selected" id="theCommandLink"  styleClass="btn" style="text-decoration: none;">
+               
+              </apex:commandlink>
+              
+             
+              
+              <apex:commandLink action="{!createRecords}" value="Save Duplicate(Ignore Alert)" id="thesaveCommandLink"  styleClass="btn" style="text-decoration: none;">
+               <apex:param assignTo="{!createduplicatecontact}" value="true" name="createduplicatecontact"/>
+              </apex:commandlink>
+
+             </apex:pageblockButtons>
+            <apex:pageBlockTable value="{!duplicateRecords}" var="item">
+                   <apex:column >
+                    <apex:facet name="header"></apex:facet>
+                    <apex:actionSupport event="onclick" action="{!setSelectedContact}" reRender="" immediate="true">
+                    <Input type="radio" value="{!item['Id']}" name="contactid" onclick="checkselection()"/>
+                    <apex:param assignTo="{!selectedContact}" value="{!item['Id']}" name="selectedContact"/>
+                    </apex:actionSupport>
+                </apex:column>
+                
+               <!-- <apex:column >
+                    <apex:facet name="header">Contact Id</apex:facet>
+                    <apex:outputField value="{!item['Id']}"/>
+                </apex:column>-->
+                
+                <apex:column >
+                    <apex:facet name="header">Name</apex:facet>
+                    <apex:outputLink value="/{!item['Id']}">{!item['Name']}</apex:outputLink>
+                </apex:column>
+                
+                 <apex:column >
+                    <apex:facet name="header">Account</apex:facet>
+                    <apex:outputField value="{!item['accountid']}"/>
+                </apex:column>
+               
+                <apex:column >
+                    <apex:facet name="header">Phone</apex:facet>
+                    <apex:outputField value="{!item['Phone']}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">Email</apex:facet>
+                    <apex:outputField value="{!item['Email']}"/>
+                </apex:column>
+            </apex:pageBlockTable> 
+        </apex:pageBlock>
+       <!--End of display duplicate records--------------------------------------------------->
+        <apex:pageBlock title="Find A Contact!" mode="edit">
+
+             <table width="100%" border="0">
+                <tr>  
+                    <td width="380" valign="top">
+
+                     <apex:pageBlock title="New Contact" mode="edit" id="criteria">
+
+                    <script type="text/javascript">
+                       function doSearch() {
+                       searchServer(
+                       document.getElementById("firstName").value,
+                       document.getElementById("lastName").value,
+                       document.getElementById("accountName").value,
+                       document.getElementById("customeraccount").value,
+                       document.getElementById("email").value,
+                       document.getElementById("phone").value,
+                       document.getElementById("role").value,
+                       document.getElementById("extension").value,
+                       document.getElementById("addiphone").value,
+                       document.getElementById("addiextension").value
+                  
+                                );
+                                }
+              
+                         function assignValues(){
+                         assignval(
+                         document.getElementById("role").value,
+                         document.getElementById("extension").value,
+                         document.getElementById("addiphone").value,
+                         document.getElementById("addiextension").value
+                           );    
+                           }
+              
+                          function assignType(){
+                           assignType(
+                           document.getElementById("type").value
+                            );
+                             }
+              
+                          function validation(){
+                            var firstname=document.getElementById("firstName").value;
+                            var lastname=document.getElementById("lastName").value;
+                            var accname=document.getElementById("accountName").value;
+                            var customeracc=document.getElementById("customeraccount").value;
+                            var email=document.getElementById("email").value;
+                            var phone=document.getElementById("phone").value;
+                          if(firstname.length > 0 && lastname.length > 0 && accname.length > 0 && customeracc.length > 0 && email.length > 0 && phone.length > 0 )
+                           {
+                           /*document.getElementById("firstName").disabled=true;
+                           //document.getElementById("lastName").disabled=true;
+                           //document.getElementById("accountName").disabled=true;
+                           //document.getElementById("customeraccount").disabled=true;
+                           //document.getElementById("email").disabled=true;
+                           //document.getElementById("phone").disabled=true;
+                            document.getElementById("button").disabled=true;*/
+                            document.getElementById('displaymessage').innerHTML='Contact with the entered details will be created simultaneously along with the Case creation. Please proceed on filling out case details in below section';
+                  
+                             }
+                            else
+                             {
+                           alert("Please Enter Fitstname,Lastname,Email,Phone field values to create new contact or select contact from existing list");
+                           }
+                           }
+              
+                          function checkselection()
+                          {
+                            var contactid=document.getElementById("contactid").value;
+                            if(contactid.length>0);
+                            {
+                               document.getElementById('displaymessage').innerHTML="";
+                            }
+                
+                            }
+              
+                            function clearall()
+                            {
+                             document.getElementById("firstName").value="";
+                             document.getElementById("lastName").value="";
+                             document.getElementById("email").value="";
+                             document.getElementById("phone").value="";
+                             document.getElementById("extension").value="";
+                             document.getElementById("addiphone").value="";
+                             document.getElementById("addiextension").value="";
+                             document.getElementById("role").value="";
+                             document.getElementById('displaymessage').innerHTML="";
+                            }
+                           
+                        </script> 
+
+              <apex:actionFunction name="searchServer" action="{!runSearch}" rerender="results,debug,errors,next" immediate="true">
+                  <apex:param name="firstName" value="" />
+                  <apex:param name="lastName" value="" />
+                  <apex:param name="accountName" value="" />
+                  <apex:param name="customeraccount" value="" />
+                  <apex:param name="email" value=""/>
+                  <apex:param name="phone" value=""/>
+                  <apex:param name="clearPagination" value="true"/>
+                  <apex:param name="extension" value=""/>
+                  <apex:param name="role" value=""/>
+                  <apex:param name="addiphone" value=""/>
+                  <apex:param name="addiextension" value=""/>
+              </apex:actionFunction>
+              <apex:actionFunction name="assignval" action="{!setSelectedContact}" immediate="true">
+                  <apex:param name="extension" value=""/>
+                  <apex:param name="role" value=""/>
+                  <apex:param name="addiphone" value=""/>
+                  <apex:param name="addiextension" value=""/>
+              </apex:actionFunction>
+              <apex:actionFunction name="assignType" action="{!setCaseComplaint}" immediate="true" reRender="complaint">
+                  <apex:param name="caseType" value="{!newCase.Type}"/>
+              </apex:actionFunction>
+              
+
+              <table cellpadding="2" cellspacing="2">
+              <tr>
+                <td style="font-weight:bold;">First Name<br/>
+                <div class="requiredInput"><div class="requiredBlock"/>
+                <input type="text" id="firstName" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.firstname}"/>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Last Name<br/>
+                <div class="requiredInput"><div class="requiredBlock"/>
+                <input type="text" id="lastName" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.lastname}"/>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Email<br/>
+                <div class="requiredInput"><div class="requiredBlock"/>
+                <input type="email" id="email" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.email}"/>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Phone<br/>
+                <div class="requiredInput"><div class="requiredBlock"/>
+                <input type="text" id="phone" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.phone}"/>
+                </div>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="font-weight:bold;">Extension<br/>
+                <input type="text" id="extension" onkeyup="doSearch();" maxlength="5" style="width: 300px;" value="{!$CurrentPage.parameters.extension}"/>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="font-weight:bold;">Additional Phone number<br/>
+                <input type="text" id="addiphone" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.addiphone}"/>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="font-weight:bold;">Additional Phone Extension<br/>
+                <input type="text" id="addiextension" onkeyup="doSearch();" maxlength="5" style="width: 300px;" value="{!$CurrentPage.parameters.addiextension}"/>
+                </td>
+              </tr>
+              
+             <tr>
+                <td style="font-weight:bold;">Account<br/>
+                <input type="text" id="accountName" onkeyup="doSearch();" value="{!accountname}" style="width: 300px;"/>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Customer Account<br/>
+                <input type="text" id="customeraccount" onkeyup="doSearch();" value="{!customeraccount}" style="width: 300px;"/>
+                </td>
+              </tr>
+              
+             <!-- <tr>
+                <td style="font-weight:bold;">Account<br/>
+                <input type="text" id="accountName" onkeyup="doSearch();" />
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Customer Account<br/>
+                <input type="text" id="customeraccount" onkeyup="doSearch();"/>
+                </td>
+              </tr>-->
+              
+              <tr>
+                <td style="font-weight:bold;">Role<br/>
+                <input type="text" id="role" onkeyup="doSearch();" style="width: 300px;" value="{!$CurrentPage.parameters.role}"/>
+                </td>
+              </tr>
+            
+              <!--<tr>
+                <td style="font-weight:bold;">
+              <input type="button" id="button" onclick="validation()" value="Create Contact" />
+              <input type="button" id="button" onclick="clearall()" value=" Clear All" style="color:black;background-color:white;"/>
+                </td>
+              </tr>-->
+              
+              <tr>
+                <td style="font-weight:bold;"><br/>
+                <apex:commandButton value="Create Contact" onclick="validation()" reRender="results,contactdetails"/>
+                <input type="button" id="button" onclick="clearall()" value=" Clear All " class="btn"/>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="font-weight:bold;">
+               <span id="displaymessage" style="color:red"></span>
+                </td>
+              </tr>
+              
+              
+              </table>
+
+              </apex:pageBlock>
+
+            </td>
+            <td valign="top">
+
+            <apex:pageBlock mode="edit" id="results">
+
+                <apex:pageBlockTable value="{!contacts}" var="contact" id="contactdetails">
+                
+                    <apex:column >
+                        <apex:actionSupport event="onclick" action="{!setSelectedContact}" reRender="" immediate="true">
+                            <input type="radio" id="contactid" name="<strong>selectRadio</strong>" onclick="checkselection()"/>
+                            <apex:param assignTo="{!selectedContact}" value="{!contact.Id}" name="selectedContact"/>
+                        </apex:actionSupport>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Name" action="{!toggleSort}" rerender="results,debug">
+                                <apex:param name="sortField" value="firstName" assignTo="{!sortField}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputPanel >
+                            <apex:outputText value="{!contact.lastname +','+ ' '+contact.firstName }"/>
+                        </apex:outputPanel>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Account" action="{!toggleSort}" rerender="results,debug">
+                                <apex:param name="sortField" value="account.name" assignTo="{!sortField}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!contact.account.name}"/>
+                    </apex:column>
+                    
+                     <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Phone" action="{!toggleSort}" rerender="results,debug">
+                                <apex:param name="sortField" value="phone" assignTo="{!sortField}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!contact.phone}"/>
+                    </apex:column>
+                    
+                     <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Email" action="{!toggleSort}" rerender="results,debug">
+                                <apex:param name="sortField" value="email" assignTo="{!sortField}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!contact.email}"/>
+                    </apex:column>
+
+                   
+
+                </apex:pageBlockTable>
+                <apex:pageBlockButtons location="bottom"  dir="LTR">
+                    <!-- 05/29/2017 added commandbutton to reset selected contact by calling the method clearselectedcontact from controller--> 
+                    <apex:commandButton immediate="true" action="{!clearselectedcontact}" reRender="results" value="Clear Selection" style="margin-right:60%;"/>
+                    <apex:commandLink value="<<- Previous" action="{!setPrevious}" rendered="{!pagination >= 10}" rerender="results,debug" immediate="true" id="previous"/>
+                    <apex:outputText value=" || " rendered="{!pagination >=10 && pagination < totalContact && contactCount >= 10}"/>
+                    <apex:commandLink value="Next ->>" action="{!setNext}" rerender="results,debug" rendered="{!pagination < totalContact && contactCount >= 10}" immediate="true" id="next" />
+                </apex:pageBlockButtons>
+
+            </apex:pageBlock>
+
+            </td> 
+          </tr>
+          </table>
+
+  <!--<apex:pageBlock title="Debug - SOQL" id="debug">
+      <apex:outputText value="{!debugSoql}" />           
+  </apex:pageBlock>--> 
+  
+  <apex:pageBlock title="Case Information" id="case">
+  
+  <!--<apex:pageBlockSection columns="2">
+    
+     <apex:inputfield value="{!newCase.Accountid}"/>
+     <apex:inputfield value="{!newCase.Type}"/>
+     <apex:inputfield value="{!newCase.Complaint__c}"/>
+     <apex:inputfield value="{!newCase.status}"/>
+     <apex:inputfield value="{!newCase.Priority}"/>
+  </apex:pageBlockSection>-->
+     <apex:pageBlockSection columns="2">    
+      
+     
+      <apex:repeat value="{!$ObjectType.Case.FieldSets.Asset_Case_Creation}" var="c">
+           
+          
+          <apex:inputField value="{!newCase[c.fieldPath]}" required="{!OR(c.required, c.dbrequired)}" rendered="{!c.label != 'Account ID' && c.label != 'Case Type' && c.label != 'Complaint' && c.label != 'Customer Name'}"/>
+          
+            
+              <apex:inputField value="{!newCase[c.fieldPath]}" required="{!OR(c.required, c.dbrequired)}" rendered="{!c.label == 'Case Type'}" id="type">
+                  <apex:actionSupport event="onchange" reRender="complaint" action="{!setCaseComplaint}" immediate="true" />
+              </apex:inputField>
+            
+        
+         
+          <apex:inputField value="{!newCase[c.fieldPath]}" rendered="{!c.label == 'Complaint'}" id="complaint" required="true"/>
+          <apex:outputField value="{!newCase[c.fieldPath]}" rendered="{!c.label == 'Customer Name'}"/>
+          <apex:outputField value="{!newCase[c.fieldPath]}" rendered="{!c.label == 'Account ID'}"/>
+          
+         
+          <!--<apex:actionSupport event="onchange" action="{!setSelectedContact}" reRender="" immediate="true">
+              <apex:inputField value="{!newCase[c.fieldPath]}" rendered="{!c.label == 'Case Type'}"/>
+          </apex:actionSupport>-->
+         
+      </apex:repeat>
+      </apex:pageBlockSection>
+  </apex:pageBlock>
+  
+  <apex:pageBlock title="Description Information" id="note">
+      <apex:outputPanel id="notespanel">
+          <apex:variable value="{!1}" var="rowNum"/>
+        <!--  <apex:commandLink value="Add More" action="{!addNewRowToTaskList}" rerender="notespanel"  immediate="true"/>
+          <apex:variable var="rowNum" value="{!rowNum+1}"/>-->
+              <apex:pageblockTable value="{!waTaskList}" var="tsk" columnsWidth="200px, 300px, 850px, 150px">
+              
+              
+                 <apex:repeat value="{!$ObjectType.Task.FieldSets.Asset_Note_Creation}" var="t">
+                      <apex:column headerValue="{!t.Label}" >
+                          
+                          <apex:inputField value="{!tsk.record[t.fieldPath]}" required="{!OR(t.required, t.dbrequired)}" rendered="{!t.Label != 'Description'}" style="width:80%"/>
+                          <apex:inputField value="{!tsk.record[t.fieldPath]}" required="{!OR(t.required, t.dbrequired)}" rendered="{!t.Label == 'Description'}" style="width:90%"/>
+                             
+                      </apex:column>    
+                  </apex:repeat>
+                   <!--<apex:column headerValue="Note Type" style="width:200px">
+                      <apex:inputField value="{!tsk.record.Note_Type__c}"/>
+                      <!--<apex:selectList size="1" value="{!selectedNoteType}">
+                          <apex:selectOptions value="{!statusOptions}"/>
+                      </apex:selectList>
+                  </apex:column>
+                  <apex:column headerValue="Subject" style="width:200px">
+                      <apex:inputField value="{!tsk.record.Subject}"/>
+                  </apex:column>
+                  <apex:column headerValue="Comments" style="width:850px">
+                      <apex:inputField value="{!tsk.record.Description}" style="width:90%"/>
+                  </apex:column>
+                  <apex:column headerValue="Priority" style="width:150px">
+                      <apex:inputField value="{!tsk.record.Priority}"/>
+                  </apex:column>-->
+                  <apex:column style="width:100px">
+                      <apex:commandLink value="Remove" style="color:red;padding-right:10px" action="{!removeRowFromTaskList}" rendered="{!rowNum >= 2}" rerender="notespanel" immediate="true" >
+                          <apex:param value="{!rowNum-1}" name="rowToRemove" assignTo="{!rowToRemove}"/>
+                      </apex:commandLink>
+                    <apex:commandLink value="Add More" action="{!addNewRowToTaskList}" rerender="notespanel" rendered="{!rowNum == 1}" immediate="true"/>
+                      <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                  </apex:column>
+              </apex:pageblockTable>
+              
+              <!--<apex:commandButton value="Add More" action="{!addNewRowToTaskList}" reRender="notespanel" Status="status" immediate="true"/>-->
+          
+      
+      </apex:outputPanel>
+  </apex:pageBlock>   
+  
+      <div align="Center">
+    <apex:outputPanel >
+      <apex:commandButton value="Create Case" action="{!createRecords}"/>
+      <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>  
+    </apex:outputPanel>
+     </div>
+
+  </apex:pageBlock>
+  <!--<apex:outputtext value="{!debugSoql}"></apex:outputtext>-->
+  </apex:form>
+
+</apex:page>

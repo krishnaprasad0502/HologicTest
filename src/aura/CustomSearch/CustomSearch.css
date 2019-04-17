@@ -1,0 +1,19 @@
+.THIS .slds-input-has-icon .slds-input__icon {
+    width: 50px !important;
+    height: 40.5px !important;
+    margin-top:5px !important;
+    top:0% !important ;
+    border-radius: 0rem;
+    border-left:1px solid #131F6B;
+    right:0px !important ;
+    vertical-align:middle;
+}
+
+.THIS .slds-lookup__search-input{
+    min-height: calc(3rem + 2px);
+    border-radius: 0rem;
+    font-size:17px ;  
+}
+.THIS .slds-lookup__search-input::-webkit-input-placeholder { /* WebKit browsers */
+  font-size: 1em;
+}

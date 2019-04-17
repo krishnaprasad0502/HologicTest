@@ -1,0 +1,177 @@
+<!------------------------------------------------------------
+Author:         Denise Bacher
+Company:        Salesforce.com
+Description:    Displays the Account Hierarchy for the current account
+                Requires use of the ObjectNodeHierarchy component
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+03/25/2015      Denise Bacher       Initial Creation
+03/31/2015      Denise Bacher       add svg4everybody to allow svg icons to work in MSIE
+05/11/2016      Denise Bacher       Update to popover information (US959)
+09/06/2016      Mani                Update to include pagination links (DE011)
+------------------------------------------------------------>
+<apex:page standardController="Account" extensions="AccountHierarchy_ControllerX" tabStyle="Account" 
+        docType="html-5.0" standardStylesheets="false" showHeader="true" sidebar="false">
+        
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-2.2.2.min.js')}"/>
+    <apex:includeScript value="{!$Resource.svg4everybody}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.slds100, 'assets/styles/salesforce-lightning-design-system.min.css')}"/>
+    
+    <style>
+        body {
+            margin: 0px !important;
+        }
+    </style>
+    
+    <script>
+        $j = jQuery.noConflict();
+        var accountId = '{!account.Id}';
+        $j(document).ready(function() {
+            svg4everybody();
+            loadInitialAccounts();
+        });
+    
+        // register events that need to be handled at the page level
+        function globalRegisterEvents(){
+            $j('li[role="treeitem"] > div.slds-tree__item > button.slds-button.lazyLoad').unbind ("click");
+            $j('li[role="treeitem"] > div.slds-tree__item > button.slds-button.lazyLoad').on("click", lazyLoadChildAccounts);
+        }
+        
+        function popoverUpdate(accounts){
+            // remove the ChildAccounts attribute before converting to JSON
+            for(var i = 0; i < accounts.length; i++){
+                delete accounts[i].ChildAccounts;
+            }
+            updatePopover(JSON.stringify(accounts));
+        }
+        
+        // make the remote call out to retrieve the initial view of the hierarchy 
+        function loadInitialAccounts(){
+            var counter = '{!counter}';       
+            var list_size = '{!list_size}';
+            var total_size = '{!total_size}';
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AccountHierarchy_ControllerX.loadInitialHierarchy}',
+                accountId,
+                counter,
+                list_size,
+                total_size,
+                function(returnPayload, event){
+                    var container = $j('#notifications').html('');
+                    if(event.status){
+                        drawTree(returnPayload.nodes);
+                        registerEvents();
+                        globalRegisterEvents();
+                        
+                        popoverUpdate(returnPayload.accounts);
+                    }
+                    else{
+                        generateRemoteErrorMessaging(container, event);
+                    }
+                },
+                {escape: true}
+            );
+        }
+    
+        // make the remote call out to retrieve the children from the selected account
+        function lazyLoadChildAccounts(){
+            var currentContainer = $j(this).parents('li')[0];
+            
+            // get the node level and node id from the selected account
+            var currentLevel = $j(currentContainer).attr('aria-level');
+            var currentObjId = $j(this).data('objid');
+            
+            var counter = '{!counter}';     
+            var list_size = '{!list_size}';
+            var total_size = '{!total_size}';
+            
+            // parse out the branch number, and branch node array from the container's id
+            var idArray = $j(currentContainer).attr('id').split('-');
+            var branch = idArray[0].replace('tree', '');
+            idArray.shift();
+            var branchArray = new Array();
+            for(var i = 0; i < idArray.length; i++){
+                branchArray.push(idArray[i].replace('node', ''));
+            }
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AccountHierarchy_ControllerX.lazyLoadChildAccounts}',
+                currentLevel, 
+                currentObjId,
+                accountId,
+                counter,
+                list_size,
+                total_size,
+                function(returnPayload, event){
+                    var container = $j('#notifications').html('');
+                    if(event.status){
+                        $j(currentContainer).replaceWith(createNode(returnPayload.nodes[0], branch, branchArray));
+                        registerEvents();
+                        globalRegisterEvents();
+                        
+                        popoverUpdate(returnPayload.accounts);
+                    }
+                    else{
+                        generateRemoteErrorMessaging(container, event);
+                    }
+                    
+                },
+                {escape: true}
+            );
+        }
+        
+        function generateRemoteErrorMessaging(container, event){
+            var errorIcon = "{!URLFOR($Resource.slds100, '/assets/icons/utility-sprite/svg/symbols.svg#warning')}";
+            var newErrorBlock = $j('<div class="slds-notify slds-notify--alert slds-theme--error slds-theme--alert-texture" role="alert">'
+                                    +   '<span class="slds-assistive-text">Error</span>'
+                                    +       '<div class="notify__content slds-grid">'
+                                    +       '<svg aria-hidden="true" class="slds-icon slds-icon--small slds-m-right--small slds-col slds-no-flex">'
+                                    +           '<use xlink:href="' + errorIcon +'"></use>'
+                                    +       '</svg>'
+                                    +       '<div class="slds-col slds-align-middle">'
+                                    +           '<h2 class="slds-text-heading--small">'
+                                    +               event.message
+                                    +           '</h2>'
+                                    +       '</div>'
+                                    +   '</div>'
+                                    +'</div>'
+            );
+            
+            $j(container).html(newErrorBlock);
+        }
+    </script>
+        
+    <apex:form >
+        <apex:actionFunction name="updatePopover" action="{!updatePopover}" rerender="popovers">
+            <apex:param name="accounts" value=""/>
+        </apex:actionFunction>
+    </apex:form>
+    
+    <div class="slds">
+        <div class="slds-page-header">
+            <div class="slds-grid">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <p class="slds-text-heading--label">Account Hierarchy</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notifications" class="slds-notify_container">
+        </div>
+        
+        <c:ObjectNodeHierarchy customPopover="true"/>
+        
+        <apex:outputPanel id="popovers">
+            <apex:repeat value="{!accounts}" var="account">
+                <c:AccountPopover account="{!account}" fields="{!$ObjectType.Account.FieldSets.Hierarchy_Popover}"/>
+            </apex:repeat>
+        </apex:outputPanel>
+    </div>
+    <apex:form >     
+            <apex:commandLink value="<<- Previous" action="{!Previous}" rendered="{!DisablePrevious == false}"/> &nbsp;        
+            <apex:commandLink value="Next ->>" action="{!Next}" rendered="{!DisableNext == false}"/>      
+    </apex:form>
+</apex:page>

@@ -1,0 +1,56 @@
+.THIS .Header1Style{
+	font-weight: bold;
+}
+.THIS .Header2Style{
+	color: #253045;
+	font-weight: bold;
+}
+.THIS .Header3Style{
+	color: #007add;
+	font-weight: bold;
+}
+.THIS .DescriptionStyling{
+    overflow: hidden;
+    display: -webkit-box;
+   -webkit-line-clamp: 5; /* Limit to 5 lines */
+   -webkit-box-orient: vertical;
+}
+.THIS .slds-text-heading_large{
+    color: #008AAD !important;
+    opacity: 100%;
+    font-size: 15px;
+    font-family: ProximaNova-Semibold,sans-serif;
+    line-height: 17px;
+    font-weight:bold;
+    padding: 5px 0;
+}
+.THIS .slds-text-heading_medium{
+    color: #131F6B !important;
+	opacity: 100%;
+	font-size: 14px;
+	font-family: Proxima Nova Lt,sans-serif;
+    line-height: 17px;
+    font-weight:bold;
+}
+.THIS .slds-text-heading_small{
+	color: #333333 !important;
+	opacity: 100%;
+	font-size: 13px;
+	font-family: ProximaNova-rg,sans-serif;
+    line-height: 18px;
+}
+.THIS .ListHeader{
+    color: #131F6B;
+    opacity: 100%;
+    font-size: 22px;
+    font-family: ProximaNova-bold,sans-serif;
+    line-height: 26px;
+    font-weight:bold;
+}
+.THIS .seeAll{
+    color: #008AAD;
+    opacity: 100%;
+    font-size: 17px;
+	font-family: ProximaNova-Semibold,sans-serif;
+	line-height: 17px;    
+}

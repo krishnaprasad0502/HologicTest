@@ -1,0 +1,15 @@
+.THIS .HeaderStyle{
+    background: lightgray;
+}
+
+.THIS .logoContainer {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 80%;
+  height: 50px;
+}
+
+.THIS .BodyContainer{
+	padding-top:20px;
+}

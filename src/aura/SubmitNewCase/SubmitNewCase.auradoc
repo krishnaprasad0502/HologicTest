@@ -1,0 +1,9 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+            This lightning component is used to create Service Request from multiple locations.
+            Service Request can be invoked  from Quicklinks on home Page, From System Detail Pages and 
+            from buttons on Service Request List View Page.
+        </p>
+    </aura:description>
+</aura:documentation>

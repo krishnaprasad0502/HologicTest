@@ -1,0 +1,143 @@
+<!--
+**********************************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 9/6/2018
+	Description: This lightning component is used to show the Menu Panels below header image. 
+
+	Controller:CommunityNavigationController
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change > 						<Copa.do US#>
+	6/9/2018			Sunil Kumar Sharma		Initial Creation 									US-0005633
+ 	02/11/2018			Nomita Walke			Added Site URL to all navigation.
+ 	04/12/2018	   		Nikhil Mutyam			Code changes to to display a larger Modal when
+ 												case deflection is switched on    					US-0006257
+	12/20/2018     		Sunil Sharma           	Initial Creation                					US-0006345
+ 	01/02/2019			Vrushabh Katariya		Default the Priority for Submit an Issue to 'Sev 2' US=0006454
+	1/19/2018			Vrushabh Katariya		PM schedule on Home page and 
+												My System detail Page								US-0006553
+**********************************************************************************************************************
+-->
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    <!-- Attribute Declaration-->
+    <aura:attribute name="MenuType" type="String" default="PRODUCT INFORMATION"/>
+    <aura:attribute name="CustomHeaderText" type="String" /> 
+    <aura:attribute name="ReturnedRecords" type="list"/> 
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="ShowCustomHeader" type="boolean"/>
+    <aura:attribute name="IconName" type="String" /> 
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="comp" type="Aura.Component"/>
+    <aura:attribute name="Line2Header" type="String" />
+    <aura:attribute name="showLine2" type="boolean"/>
+    <aura:attribute name="Line2Url" type="String" /> 
+    <aura:attribute name="Line3Header" type="String" />
+    <aura:attribute name="showLine3" type="boolean"/>
+    <aura:attribute name="Line3Url" type="String" /> 
+    <aura:attribute name="logoImageUrl" type="String"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }" /> 
+    
+    <div class="slds-grid slds-wrap" style="text-align: center;">
+        <div class="slds-col slds-size--1-of-1" >
+            <span class="slds-avatar slds-avatar_large">
+                <img src="{!v.logoImageUrl}" alt="meaningful text" />
+            </span>
+
+            <!--<lightning:icon iconName="{!v.IconName}" size="large" />-->
+    	</div>
+    </div>
+	<div class="slds-grid slds-wrap" style="text-align: center">
+        <div class="slds-col slds-size--1-of-1">
+    		<label class="menu-header">{!v.CustomHeaderText}</label>
+    	</div>
+    </div>
+    <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+        <aura:if isTrue="{!menu.MenuItem_IsHeroMenu}">
+            <aura:if isTrue="{!menu.MenuItem_displayComponent == False}">
+            <div class="slds-grid slds-wrap" style="text-align:center;padding-top: 12px;">
+                <div class="slds-col slds-size--1-of-1">
+                   <a class="menu-links" href="{!menu.MenuItem_Url}" >
+                       {!menu.MenuItem_Title}
+                    </a> 
+                </div>
+            </div>
+                <aura:set attribute="else">
+                    <div class="slds-grid slds-wrap" style="text-align:center;padding-top: 12px;">
+                		<div class="slds-col slds-size--1-of-1">
+                            <!-- Default the Priority for Submit an Issue to 'Sev 2' US=0006454 -->
+                            <a class="menu-links" onclick="{!c.InvokeComponent}"  
+                                data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Title}">
+                                {!menu.MenuItem_Title}
+                            </a>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>    
+        </aura:if>
+    </aura:iteration>
+    <aura:if isTrue="{!v.showLine2}">
+        <div class="slds-grid slds-wrap" style="text-align:center;padding-top: 12px;">
+            <div class="slds-col slds-size--1-of-1">
+                <a class="menu-links" href="{!v.configSetting.SiteURL__c+v.Line2Url}" >
+                    <label style="cursor: pointer !important;">{!v.Line2Header}</label>
+                </a>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.showLine3}">
+        <div class="slds-grid slds-wrap" style="text-align:center;padding-top: 12px;">
+            <div class="slds-col slds-size--1-of-1">
+                <a class="menu-links" href="{!v.configSetting.SiteURL__c+v.Line3Url}" >
+                    <label style="cursor: pointer !important;">{!v.Line3Header}</label>
+                </a>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isOpen}">
+        <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" 
+				aria-modal="true" aria-describedby="modal-content-id-1" 
+				class="{! $Label.c.Community_Show_Deflection == 'Yes' ? 'slds-modal slds-fade-in-open slds-modal_large' : 'slds-modal slds-fade-in-open'}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{!c.closeModel}"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        {!v.comp}
+                    </div>
+                </div>    
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>    
+            <aura:set attribute="else">
+                <div class="PHONE comm-panels-container uiContainerManager siteforcePanelsContainer" data-aura-rendered-by="45:0" 
+                     data-aura-class="uiContainerManager siteforcePanelsContainer">
+                        <div aria-labelledby="title_26:1314;a" tabindex="-1" role="dialog" data-aura-rendered-by="30:1314;a" 
+                             class="uiPanel--medium uiPanel forceMobileOverlay open active" 
+                             data-aura-class="uiPanel--medium uiPanel forceMobileOverlay" 
+                             aria-hidden="false" style="opacity: 1; z-index: 2; visibility: visible;">
+                            
+                            <div class="container">
+                                <div class="panel-header">
+                                    <h2 class="title slds-truncate" id="title_26:1314;a" data-aura-rendered-by="1:1321;a">New Case: Support</h2>
+                                    <lightning:button label="Close" title="Close" onclick="{!c.closeModel}"/>
+                                </div> 
+                                <div class="panel-content scrollable">
+                                    {!v.comp}
+                                </div>
+                                <div class="panel-header">
+                                    &nbsp;
+                                </div>    
+                            </div>
+                        </div>
+                    </div>
+            </aura:set>    
+        </aura:if>
+    </aura:if> 
+</aura:component>

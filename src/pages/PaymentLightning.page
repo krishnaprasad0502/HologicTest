@@ -1,0 +1,295 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Displays the payment authorization page to authorize credit cards using paymetrics.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+07/17/2018      Mani Sundaresan       Initial Creation (US-0004314)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page controller="paymentAuthorization" doctype="html-5.0" showheader="false" sidebar="false" applyhtmltag="false" id="mainid">
+
+    <!-- Header section to load all the scripts and stylesheets required for the page-->
+
+    <head>
+        <apex:slds />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="cache-control" content="no-cache, no-store, max-age=0, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <apex:includescript value="{!$Resource.iframejs}" />
+        <script src="{!XiInterceptURL}/Scripts/XIPlugin/XIPlugin-1.1.0.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/latest/jquery.js"></script>
+        <apex:stylesheet value="{!XiInterceptURL}/Content/IFrameStyleSheet.css" />
+        <apex:includescript value="https://code.jquery.com/jquery-2.2.1.min.js" />
+        <apex:includescript value="/soap/ajax/24.0/connection.js" />
+        <apex:includescript value="/soap/ajax/24.0/apex.js" />
+        <apex:includescript value="/support/console/43.0/integration.js" />
+        <apex:includescript value="{!URLFOR($Resource.Paymetric_Accounting,'accounting.js')}" />
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap-theme.min.css"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+    </head>
+    <body class="slds-scope" id="body">
+        <apex:form id="formId">
+            <apex:pageblock id="pgblk" rendered="{!NOT(isPaymentExists)}">
+
+                <!-- Section to display the list of existing cards on the accounts-->
+
+                <apex:pageblocksection title="Exisiting Card Details" collapsible="false" columns="1" id="pgblksec">
+                    <apex:commandlink value="Enter a new card information" action="{!showNewCardSection}" rerender="pgblk,pgblksec2,pgbtns" />
+                    <apex:outputpanel layout="block" style="overflow:auto;height:300px;">
+                        <center><b><apex:outputtext rendered="{!existingCardsList.size == 0}"> No credit card information on file. Please enter the new card information in the below section.</apex:outputtext></b></center>
+                        <apex:datatable value="{!existingCardsList}" var="epc" styleclass="slds-table slds-table_bordered slds-table_cell-buffer tableClass" id="tbl" rendered="{!existingCardsList.size > 0}">
+                            <apex:variable value="{!0}" var="cnt" />
+                            <apex:column style="width:10px">
+                                <apex:actionsupport action="{!selectcon}" event="onclick" rerender="authMsg,pgmsgs,pgblksec3">
+                                    <!-- We use AJAX to call an apex function when a radio button is clicked -->
+                                    <input type="radio" class="primaryRadioButtons" value="{!epc.selected}" onclick="allowOnePrimary(this);" />
+                                    <apex:param name="index" value="{!cnt}" />
+                                    <apex:param name="conid" value="{!epc.payCard.Id}" />
+                                </apex:actionsupport>
+                                <apex:variable var="cnt" value="{!cnt+1}" />
+                            </apex:column>
+                            <apex:column styleclass="slds-truncate" style="width:250px">
+                                <apex:facet name="header">Last Four Digits</apex:facet>
+                                {!epc.payCard.Credit_Card_Last_4__c}
+                            </apex:column>
+                            <apex:column styleclass="slds-truncate" style="width:250px">
+                                <apex:facet name="header">Name on card</apex:facet>
+                                {!epc.payCard.Credit_Card_Name_on_Card__c}
+                            </apex:column>
+                            <apex:column styleclass="slds-truncate" style="width:250px">
+                                <apex:facet name="header">Credit card type</apex:facet>
+                                {!epc.payCard.Credit_Card_Type__c}
+                            </apex:column>
+                            <apex:column styleclass="slds-truncate" style="width:250px">
+                                <apex:facet name="header">Expiration date</apex:facet>
+                                {!epc.payCard.Credit_Card_Expiration_Month__c}/{!epc.payCard.Credit_Card_Expiration_Year__c}
+                            </apex:column>
+                        </apex:datatable><br />
+                    </apex:outputpanel>
+                </apex:pageblocksection>
+
+                <!-- Section to display the paymetrics iFrame to enter the new credit card information-->
+
+                <apex:pageblocksection id="pgblksec2" collapsible="false" columns="1" title="New Card Information" rendered="{!newCardSec}">
+                    <div id="cc-frame" class="slds-text-title_caps slds-truncate">
+                        <apex:outputpanel >
+                            <div><b>Enter your credit card information:</b></div><br />
+                            <apex:iframe id="dieCommFrame" frameborder="0" height="170px" src="{!iFrameURL}"></apex:iframe><br />
+                        </apex:outputpanel>
+                    </div><br />
+                </apex:pageblocksection>
+                <apex:pagemessages id="pgmsgs"></apex:pagemessages>
+
+                <!-- Section to display the Authorization amount and allows user to select the Bill To Account and Bill To Site Location-->
+
+                <apex:pageblocksection id="pgblksec3" collapsible="false" columns="2" title="Authorization Section">
+                    <apex:pageblocksectionitem id="pgblk3item1">
+
+                        <apex:outputlabel for="sl-amount" style="float: left;width:350px;">Authorization Amount (includes {!IF(acc == null, configSetting.Uplift_Percentage__c, 0)}% uplift):</apex:outputlabel>
+                        <apex:outputpanel >
+                            {!currencyKey}&nbsp;&nbsp;<apex:inputtext id="sl-amount" value="{!amount}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem ></apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!isAccount && NOT(existingCard)}" id="pgblk3item2">
+
+                        <b><label style="text-align:right;width:auto;margin-left:5px;">Bill To: </label></b>
+                        <apex:selectlist id="BTA" value="{!billToAcct}" multiselect="false" size="1">
+                            <apex:selectoptions value="{!items}" />
+                            <apex:actionsupport event="onchange" rerender="BTS" action="{!BillToAcctChanged}">
+                                <apex:param name="index" assignto="{!index}" value="" />
+                            </apex:actionsupport>
+                        </apex:selectlist>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!isAccount && NOT(existingCard)}" id="pgblk3item3">
+                        <apex:outputlabel value="Bill To Site" for="BTS" />
+                        <apex:outputpanel id="BTS">
+                            <apex:inputtext id="bt" value="{!billToSite}" />
+                            <apex:inputhidden id="billToSiteId" value="{!billToSiteId}" />
+                            <a href="" id="acc3" onclick="openLookupBTA(1);" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)" />
+                            </a>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+
+                <!-- Section to display the custom buttons to Tokenize and Authorize the card & payment-->
+
+                <apex:pageblockbuttons location="bottom" id="pgbtns">
+                    <apex:outputpanel id="btns">
+                        <apex:commandbutton value="Verify Card" onclick="submitform();return false;" rendered="{!isTokenGenerated == false && newCardSec}" id="cmdbtn1" rerender="pgmsgs,Panel,btns" />&nbsp;
+                        <apex:commandbutton value="Authorize Payment" action="{!authorizePayment}" rendered="{!isTokenGenerated == true || NOT(newCardSec)}" status="disablebtn" rerender="pgmsgs,Panel" id="cmbtn2" />&nbsp;
+                        <apex:actionstatus id="disablebtn" onstart="DisableButton()" onstop="EnableButton()"></apex:actionstatus>
+                        <apex:commandbutton value="Remove the selected card" action="{!removeCard}" rendered="{!NOT(newCardSec)}" rerender="pgblksec" />&nbsp;&nbsp;
+                        <apex:commandbutton value="Cancel" onclick="cancelPage();return false;" id="cmbtn3" />
+                    </apex:outputpanel>
+                </apex:pageblockbuttons>
+
+            </apex:pageblock>
+
+            <apex:outputpanel rendered="{!isPaymentExists}">
+                <apex:pagemessage severity="info" title="Payment already exists on the record!!!"></apex:pagemessage><br /><br />
+                <center><apex:commandbutton value="Back to record" action="{!cancel}" /></center>
+            </apex:outputpanel>
+
+            <apex:outputpanel id="Panel">
+                <apex:outputlabel rendered="{!isTokenGenerated == True || isAuthorized == True}" id="token">Generated Token:</apex:outputlabel>
+                <apex:outputtext value="{!ccToken}"></apex:outputtext><br />
+                <apex:outputpanel id="authMsg" rendered="{!isAuthorized && isPaymentCreated && !isPaymentExceeded}">
+                    <apex:outputlabel rendered="{!isAuthorized == True}" id="code">Authorization Code:</apex:outputlabel>
+                    <apex:outputtext value="{!ccAuthCode}"></apex:outputtext><br />
+                    <apex:outputlabel rendered="{!isAuthorized == True}" id="txn">Transaction Id:</apex:outputlabel>
+                    <apex:outputtext value="{!txId}"></apex:outputtext>
+                    <script>
+                        alert('Payment authorized successfully!!!');
+                        if (sforce.console.isInConsole()) {
+                            sforce.console.getEnclosingPrimaryTabId(refreshPrimaryTab);
+                            sforce.console.getFocusedSubtabId(closeTab);
+                        }
+                        else{
+                            var url = location.href;
+                            var baseURL = url.substring(0, url.indexOf('/', 14));
+                            window.location.href = baseURL+'/{!$CurrentPage.parameters.Id}';
+                        }
+
+                    </script>
+                </apex:outputpanel>
+            </apex:outputpanel>
+
+            <input type="hidden" name="acctoken" id="AccessToken" value="{!accessToken}" />
+            <input type="hidden" id="SignedToken" value="{!signature}" />
+            <apex:actionfunction name="Tokenization" action="{!getCreditCardToken}" rerender="pgmsgs,Panel,btns">
+                <apex:param name="accessToken" value="" />
+                <apex:param name="signedToken" value="" />
+                <apex:param name="amt" value="" />
+            </apex:actionfunction>
+            <apex:actionfunction name="Authorization" action="{!authorizePayment}" rerender="pgmsgs,Panel,code,txn">
+                <apex:param name="amt" value="" />
+            </apex:actionfunction>
+            <apex:actionfunction name="Cancel" action="{!cancel}" />
+
+        </apex:form>
+
+        <!-- JQuery and Javascripts-->
+
+        <script>
+
+        function submitform() {
+            var iframe = document.getElementsByName('dieCommFrame');
+            if (iframe) {
+                $XIFrame.submit({
+                    iFrameId: 'dieCommFrame',
+                    targetUrl: iframe[0].getAttribute("src"),
+                    onSuccess: function (msg) {
+                        var message = JSON.parse(msg);
+                        if (message && message.data.HasPassed) {
+                            var accessToken = document.getElementById('AccessToken');
+                            var signedToken = document.getElementById('SignedToken');
+                            var hiddenAmount = document.getElementById('mainid:formId:pgblk:pgblksec3:pgblk3item1:sl-amount').value;
+
+                            Tokenization(accessToken.value, signedToken.value, hiddenAmount);
+
+                        } else {
+                            alert(message.data.Message);
+                        }
+                    },
+                    onError: function (msg) {
+                        alert(msg);
+                    }
+                });
+            }
+        }
+
+        function passAmt(){
+            var hiddenAmount = document.getElementById('sl-amount').value;
+            Authorization(hiddenAmount);
+
+
+        }
+
+        function redirectRec(){
+            alert('Payment authorized successfully!!!');
+            var url = location.href;
+            var baseURL = url.substring(0, url.indexOf('/', 14));
+            window.location.href = baseURL+'/{!$CurrentPage.parameters.retURL}';
+
+        }
+
+        function DisableButton() {
+            var btn = document.getElementById("{!$Component.mainid.formId.pgblk.pgbtns.cmbtn2}");
+            btn.disabled = true;
+        }
+        function EnableButton() {
+            var btn = document.getElementById("{!$Component.mainid.formId.pgblk.pgbtns.cmbtn2}");
+            btn.disabled = false;
+        }
+
+        if('{!recAmt}' != null)
+            document.getElementById('mainid:formId:pgblk:pgblksec3:pgblk3item1:sl-amount').value = '{!recAmt}';
+
+
+        function allowOnePrimary(checkbox) {
+            var checkboxes = document.getElementsByClassName('primaryRadioButtons');
+                for(var i=0; i<checkboxes.length; i++){
+                   checkboxes[i].checked = false;
+                }
+                checkbox.checked = true;
+        }
+
+        function openLookupBTA(a){
+            var BTA = $('select[id$=BTA]').val();
+            var res=0;
+
+            try{
+                if(BTA!=null&&BTA!='')
+                {
+
+                   var url="/apex/SiteLocationPopup?billaccid="+BTA+'&qlsize=0&a=1&linenum=0&qlineid=0';
+                   newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+                   if (window.focus){
+                        newWin.focus();
+                   }
+                }
+                 else
+                {
+                    alert("Please Select Bill to Account");
+                }
+
+            }catch(e){
+                alert('Server Error: '+e);
+            }
+        return false;
+        }
+
+        function closeLookupPopup(){
+           if (null!=newWin)
+           {
+               newWin.close();
+           }
+        }
+
+        function cancelPage() {
+            if (sforce.console.isInConsole()) {
+                <!--sforce.console.getEnclosingPrimaryTabId(refreshPrimaryTab);-->
+                sforce.console.getFocusedSubtabId(closeTab);
+
+            } else {
+                  Cancel();
+            }
+
+        }
+
+         var refreshPrimaryTab = function closeSubtab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.refreshPrimaryTabById(tabId, true);
+        };
+
+        var closeTab = function closeTab(result) {
+            sforce.console.closeTab(result.id);
+        };
+
+        </script>
+    </body>
+</apex:page>

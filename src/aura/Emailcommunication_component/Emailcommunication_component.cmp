@@ -1,0 +1,300 @@
+<!-- 
+*******************************************************************************
+Author:         KRISHNA PRASAD
+Company:        APPS ASSOCIATES 
+Description:    EMAIL COMMUNICATION SEARCH PAGE
+Component Name:     Emailcommunication _component         
+Contoller:     Email Communication 
+
+History:
+<Date>          <Authors Name>          <Brief Description of Change>
+20/1/2018       KRISHNA PRASAD          Initial Creation(US-0003622)
+*******************************************************************************
+--> 
+
+    <aura:component controller="Emailcommunication" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="objClassController" type="Emailcommunication"/>
+    <aura:attribute name="Message" type="boolean" default="false" description="use for display no records found message"/>
+    <aura:attribute name="searchname" type="string" description="use for store user input search on name and fromname"/>
+    <aura:attribute name="enterdate" type="Date" default="" description="search through date"/>
+    <aura:attribute name="fromdate" type="Date" default="" description="search through date"/>
+    <aura:attribute name="pagination" type="Integer" default="0" />
+    <aura:attribute name="PicklistValues" type="String[]" description="To get To Address Directly from Meta Data."/>
+    <aura:attribute name="searchKeyword"  type="string"/>
+    <aura:attribute name="searchKey"  type="string"/>
+    <aura:attribute name="flag2" type="boolean" default="false"/>
+    <!-- used to perform Search function in controller when input is given -->
+    <aura:handler name="change" value="{!v.searchKeyword}" action="{!c.Search}"/>
+    <aura:handler name="change" value="{!v.searchname}" action="{!c.Search}"/>
+    <aura:handler name="change" value="{!v.enterdate}" action="{!c.Search}"/>
+    <aura:handler name="change" value="{!v.fromdate}" action="{!c.Search}"/>
+    <aura:handler name="change" value="{!v.searchKey}" action="{!c.Search}"/>
+    <aura:attribute name="deleted" type="string" description="To display confirmation message when Email Communication Record is Deleted."/>
+    <style>
+        .HoverPopup {
+        position: relative;
+        z-index: 0;
+        }
+        .HoverPopup:hover
+        {
+        background-color: #eeeeee;
+        Text-decoration: none;
+        z-index: 50;
+        }
+        a.datePicker-openIcon.display {
+        visibility: hidden;
+        }
+        .HoverPopup div {
+        position: absolute;
+        visibility: hidden;
+        }
+        .HoverPopup:hover div {
+        visibility: visible;
+        top: 20px;
+        left: 0px;
+        border: 1px solid black;
+        background-color: #eeeeee;
+        padding: 10px;
+        color: black;
+        Text-decoration: none;
+        white-space: pre;
+        }tr.slds-text-title--caps {
+        font-size: 14px;
+        font-weight: 900;
+        }
+        label.slds-form-element__label {
+        //color: white;
+        font-size: large;
+        }
+        span.slds-output.uiOutputText {
+        colour: white;
+        color: white;
+        font-size: larger;
+        }
+        span.slds-form-element__control {
+        color: white;
+        font-size: medium;
+        }
+        .slds-form-element__control.header {
+        align : bottom;
+        }
+        .slds-form-element.endate {
+        padding-top: 7px;
+        }
+        .reassign {
+        left: -23px;
+        position: relative;
+        }
+        button.slds-button.slds-button--brand.reset {
+        top: 12px;
+        position: relative !important;
+        left: 50%;
+        }
+        .slds-form-element__control.test{
+        width:100% !important;
+        aria-expanded:"true" !important;
+        aria-haspopup:"false" !important;
+        overflow:unset !important;
+        }
+        .datePicker-openIcon.display {
+        position: relative;
+        left: 168px;
+        top: -23px;
+        }
+        .uiInputSelectOption {
+        padding-top: 16px;
+        }
+        .form-element.uiInput.uiInputDate.uiInput--default.uiInput--input.uiInput--datetime {
+        top: 6px;       
+        }
+        .textoverflow {
+        right: 31px;
+        position: relative !important; 
+        white-space: nowrap; 
+        width: 33em; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        }
+        .uiInput.forceSearchInputLookupDesktop.uiInput--default.forceInputField {
+        width: 200px;
+        }
+        .Toaddress{
+        white-space: nowrap; 
+        width: 20em; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        } 
+        .pickliststyle
+        {
+        height:30px;
+        border-radius: 4px;
+        border: 1px solid rgb(217, 219, 221);
+        border-color: rgb(217, 219, 221);
+        border-style: solid;
+        border-width: 1px;
+        }
+    </style>
+    <!--aura init handler , call js "loadEmailcommunications" function on component load, and display Emailcommunication data on table-->   
+    <aura:handler name="init" value="{!this}" action="{!c.loadEmailcommunicationlist}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.loadPicklistValues}"/>
+    <!--For Alert Messages -->
+    <aura:if isTrue="{!v.deleted}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!-- HEADER Part-->
+                <div class="slds-modal__header">
+                    <h2 id="header99" class="slds-text-heading--medium">Confirm Message</h2>
+                </div>
+                <!--BODY Part-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p><b><h3>Record is Deleted </h3>
+                        </b>
+                    </p>
+                </div>
+                <!--FOOTER Part-->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.okay}" >OK</button>
+                </div>
+            </div>
+        </div><div class="slds-backdrop slds-backdrop--open"></div>
+    </aura:if>
+    <div class="slds-m-around--large">
+        <form class="slds-form--inline" id="form1">
+            <br/>
+            <table border="0">
+                <tr>
+                    <td >
+                        <label class="slds-form-element__label" for="search">Search </label>
+                    </td>
+                    <td >
+                        <label class="slds-form-element__label" for="search">From Date</label>
+                    </td>
+                    <td >
+                        <label class="slds-form-element__label" for="search">To Date</label>
+                    </td>
+                    <td >
+                        <label class="slds-form-element__label " for="search">Search By To address</label>
+                    </td>
+                    <td >
+                        <label class="slds-form-element__label " for="search">Emails</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        <div class="slds-form-element__control bca">
+                            <ui:inputText aura:id="searchfrom" class="slds-input" value="{!v.searchname}" placeholder="Type here..." updateOn="keyUp"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form-element__control date1 endate" for="date">
+                            <ui:inputDate aura:id="frmdate" class="slds-input" value="{!v.fromdate}" displayDatePicker="true" updateOn="keyUp" /> 
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form-element__control date2 endate " for="date">
+                            <ui:inputDate aura:id="expdate" class="slds-input " value="{!v.enterdate}" displayDatePicker="true" updateOn="keyUp" /> 
+                        </div>
+                    </td>
+                    <td>
+                        <ui:inputSelect aura:id="searchKey" value="{!v.searchKey}" class="slds-combobox-picklist pickliststyle">
+                            <ui:inputSelectOption text="" label="--None--" /> 
+                            <aura:iteration items="{!v.PicklistValues}" var="pv">
+                                <ui:inputSelectOption text="{!pv}" label="{!pv}" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </td>
+                    <td>
+                        <div class="slds-form-element">
+                            <ui:inputSelect aura:id="searchId" value="{!v.searchKeyword}" class="slds-combobox-picklist pickliststyle" >
+                                <ui:inputSelectOption text="Unassigned" label="Unassigned" />
+                                <ui:inputSelectOption text="Assigned" label="Assigned" />
+                                <ui:inputSelectOption text="All" label="All"/>
+                            </ui:inputSelect>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" align="center" >
+                        <button class="slds-button slds-button--brand reset" onclick="{!c.Reset}">Reset All</button>
+                    </td>
+                </tr>
+            </table>
+            <aura:if isTrue="{!v.Message}">
+                <div class="slds-text-color--error"> No Result Found...</div>
+            </aura:if>
+            <br/>  
+            <br/>  
+            <!--Emailcommunication table part--> 
+            <label class="slds-form-element__label" for="search">Details</label>
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                <thead>
+                    <tr class="slds-text-title--caps ">
+                        <th>
+                            <span  title="Delete"><b>Delete</b></span>      
+                        </th>
+                        <th>
+                            <span style="left: -21px; position: relative;" title="Reassign"><b>Reassign</b></span>      
+                        </th>
+                        <th>       
+                            <span title="Subject"><b>Subject</b></span>
+                        </th>
+                        <th >
+                            <span  title="FromName"><b>From Name</b></span>
+                        </th>
+                        <th>       
+                            <span title="FromAddresses"><b>From Addresses</b></span>
+                        </th>
+                        <th>       
+                            <span  title="ToAddresses"><b>To Addresses</b></span>
+                        </th>
+                        <th >
+                            <span  title="messageDate"><b>Message Date</b></span>
+                        </th>
+                        <th >
+                            <span  title="Case">Case</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.objClassController.lstemailcommunication}" var="EMC">
+                        <tr class="slds-size--1-of-2">
+                            <td >
+                                <button type="button" onclick="{!c.delete}" id="{!EMC.Id}">Delete</button>
+                            </td>
+                            <td >
+                                <button class="reassign" type="button" onclick="{!c.recordurl}" id="{!EMC.Id}">Reassign</button>
+                                
+                            </td>
+                            <td >
+                                <div class=" textoverflow " title="{!EMC.Subject__c}"><a href="javascript:void(0)" onclick="{!c.recordurl}" id="{!EMC.Id}">{!EMC.Subject__c} </a>
+                                </div>
+                            </td>
+                            <td >
+                                <div class="fromname" style="right: 19px; position: relative !important;" title="{!EMC.From_Name__c}">{!EMC.From_Name__c}</div>
+                            </td>
+                            <td >
+                                <div class=" fromaddress "  title="{!EMC.From_Address__c}">{!EMC.From_Address__c}</div>
+                            </td>
+                            <td >
+                                <div class=" Toaddress" title="{!EMC.To_Address__c}">{!EMC.To_Address__c}</div>
+                            </td>
+                            <td data-label="Completed Date"> 
+                                <!--<ui:outputDateTime value="{!EMC.Message_Date__c}"/>-->
+                                <lightning:formattedDateTime value="{!EMC.Message_Date__c}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" timeZoneName="short"/>
+                            </td>
+                            <td >
+                                <div  title="{!EMC.Case__r.CaseNumber}">{!EMC.Case__r.CaseNumber}</div>  
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                    <tr>
+                        <td> <lightning:button label="Previous" onclick="{!c.setPrevious}"  disabled="{!or(20>v.pagination,v.pagination > v.objClassController.totalsearch)}"/>
+                        </td>
+                        <td> <lightning:button label="Next" onclick="{!c.setNext}" disabled="{!or(v.pagination+20>v.objClassController.totalsearch,20>=v.objClassController.totalsearch)}"/>  
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</aura:component>

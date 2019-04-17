@@ -1,0 +1,272 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Displays records to be displayed on Customer Service Report
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+05/04/2017      Mani Sundaresan       Initial Creation (US2248)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page controller="CSRController" showHeader="true" id="Page" docType="html-5.0">
+    <apex:form id="form">
+        <apex:pageBlock id="pgblk" title="Customer Service Report">
+        
+            <apex:outputPanel styleClass="gray" layout="block" id="op1">
+            
+                <!-----------------------------------------------------------------Filter Section-------------------------------------------------------->
+                <apex:outputPanel id="filterOP" >
+                    <apex:pageBlockSection collapsible="false" title="Filter Section" id="filter" columns="2" rendered="{!caseWrapperSize && NOT(isCase)}" >
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Service Start Date: "></apex:outputLabel>
+                            <apex:input type="date" value="{!servStartDate}"/>
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Service End Date: "></apex:outputLabel>
+                            <apex:input type="date" value="{!servEndDate}"/>
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageblockSectionItem >
+                            <apex:outputLabel value="Case Record Type: "></apex:outputLabel>
+                            <c:MultiselectPicklist leftOption="{!allRTs}" rightOption="{!selectedRTs}" size="3" width="150px"/>
+                        </apex:pageblockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Case Priority: "></apex:outputLabel>
+                            <c:MultiselectPicklist leftOption="{!allCaseTypes}" rightOption="{!selectedCaseTypes}" size="3" width="150px"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageblockSectionItem >
+                            <apex:outputLabel value="Include Pricing?: "></apex:outputLabel>
+                            <apex:inputCheckbox value="{!includePricing}"/>
+                        </apex:pageblockSectionItem>
+                    </apex:pageBlockSection>
+                   <div align="center"> 
+                       <apex:commandButton value="Filter Case" action="{!filterCaseRecs}" reRender="caseSec,woSec" status="loading" rendered="{!caseWrapperSize && NOT(isCase)}" id="filterbtn"/>
+                   </div>
+                </apex:outputPanel>
+                <!--------------------------------------------------------------------------------------------------------------------------------------->
+            
+                <!----------------------------------------------------------------- Account Section------------------------------------------------------>
+                <apex:pageblockSection collapsible="false" title="Accounts" id="accPbSec" columns="1">
+                    <apex:pageBlockTable id="accpgblktable" value="{!accountList}" var="account">
+                        <apex:column id="col1" >
+                            <apex:facet name="header">Customer Name</apex:facet>
+                            <apex:commandLink action="/{!account.ParentId}" value="{!account.Parent.Name}" rendered="{!sObjectRT == 'Site'}"/>
+                            <apex:commandLink action="/{!account.Id}" value="{!account.Name}" rendered="{!sObjectRT == 'Customer'}"/>
+                        </apex:column>
+                        <apex:column rendered="{!sObjectRT == 'Site'}" >
+                            <apex:facet name="header">Site Name</apex:facet>
+                            <apex:commandLink action="/{!account.Id}" value="{!account.Name}"/>
+                        </apex:column>
+                        <apex:column headerValue="Address" value="{!accountAddress}"/>
+                    </apex:pageBlockTable>
+                </apex:pageblockSection>
+                <!--------------------------------------------------------------------------------------------------------------------------------------->
+                <!------------------------------------------------------------------Asset Section-------------------------------------------------------->
+                <apex:pageblockSection collapsible="false" title="Assets" id="assetPbSec" columns="1">
+                    <apex:outputPanel layout="block" style="overflow:auto;height:250px" id="op2">
+                        <apex:pageblockTable id="assetpgblktable" value="{!assetWrapper}" var="asset">
+                            
+                            <apex:column rendered="{!isAccount}" >
+                                <apex:facet name="header">
+                                    <apex:inputCheckbox onchange="cvCheckAllOrNone(this,'asset')" title="Toggle All Rows" id="MasterChkBox" selected="{!MasterChkBox}">
+                                        <apex:actionSupport event="onclick" action="{!setSelected}" reRender="caseSec,woSec,filterOP,filterbtn" status="loading">
+                                            <apex:param name="Master" value="master"/>
+                                        </apex:actionSupport>
+                                    </apex:inputCheckbox>
+                                </apex:facet>
+                                            
+                                <apex:inputCheckbox id="checkedone" onchange="checkAll(this,'Asset');" value="{!asset.selected}">
+                                    <apex:actionSupport event="onclick" action="{!setSelected}" reRender="caseSec,woSec,filterOP,filterbtn" status="loading">
+                                        <apex:param name="AssetId" value="{!asset.asse.Id}"/>
+                                        <apex:param name="Selected" value="{!asset.selected}"/>
+                                   </apex:actionSupport>
+                                </apex:inputCheckbox>
+                           </apex:column>
+                                        
+                           <apex:column >
+                               <apex:facet name="header">Serial Number</apex:facet>
+                               <apex:outputLink value="/{!asset.asse.Id}">{!asset.asse.SerialNumber}</apex:outputLink>
+                               <!--<apex:commandLink action="/{!asset.asse.Id}" value="{!asset.asse.SerialNumber}" />-->
+                           </apex:column>
+                           <apex:column headerValue="Site Name" value="{!asset.asse.Account.Name}"/>
+                           <apex:column headerValue="Product" value="{!asset.asse.Product2.Name}"/>
+                           <apex:column headerValue="Description" value="{!asset.asse.Description}"/>
+                       </apex:pageblockTable>
+                   </apex:outputPanel>
+                </apex:pageblockSection>
+              <!----------------------------------------------------------------------------------------------------------------------------------------> 
+              <!------------------------------------------------------------------Case Section---------------------------------------------------------->
+              <apex:outputPanel id="caseSec">
+                  <apex:pageblockSection collapsible="false" title="Cases" id="casePbSec" columns="1" rendered="{!caseWrapperSize}">
+                      <apex:outputPanel layout="block" style="overflow:auto;height:250px">    
+                          
+                          <apex:actionStatus id="loading" style="align:center;">
+                              
+                                  <apex:facet name="start">
+                                      <apex:image value="{!URLFOR($Resource.LoadingImage)}" title="Processing..."/>
+                                  </apex:facet>
+                              
+                                  <apex:facet name="stop">
+                                      <apex:pageblockTable id="casepgblktable" value="{!caseWrapper}" var="case">
+                                          
+                                              <apex:column width="2.5%" rendered="{!NOT(isCase)}" >
+                                                  <apex:facet name="header">
+                                                  
+                                                      <apex:inputCheckbox onchange="cvCheckAllOrNone(this)" title="Toggle All Rows" id="CaseMasterChkBox" selected="{!caseMasterChkBox}">
+                                                           <apex:actionSupport event="onclick" action="{!setCaseSelected}" reRender="woSec" status="woloading">
+                                                               <apex:param name="Master" value="master"/>
+                                                           </apex:actionSupport>
+                                                      </apex:inputCheckbox>
+                                                  </apex:facet>
+                                                    
+                                                  <apex:inputCheckbox value="{!case.selected}" id="checkedonecase" onchange="checkAllCase(this,'Case');">
+                                                      <apex:actionSupport event="onclick" action="{!setCaseSelected}" reRender="woSec" status="woloading">
+                                                          <apex:param name="CaseId" value="{!case.caseVal.Id}"/>
+                                                          <apex:param name="Selected" value="{!case.selected}"/>
+                                                      </apex:actionSupport>
+                                                  </apex:inputCheckbox>
+                                               </apex:column>
+                                  
+                                  
+                                              <apex:column headerValue="Case Number" value="{!case.caseVal.CaseNumber}" width="10%"/>
+                                              <apex:column headerValue="Asset Name" value="{!case.caseVal.Asset.Name}"/>
+                                              <apex:column headerValue="Subject" value="{!case.caseVal.Subject}" width="70%"/>
+                                              <apex:column headerValue="Date Created" value="{!case.caseVal.CreatedDate}"/>
+                              
+                                          </apex:pageblockTable>
+                                      
+                                  </apex:facet>
+                          </apex:actionStatus>
+                          
+                      </apex:outputPanel>
+                  </apex:pageblockSection>
+              </apex:outputPanel>
+              <!----------------------------------------------------------------------------------------------------------------------------------------------> 
+              <!------------------------------------------------------------------Work Order Section---------------------------------------------------------->
+              <apex:outputPanel id="woSec">
+                  <apex:pageblockSection collapsible="false" title="Work Orders" id="woPbSec" columns="1" rendered="{!woWrapperSize}">
+                      <apex:outputPanel layout="block" style="overflow:auto;height:250px">
+                      
+                          <apex:actionStatus id="woloading" style="align:center;">
+                              
+                                  <apex:facet name="start">
+                                      <apex:image value="{!URLFOR($Resource.LoadingImage)}" title="Processing..."/>
+                                  </apex:facet>
+                                  
+                                  <apex:facet name="stop">
+                                      <apex:pageblockTable id="wopgblktable" value="{!woWrapper}" var="wo">
+                                          <apex:column headerValue="Work Order#" value="{!wo.wo.WorkOrderNumber}"/>
+                                          <apex:column headerValue="Case Number" value="{!wo.wo.Case.CaseNumber}"/>
+                                          <apex:column headerValue="Subject" value="{!wo.wo.Subject}"/>
+                                          <apex:column headerValue="Start Date" value="{!wo.wo.StartDate}"/>
+                                          <apex:column headerValue="Type" value="{!wo.wo.FSO__Type__c}"/>
+                                      </apex:pageblockTable>
+                                  </apex:facet>
+                                  
+                          </apex:actionStatus>
+                      </apex:outputPanel>
+                  </apex:pageblockSection>
+              </apex:outputPanel>
+              <!----------------------------------------------------------------------------------------------------------------------------------------------->
+                    
+            </apex:outputPanel>
+            
+            
+            <div align="center">
+                <apex:commandButton value="Generate Report" action="{!generateReport}"/> &nbsp;&nbsp;
+                <apex:commandButton value="Cancel" action="{!Cancel}"/>
+            </div>
+            
+            
+            
+        </apex:pageBlock>
+    </apex:form>
+  
+
+    <style type="text/css">
+        .bPageBlock .pbTitle {
+            width: 100%;    
+            text-align: center;
+        }
+        
+        body .bPageBlock .pbBody .gray .pbSubheader{
+            background-color:#808080;
+        }
+    </style>
+    
+    <script>
+    
+        function checkAll(cb){
+            
+            var inputElem = document.getElementsByTagName("input");
+            var count = 0;
+            
+            for(var i=0; i<inputElem.length; i++){
+                if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("checkedone") > -1 && inputElem.item(i).type == "checkbox")
+                    count++; 
+                if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("MasterChkBox") > -1 && inputElem.item(i).type == "checkbox")
+                    count--;
+            }
+            
+            var leng = '{!size}';
+            
+            if(count == leng)
+                document.getElementById('{!$Component.Page.form.pgblk.assetPbSec.assetpgblktable.MasterChkBox}').checked = cb;
+            
+            if(count != leng)
+                document.getElementById('{!$Component.Page.form.pgblk.assetPbSec.assetpgblktable.MasterChkBox}').checked = false; 
+        }
+        
+        function checkAllCase(cb){
+            
+            var inputElem = document.getElementsByTagName("input");
+            var count = 0;
+            
+            
+            for(var i=0; i<inputElem.length; i++){
+                
+               if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("checkedonecase") > -1 && inputElem.item(i).type == "checkbox")
+                   count++; 
+               
+               if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("CaseMasterChkBox") > -1 && inputElem.item(i).type == "checkbox")
+                   count--;
+            }
+            
+            var caseleng = '{!caseSize}';
+            
+            
+            if(count == caseleng)
+                document.getElementById('{!$Component.Page.form.pgblk.casePbSec.casepgblktable.CaseMasterChkBox}').checked = cb;
+            
+            if(count != caseleng)
+                document.getElementById('{!$Component.Page.form.pgblk.casePbSec.casepgblktable.CaseMasterChkBox}').checked = false; 
+        }
+        
+        
+
+        
+        function cvCheckAllOrNone(allOrNoneCheckbox) {
+        
+        // Find parent table
+        var container = allOrNoneCheckbox;
+        while (container.tagName != "TABLE") {
+            container = container.parentNode;
+        }
+
+        // Switch all checkboxes
+        var inputs = container.getElementsByTagName("input");
+        var checked = allOrNoneCheckbox.checked;
+        for (var i = 0; i < inputs.length; i++) {
+            var input = inputs.item(i);
+            if (input.type == "checkbox") {
+                if (input != allOrNoneCheckbox && input.disabled == false) {
+                    input.checked = checked;
+                    }
+                }
+            }
+        }
+        
+        
+        
+    </script>
+  
+</apex:page>

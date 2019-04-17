@@ -1,0 +1,80 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" controller="ProfileDataListController" >
+    
+    <!-- create 2 aura handler with waiting and donewaiting events--> 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <!--create a component attributs -->
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="profDatasSize" type="Integer" default="0"/>
+    <aura:attribute name="profDatas" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium" >Add Lab Landscape</h4>
+    </div>
+    
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->   
+    
+    <!--Datatable to display the profile data records-->
+    <aura:if isTrue="{!v.profDatasSize > 0}">
+        
+        <table Class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <ui:scrollerWrapper class="sWrap">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col" width="1%"><div class="slds-truncate" title="MasterChkbox"><ui:inputCheckbox aura:id="MasterCheckbox" change="{!c.checkAllCheckboxes}" /></div></th>  
+                    <th scope="col"><div class="slds-truncate" title="Division">Division</div></th>
+                    <th scope="col"><div class="slds-truncate" title="Profile">Profile Name</div></th>
+                    <th scope="col"><div class="slds-truncate" title="Volume">Volume</div></th>
+                    <th scope="col"><div class="slds-truncate" title="Price">Price</div></th>
+                </tr>
+            </thead>
+            <tbody>
+					<aura:iteration items="{!v.profDatas}" var="pd">
+                    	<tr class="slds-hint-parent">
+                        	<td width="1%"><div class="slds-truncate" title="{!pd.selected}"><ui:inputCheckbox aura:id="DependentCheckbox" change="{!c.uncheckMasterCheckbox}" value="{!pd.selected}"/></div></td>
+                            <td><div class="slds-truncate" title="{!pd.ProfData.Division__c}">{!pd.profData.Division__c}</div></td>
+                            <td><div class="slds-truncate" title="{!pd.profData.Profile__r.Name}">{!pd.profData.Profile__r.Name}</div></td>
+                            <td><div class="slds-truncate" title="{!pd.profData.Volume__c}">{!pd.profData.Volume__c}</div></td>
+                            <td><div class="slds-truncate" title="{!pd.profData.CurrencyIsoCode}"><lightning:formattedNumber value="{!pd.profData.Price__c}" style="currency" currencyCode="{!pd.profData.CurrencyIsoCode}"/></div></td>
+                        </tr>
+					</aura:iteration>
+            </tbody>
+                </ui:scrollerWrapper>
+        </table>
+        
+        <aura:set attribute="else">
+            <div class="slds-align_absolute-center">No records to display!</div>
+        </aura:set>
+    </aura:if>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <div class="forceChangeRecordTypeFooter">
+            <ui:button class="slds-button slds-button--brand" label="Cancel" press="{!c.cancel}"/> 
+            <ui:button class="slds-button slds-button--brand" label="Save" press="{!c.savePP}"/>
+        </div>
+    </div>
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>    
+</aura:component>

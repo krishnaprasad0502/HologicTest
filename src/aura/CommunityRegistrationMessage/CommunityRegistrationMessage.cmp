@@ -1,0 +1,32 @@
+<!--
+********************************************************************************************************************
+    Author 		 : Niraj Wani
+    Company 	 : Hexaware Technologies
+	Created Date : 10/14/2018 10:39 AM
+    Description  : When community user register, dsiplay message of request acceptance.
+
+    History:
+    <Date>         		<Author Name>		    <Brief Description of Change>  		<Copa.do US#>
+	8/13/2018			Niraj Wani				Initial Creation					US-0005861  
+********************************************************************************************************************   
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes" >
+    
+	<h1 style="font-size: 22px;
+    font-family: 'ProximaNova-Bold',sans-serif;
+    font-weight: bold;
+    color: #131f6b;">Request Support Account</h1>
+<br/>
+<p style="font-size: 16px;
+    font-family: 'ProximaNova-Bold',sans-serif;
+    font-weight: bold;
+    color: #131f6b;
+    text-align: center;">Thanks for requesting a My Hologic Support account. <br/>
+    Our Customer Care team will process your request and get back to you shortly.<br/><br/>
+    <button  class="slds-button slds-button_neutral ButtonStyle slds-align_absolute-center" 
+        type="button" title="Hologic Home"  onclick="{!c.sendToLink}" >
+    HOLOGIC HOME
+</button>
+</p>  
+</aura:component>

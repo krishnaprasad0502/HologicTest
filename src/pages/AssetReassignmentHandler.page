@@ -1,0 +1,176 @@
+<!------------------------------------------------------------
+Author:         Raviraj Reddy
+Company:        Cynosure
+Description:    Page to reassign reps on Laser Owned Assets.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+03/19/2018      Raviraj Reddy       Initial Creation (US3819)
+------------------------------------------------------------>
+<apex:page controller="AssetReassignmentHandlerCtlr">
+    
+    <style>
+    .homeTab .tertiaryPalette{
+        background-color: #204ea9; 
+    }
+    .header {
+        background-color: rgb(207, 238, 248);
+    }
+    .outputMessage {
+        font-family: sans-serif;
+        font-size: 16px;
+        left-padding: 100px;
+        left-margin: 100px;
+        text-align: center;
+    }
+        
+    </style> 
+    <apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/latest/jquery.js"/>
+  
+    <apex:includeScript value="{!URLFOR($Resource.SL_BootStrap, 'bootstrap-3.3.6-dist/js/bootstrap.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SL_BootStrap, 'bootstrap-3.3.6-dist/css/bootstrap.min.css')}"/>
+    
+     <apex:includeScript value="{!URLFOR($Resource.SL_DataTable, '/datatable/Datatablesorter.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.SL_DataTable, '/datatable/jquery.dataTables.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SL_DataTable, '/datatable/jquery.dataTables.min.css')}"/>
+    
+    <apex:includeScript value="{!$Resource.SL_AMPSTasks}"/>
+    
+    <apex:form id="formId" >
+       <apex:PageBlock id="pgblock">
+            <apex:pageMessages id="showmsg"></apex:pageMessages>
+            <apex:pageBlockButtons style="padding-left: 13%;" id="buttons" location="top">
+            <!--DK Update to hide only one button-->  
+            <!--    <script type="text/javascript">
+                    $j = jQuery.noConflict();    
+                    $j(document).ready(function () {
+                    $j("[id$=laserList]").tablesorter();
+                    });    
+                </script>-->
+            
+            <script> 
+               $.extend( true, $.fn.dataTable.defaults, {
+                    "lengthMenu": false,
+                    "lengthMenu": [10, 100, 1000 ]
+                } ); 
+               $(document).ready(function()
+                {
+                    if ($.fn.DataTable.isDataTable( '.display' ) ) return;
+                    
+                    $('.display').DataTable({
+                            bsortable : true
+                            
+                            /*deferRender: true,
+                            bJQueryUI: true*/
+                    });
+                    
+                });
+                                      
+            </script> 
+            
+                <!--DK Update for All Lasers--> 
+                <apex:commandButton id="cmdId2" styleClass="cmdbutton" action="{!getAssetRecords}" value="Get Assets"  rerender="Over1kMessage,laserList,showmsg,laserList2,pbs2," oncomplete="refresh2();" status="loading">
+                </apex:commandButton>
+                <apex:commandButton id="cmdId" styleClass="cmdbutton" action="{!Assign}" value="Assign"  rerender="Over1kMessage,laserList,showmsg,laserList2,pbs2"  oncomplete="refresh2();" status="loading"/>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="Choose Existing and New Reps for Reassignment" id="pbsId" columns="1">
+                
+                <apex:inputfield value="{!team1.Relationship__c}"/>
+                
+                <apex:inputfield label="Existing User" value="{!team1.User__c}"/>
+            
+                <apex:inputfield label="New User" value="{!team2.User__c}"/>
+           
+           </apex:pageBlockSection>
+            <apex:pageBlockSection id="pbs2" title="List of Existing Assets" columns="1">
+                <apex:outputPanel rendered="{!IF(laserList.size = 1000, TRUE, FALSE)}" id="Over1kMessage" styleClass="outputMessage"> There are more than 1000 Laser Owned records in this list. Only the 1000 most recent records will be available.</apex:outputPanel>  
+                <apex:dataTable id="laserList"  value="{!laserList}" var="l" rendered = "{!IF(laserList.size > 0, TRUE, FALSE)}" styleClass="display" headerClass="header">
+                   <apex:column id="col1">
+                       <apex:facet name="header">
+                           <apex:inputCheckbox onclick="selectAllCheckboxes(this,'selectid')" />
+                       </apex:facet>
+                       <apex:inputCheckbox id="selectid" value="{!l.selected}" onclick="buttonsEnabled(true);" selected="false" style="margin-left: 19%;"/>             
+                   </apex:column>
+                   <apex:column headerValue="Asset"> 
+                       <apex:outputLink style="padding-left: 1%;" value="/{!l.asst}">{!l.asst.Name}</apex:outputLink>
+                   </apex:column>
+                    <apex:column headerValue="Account" >
+                       <apex:outputLink style="padding-left: 2%;" value="/{!l.asst.AccountID}">{!l.asst.Account.Name}</apex:outputLink>        
+                   </apex:column>
+                   
+                   <apex:column headerValue="City"  >
+                       <!--<apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.ShippingCity}"></apex:outputText> -->
+                      <apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.BillingCity}"></apex:outputText>
+                    </apex:column>
+                   
+                    <apex:column headerValue="State"  >
+                       <!--<apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.ShippingState}"></apex:outputText>-->
+                        <apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.BillingState}"></apex:outputText>
+                    </apex:column>
+                   
+                    <apex:column headerValue="Zip Code"  >
+                       <!--<apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.ShippingPostalCode}"></apex:outputText>-->
+                       <apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.BillingPostalCode}"></apex:outputText>
+                    </apex:column>
+                   
+                    <apex:column headerValue="PhoneNumber"  >
+                       <apex:outputText style="padding-left: 4%;" value="{!l.asst.Account.Phone}"></apex:outputText>
+                   </apex:column>
+                   
+                   <!--apex:column headerValue="Product" >
+                       <apex:outputLink style="padding-left: 2%;" value="/{!l.lasOwned.Asset__r.Product2}">{!l.lasOwned.Asset__r.Product2.Name}</apex:outputLink>        
+                   </apex:column>
+                   <apex:column headerValue="Owner" value="{!l.lasOwned.User_1__c}"  style="padding-left:2%;"/-->
+<!--                </apex:pageBlockTable> -->
+               </apex:dataTable>
+               <apex:outputPanel id="laserList2" rendered="{!IF(AND(team2.User__c!= null, laserList.size == 0), TRUE, False)}">  
+                            <h2>No Records Found For the Selected User</h2>                     
+               </apex:outputPanel>
+               
+               
+            </apex:pageBlockSection>
+        </apex:PageBlock>
+         
+        <script>
+            
+           
+            
+            function refresh2(){
+                
+               
+                
+                
+                if ($.fn.DataTable.isDataTable( '.display' ) ) return;
+                $('.display').DataTable({
+                    /*bsortable : true,
+                    deferRender: true,
+                    bJQueryUI: true*/
+                });
+                
+            }
+            window.onload = function() {
+             // buttonsEnabled(false);
+               jQuery('[id$=selectlistId]').focus();
+            };
+                
+    </script>
+     <apex:actionstatus id="loading" startText="Requesting...">
+             <apex:facet name="start">
+                <div id="salesforceSource_blurybackground" style="position:absolute; left:1px; top:1px; width:100%; height:100%; text-align:center; vertical-align: middle; background-color: #dcdcdc; opacity:0.7;filter:alpha(opacity=60)"></div>
+                 <div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 80%; display: ''; ">
+                    <div style="width: 144px;vertical-align: middle;" class="waitingHolder">
+                    <table align="center" valign="top" style="width: 100%; height: 30%">
+                    <tr align="center" valign="top" style="width: 100%; height: 30%">
+                        <td valign="top"><img src="/img/loading.gif"/><span class="waitingDescription"><b>Loading...</b></span></td>
+                    </tr>
+                    </table>
+                    </div>
+                </div>
+                <!--<div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 100%; display: ''; "/>
+                <script>document.getElementById('ManageMembersViewport_loading').height = window.innerHeight * (3/4);</script>-->
+             </apex:facet>
+             <apex:facet name="stop"></apex:facet>
+        </apex:actionstatus>
+    </apex:form>
+</apex:page>

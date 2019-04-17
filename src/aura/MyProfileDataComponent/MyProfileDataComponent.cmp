@@ -1,0 +1,35 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="MyProfileDataController">
+    <aura:attribute name="profDatas" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!--Display Header info-->
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+    	<h4 class="title slds-text-heading--medium" >My Profile Data</h4>
+    </div>
+    
+    <!--Data table to display profile data values-->
+    <table Class="slds-table slds-table_cell-buffer slds-table_bordered">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th scope="col"><div class="slds-truncate" title="Account">Account</div></th>
+                <th scope="col"><div class="slds-truncate" title="AccountSite">Account Site</div></th>
+                <th scope="col"><div class="slds-truncate" title="Profile">Profile</div></th>
+                <th scope="col"><div class="slds-truncate" title="ProfileDataName">Profile Data Name</div></th>
+                <th scope="col"><div class="slds-truncate" title="ProfileDataVolume">Profile Data Volume</div></th>
+            </tr>
+    	</thead>
+        <tbody>
+            <aura:iteration items="{!v.profDatas}" var="pd">
+            	<tr class="slds-hint-parent">
+                	<td><div class="slds-truncate" title="{!pd.ProfData.Account__r.Parent.Name}">{!pd.profData.Account__r.Name}</div></td>
+                    <td><div class="slds-truncate" title="{!pd.profData.Account__r.Name}">{!pd.profData.Account_Site__r.Name}</div></td>
+                    <td><div class="slds-truncate" title="{!pd.profData.Profile__r.Name}"><a href="{!'/one/one.app?#/sObject/'+ pd.profData.Profile__c + '/view'}" target="_blank">{!pd.profData.Profile__r.Name}</a></div></td>
+                    <td><div class="slds-truncate" title="{!pd.profData.Name}">{!pd.profData.Name}</div></td>
+                    <td><div class="slds-truncate slds-form-element" title="{!pd.profData.Volume__c}"><lightning:input type="number" variant="label-hidden" name="volume" label="" value="{!pd.profData.Volume__c}"/></div></td>
+                </tr>
+			</aura:iteration>
+       </tbody>
+    </table>
+    
+		
+</aura:component>

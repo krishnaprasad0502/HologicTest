@@ -1,0 +1,22 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="QuoteExtController"  action="{!onSubmit}">
+    <apex:form id="form1">
+      <apex:pageBlock title="Submit for Approval">
+        <apex:pageMessages />
+            <apex:pageBlockButtons location="Bottom" >
+                <apex:commandButton value="Return to Quote" action="{!backToQuote}"/>
+            </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Non-quotable products" columns="1" rendered="{! IF(lines.size > 0, true, false)}">
+             <apex:pageBlockTable value="{!lines}" var="l" rendered="{! haveLineErrors}">
+                
+                <apex:repeat var="f" value="{!$ObjectType.SBQQ__QuoteLine__c.FieldSets.Approval_Validation}">
+                    <apex:column headerValue="{!f.label}">
+                        <apex:outputField value="{!l[f]}" />
+                    </apex:column>
+                </apex:repeat>                
+                       
+            </apex:pageBlockTable>  
+
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

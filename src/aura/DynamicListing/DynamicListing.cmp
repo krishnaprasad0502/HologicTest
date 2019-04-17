@@ -1,0 +1,208 @@
+<!--
+****************************************************************************************************************************
+    Author       : Nikhil Mutyam
+    Company      : Hexaware Technologies
+    Created Date : 9/14/2018 7:23 AM
+	Description  : Display record lists based on the selection made from design attributes. Flexibility provided for
+				   Sorting, Filtering and many more.
+
+    History:
+    <Date>         <Author Name>			<Brief Description of Change> 		<Copa.do US#>
+   9/14/2018	   Nikhil Mutyam			Initial Creation					US-0005633
+   10/15/2018	    Niraj Wani  			Top Margin px            	        US-0005861
+  10/30/2018		Nomita Walke			Added dynamic url to listviewurl.	US-0006062
+  11/20/2018		VRUSHABH KATARIYA		Updated Design and added style		US-0006169
+ 12/17/2018			Nomita Walke			Fixed Static Resource				US-0006345
+  12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+****************************************************************************************************************************  
+-->
+
+<aura:component controller="ListController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" 
+	access="global">
+    
+	<!-- CSS for Dynamic Listing-->
+    <!-- SFDC Edit <ltng:require 
+    styles="{!$Resource.HologicSupportResources + '/HoLogicResources/Font_Awesome/css/font-awesome.css'}"/> -->
+    <ltng:require styles="{!$Resource.Font_Awesome + '/Font_Awesome/fontawesome/css/font-awesome.css'}"/>
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="displayWidget" type="Boolean" default="true"/>
+	<aura:attribute name="ListType" type="string" default="Account"/>
+	<aura:attribute name="FieldName" type="string" default="Name"/>
+	<aura:attribute name="FieldName2" type="string" default="Name"/>
+    <aura:attribute name="FieldName3" type="string" default="Name"/>
+    <aura:attribute name="FieldName4" type="string" default="Name"/>
+    <aura:attribute name="SortBy" type="string" default="Name"/>
+    <aura:attribute name="Limit" type="String" default="5"/>
+    <aura:attribute name="DescriptionLineLimit" type="Boolean" default="True"/>
+    <aura:attribute name="MarginTop" type="Boolean" default="True"/>
+    <aura:attribute name="border" type="String" />
+	<aura:attribute name="ReturnedRecords" type="list"/>
+	
+	<aura:attribute name="Line1Display" type="Boolean" />
+    <aura:attribute name="Line1Title" type="string" />
+	<aura:attribute name="Line1FontColor" type="string" />
+    <aura:attribute name="Line1Weight" type="string" />
+	<aura:attribute name="Line1Header" type="string" />
+	
+    <aura:attribute name="Line2Display" type="Boolean" />
+    <aura:attribute name="Line2Title" type="string" />
+	<aura:attribute name="Line2FontColor" type="string" />
+    <aura:attribute name="Line2Weight" type="string" />
+    <aura:attribute name="Line2Header" type="string" />
+    <aura:attribute name="Line2Link" type="Boolean" />    
+    
+    <aura:attribute name="Line3Display" type="Boolean" />
+    <aura:attribute name="Line3Title" type="string" />
+	<aura:attribute name="Line3FontColor" type="string" />
+    <aura:attribute name="Line3Weight" type="string" />
+    <aura:attribute name="Line3Header" type="string" />
+    <aura:attribute name="Line3Link" type="Boolean" />
+    
+    <aura:attribute name="Line4Display" type="Boolean" />
+	<aura:attribute name="Line4FontColor" type="string" />
+    <aura:attribute name="Line4Weight" type="string" />
+    <aura:attribute name="Line4Header" type="string" />
+    <aura:attribute name="Line4Link" type="Boolean" />
+    
+    <aura:attribute name="Line5Display" type="Boolean" />
+	<aura:attribute name="Line5FontColor" type="string" />
+    <aura:attribute name="Line5Weight" type="string" />
+    <aura:attribute name="Line5Header" type="string" />
+    
+    <aura:attribute name="detailPageUrl" type="String"/>
+    
+    <aura:attribute name="ListViewName" type="string" />
+    <aura:attribute name="ListViewURL" type="string" />
+    
+    <aura:attribute name="ShowRelatedRecords" type="Boolean" />
+    <aura:attribute name="RelatedFieldAPI" type="string" />
+    <aura:attribute name="recordId" type="String"/>
+    
+    <!--Filter-->
+    <aura:attribute name="FilterField" type="string" />
+    <aura:attribute name="FilterOperator" type="string" />
+    <aura:attribute name="FilterValue" type="string" />
+    
+    <!--Knowledge-->
+    <aura:attribute name="MapDataCategories" type="Boolean" default="false"/>
+    <aura:attribute name="DataCategoryField" type="string" />
+    <aura:attribute name="LandingPageObjectType" type="string" />
+    <aura:attribute name="DataCategory" type="string"/>
+    <aura:attribute name="IsQuestionTypeFeed" type="Boolean"/>
+    <!-- Custom Setting -->
+    <aura:attribute name="configSetting" type="Object"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.displayWidget}">
+        <div style="{!'border-left:'+ v.border+';padding-left: 20px;padding-right:30px;'}">
+            <aura:if isTrue="{!v.MarginTop}">
+                <div style="padding-top:20px;"></div>
+            </aura:if>
+            <!-- Line 1 -->
+            <aura:if isTrue="{!v.Line1Display}">
+                <!-- US-0006169 Added Style -->
+                <div class="{!v.Line1Header}" style="{!'font-weight:'+v.Line1Weight}">
+                    <p>{!v.Line1Title}</p>
+                </div><br/>
+            </aura:if>
+            
+            <!-- Display Records - Line 2,3,4 -->
+            <aura:if isTrue="{!v.Line2Display}">
+                <div>
+                    <aura:iteration items="{!v.ReturnedRecords}" var="item">
+                        <!-- US-0006169 Added Style -->
+                        <p class="{!v.Line2Header}" style="{!'font-weight:'+v.Line2Weight}">
+                            <aura:if isTrue="{!v.Line2Link}">
+                                <aura:if isTrue="{!equals(v.ListType,'Knowledge__kav')}">
+                                    <!-- US-0006169 Added Style -->
+                                    <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c+'article/'+ item.urlName}" class="{!v.Line2Header}" style="{!'font-weight:'+v.Line2Weight}">
+                                        {!v.Line2Title}{!item.Title}
+                                    </a>
+                                    <aura:set attribute="else">	
+                                        <!-- US-0006169 Added Style -->
+                                        <a href="{!v.configSetting.SiteURL__c+v.detailPageUrl+ item.Id}" class="{!v.Line2Header}" style="{!'font-weight:'+v.Line2Weight}">{!v.Line2Title}{!item.Title}</a>
+                                    </aura:set>
+                                </aura:if>
+                                <aura:set attribute="else">
+                                    {!v.Line2Title}{!item.Title}
+                                </aura:set>
+                            </aura:if>
+                        </p>
+                        
+                        <!-- Line 3 -->
+                        <aura:if isTrue="{!v.Line3Display}">
+                            <!-- US-0006169 Added Style -->
+                            <p class="{!v.Line3Header}" style="{!'font-weight:'+v.Line3Weight}">
+                                <aura:if isTrue="{!v.Line3Link}">
+                                    <aura:if isTrue="{!equals(v.ListType,'Knowledge__kav')}">
+                                        <!-- US-0006169 Added Style -->
+                                        <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c+'article/'+ item.urlName}" class="{!v.Line3Header}" style="{!'font-weight:'+v.Line3Weight}">
+                                            {!v.Line3Title}{!item.Value1}
+                                        </a>
+                                        <aura:set attribute="else">	
+                                            <!-- US-0006169 Added Style -->
+                                            <a href="{!v.configSetting.SiteURL__c+v.detailPageUrl+ item.Id}" class="{!v.Line3Header}" style="{!'font-weight:'+v.Line3Weight}">{!v.Line3Title}{!item.Value1}</a>
+                                        </aura:set>
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        <aura:unescapedHtml value="{!v.Line3Title + item.Value1 }" />
+                                    </aura:set>
+                                </aura:if>	
+                            </p>
+                        </aura:if>
+                        
+                        <!-- Line 4 -->
+                        <aura:if isTrue="{!v.Line4Display}">
+                            <!--<p class="{!v.Line4Header + ' slds-truncate'}" style="{!'color:'+v.Line4FontColor+';font-weight:'+v.Line4Weight+';'}">-->
+                            <!-- US-0006169 Added Style -->
+                            <p class="{!v.DescriptionLineLimit == True ? v.Line4Header + ' slds-truncate' : v.Line4Header + ' DescriptionStyling'}" style="{!'font-weight:'+v.Line4Weight}">
+                                <aura:if isTrue="{!v.Line4Link}">
+                                    <aura:if isTrue="{!equals(v.ListType,'Knowledge__kav')}">
+                                        <!-- US-0006169 Added Style -->
+                                        <a href="{!v.configSetting.SiteURL__c+v.configSetting.Hologic_Home__c+'article/'+ item.urlName}" 
+                                           class="{!v.DescriptionLineLimit == True ? v.Line4Header + ' slds-truncate' : v.Line4Header + ' DescriptionStyling'}" style="{!'font-weight:'+v.Line4Weight}">
+                                            {!item.Value2}
+                                        </a>
+                                        <aura:set attribute="else">	
+                                            <!-- US-0006169 Added Style -->
+                                            <a href="{!v.configSetting.SiteURL__c+v.detailPageUrl+ item.Id}" 
+                                               class="{!v.DescriptionLineLimit == True ? v.Line4Header + ' slds-truncate' : v.Line4Header + ' DescriptionStyling'}" style="{!'font-weight:'+v.Line4Weight}">
+                                                {!item.Value2}
+                                            </a>
+                                        </aura:set>
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        {!item.Value2}
+                                    </aura:set>
+                                </aura:if>
+                            </p>
+                        </aura:if>
+                        
+                        <!-- Line 5 -->
+                        <aura:if isTrue="{!v.Line5Display}">
+                            <!-- US-0006169 Added Style -->
+                            <p class="{!v.Line5Header}" style="{!'font-weight:'+v.Line5Weight}">
+                                {!item.Value3}
+                            </p>
+                        </aura:if>
+                        <br/>
+                    </aura:iteration>
+                </div>
+                
+                <!-- See All link Customization-->
+                <aura:if isTrue="{! and( v.ListViewName != null, v.ListViewName != '', v.ListViewName != 'undefined')}">
+                    <div class="seeAll" style="text-align:left;text-decoration: none;">
+                        <a href="{!v.configSetting.SiteURL__c+v.ListViewURL}">
+                            <p class="seeAll">
+                                <b>{! v.ListViewName}&nbsp;&nbsp; <i class="fa fa-arrow-right"></i></b>
+                            </p>
+                        </a>
+                    </div>
+                </aura:if>
+            </aura:if>
+        </div>	
+    </aura:if>
+</aura:component>

@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="placeHolderText" label="Place Holder Label" description="Place Holder Label"/>  
+    <design:attribute name="searchType" label="Type of Search" description="Type of Search" datasource="Global,Object,Knowledge"/>   
+</design:component>

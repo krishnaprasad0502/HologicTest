@@ -1,0 +1,5 @@
+<aura:documentation>
+	<aura:description>
+    This component is used to display image of the record for any Sobject record.
+    </aura:description>
+</aura:documentation>

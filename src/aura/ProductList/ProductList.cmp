@@ -1,0 +1,48 @@
+<!--
+*****************************************************************************************
+	Author:Sunil Kumar Sharma
+	Company:Hexaware Technologies
+	Description: This lightning component is used to show the product list for an individual 
+		     product family. 
+
+	Controller:ProductViewController
+
+	History:
+    <Date>              <Author Name>        	<Brief description of change >		<Copa.do US#>
+	8/22/2018			Sunil Kumar Sharma		Initial Creation 					US-0005699 
+	12/02/2018			Sunil Kumar Sharma		Product Load performance issue	  	US-0006259 
+												fixed
+*****************************************************************************************
+-->
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes" access="global">
+    <!-- Attribute Declarations-->
+    <aura:attribute name="products" type="List" />
+    <aura:attribute name="showCount" type="Integer" default="5" />
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="listViewName" type="String" />
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div >
+        <aura:iteration items="{!v.products}" var="item" indexVar ="index" end ="{!v.showCount}">
+            <aura:if isTrue="{!lessthan(index,v.showCount-1)}">
+                
+                <c:ProductDescriptionLink productDescription="{!item}" listViewName="{!v.listViewName}"/>
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.products.length != v.showCount}">
+                        <div class="slds-grid " style="padding-top:10px;">
+                            <div class="slds-col slds-size-1--of-2 " >
+                                <a href="" style="Font-size:14px;font-family: ProximaNova-Semibold,sans-serif; 
+                                    font-weight:bold;color:#008aad;" onclick="{!c.onAllProductSelection}"> 
+                                    View All Products...
+                                </a>
+                            </div>
+                        </div>
+                        <aura:set attribute="else">
+                            <c:ProductDescriptionLink productDescription="{!item}" listViewName="{!v.listViewName}"/>
+                        </aura:set>    
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+        </aura:iteration>
+    </div>
+</aura:component>

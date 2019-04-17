@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>
+        The component is used to show the quick links menu below the hero image on community home page.
+    </aura:description>
+	
+</aura:documentation>

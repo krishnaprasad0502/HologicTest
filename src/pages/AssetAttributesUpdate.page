@@ -1,0 +1,147 @@
+<apex:page controller="AssetAttributesUpdateController" showHeader="false" standardStylesheets="false" sidebar="false" docType="html-5.0" applyBodyTag="False" applyHtmlTag="true" title="System Attributes Update">
+    <head>
+        <apex:slds />
+    </head>
+    <style>
+    </style>
+    <body style="background-color: white; padding: 20px;">
+        <div class="slds-scope">
+            <h1 class="slds-text-heading_large slds-m-bottom_medium">
+                Asset Attributes
+            </h1>  
+            <apex:Form >    
+                <!-- Find Serial Number -->
+                <div class="slds-card slds-p-around_large" style="display: {!IF(idURL == null, 'block', 'none')};">
+                    <apex:inputText value="{! serialNumber}" styleClass="slds-input slds-size--1-of-1 slds-small-size--1-of-3 slds-medium-size--1-of-4" html-placeholder="Enter Serial Number"/><br/>
+                    <apex:commandButton value="Find" styleClass="slds-button slds-button_brand slds-m-top_x-small"/>
+                </div>
+                <!-- /Find Serial Number -->
+                <apex:pageBlock rendered="{!IF(Asset != null, true, false)}">
+                    <!-- System Information -->
+                    <h1 class="slds-text-heading_medium slds-m-top_medium slds-m-bottom_medium slds-border_bottom">
+                        System Information
+                    </h1>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">System ID</p>
+                            {! Asset.Oracle_System_ID__c }
+                        </div>
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">System Description</p>
+                            {! Asset.Description }
+                        </div>
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">System Item</p>
+                            {! Asset.Product2.Name }
+                        </div>
+                    </div>
+                    <!-- /System Information -->
+                    <p></p>
+                    <!-- Locations -->
+                    <h1 class="slds-text-heading_medium slds-m-top_medium slds-m-bottom_medium slds-border_bottom">
+                        Locations
+                    </h1>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">
+                                Installed At
+                            </p>
+                            {! Asset.Customer_Account__r.Name}<br/>
+                            {! Asset.Install_Location__r.Address_Line_1__c}<br/>
+                            <apex:outputText rendered="{! IF(Asset.Install_Location__r.Address_Line_2__c == null, false, true) }">
+                                {! Asset.Install_Location__r.Address_Line_2__c}<br/>
+                            </apex:outputText>                                
+                            <apex:outputText rendered="{! IF(Asset.Install_Location__r.Address_Line_3__c == null, false, true) }">
+                                {! Asset.Install_Location__r.Address_Line_3__c}<br/>
+                            </apex:outputText>
+                            <apex:outputText rendered="{! IF(Asset.Install_Location__r.Address_Line_4__c == null, false, true) }">
+                                {! Asset.Install_Location__r.Address_Line_4__c}<br/>
+                            </apex:outputText>
+                            {! Asset.Install_Location__r.City__c}, {! Asset.Install_Location__r.State__c} {! Asset.Install_Location__r.Zip_Code__c}<br/>
+                            {! Asset.Install_Location__r.Country__c}                            
+                        </div>
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">
+                                Billed To
+                            </p>
+                            {! Asset.Customer_Account__r.Name}<br/>
+                            {! Asset.Bill_To_Location__r.Address_Line_1__c}<br/>
+                            <apex:outputText rendered="{! IF(Asset.Bill_To_Location__r.Address_Line_2__c == null, false, true) }">
+                                {! Asset.Bill_To_Location__r.Address_Line_2__c}<br/>
+                            </apex:outputText>                                
+                            <apex:outputText rendered="{! IF(Asset.Bill_To_Location__r.Address_Line_3__c == null, false, true) }">
+                                {! Asset.Bill_To_Location__r.Address_Line_3__c}<br/>
+                            </apex:outputText>
+                            <apex:outputText rendered="{! IF(Asset.Bill_To_Location__r.Address_Line_4__c == null, false, true) }">
+                                {! Asset.Bill_To_Location__r.Address_Line_4__c}<br/>
+                            </apex:outputText>
+                            {! Asset.Bill_To_Location__r.City__c}, {! Asset.Bill_To_Location__r.State__c} {! Asset.Bill_To_Location__r.Zip_Code__c}<br/>
+                            {! Asset.Bill_To_Location__r.Country__c}                            
+                        </div>
+                        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-3 slds-m-top_x-small">
+                            <p class="slds-text-title slds-m-bottom--xx-small">
+                                Ship To
+                            </p>
+                            {! Asset.Customer_Account__r.Name}<br/>
+                            {! Asset.Ship_To_Location__r.Address_Line_1__c}<br/>
+                            <apex:outputText rendered="{! IF(Asset.Ship_To_Location__r.Address_Line_2__c == null, false, true) }">
+                                {! Asset.Ship_To_Location__r.Address_Line_2__c}<br/>
+                            </apex:outputText>                                
+                            <apex:outputText rendered="{! IF(Asset.Ship_To_Location__r.Address_Line_3__c == null, false, true) }">
+                                {! Asset.Ship_To_Location__r.Address_Line_3__c}<br/>
+                            </apex:outputText>
+                            <apex:outputText rendered="{! IF(Asset.Ship_To_Location__r.Address_Line_4__c == null, false, true) }">
+                                {! Asset.Ship_To_Location__r.Address_Line_4__c}<br/>
+                            </apex:outputText>
+                            {! Asset.Ship_To_Location__r.City__c}, {! Asset.Ship_To_Location__r.State__c} {! Asset.Ship_To_Location__r.Zip_Code__c}<br/>
+                            {! Asset.Ship_To_Location__r.Country__c}                            
+                        </div>
+                    </div>
+                    <!-- /Locations -->
+                    <!-- System Attributes -->
+                    <h1 class="slds-text-heading_medium slds-m-top_medium slds-m-bottom_medium slds-border_bottom">
+                        System Attributes
+                    </h1>
+                    <apex:repeat value="{! AssetAttributes}" var="a" rows="1">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size--1-of-4 slds-m-top_x-small">
+                                Item Name
+                            </div>
+                            <div class="slds-col slds-size--3-of-4 slds-m-top_x-small">
+                                <apex:inputText value="{! a.Asset__r.Product2.Name }" disabled="true"/>
+                            </div>
+                            <div class="slds-col slds-size--1-of-4 slds-m-top_x-small">
+                                Category
+                            </div>
+                            <div class="slds-col slds-size--3-of-4 slds-m-top_x-small">
+                                <apex:inputText value="{! a.Category__c }" disabled="true"/>
+                            </div>
+                        </div>
+                    </apex:repeat>
+                    <div class="slds-grid slds-wrap">
+                        <!-- Input Values -->
+                        <apex:repeat value="{! AssetAttributes}" var="a">
+                            <div class="slds-col slds-size--1-of-4 slds-m-top_x-small" title="Attribute Name">
+                                {! a.Name }
+                            </div>
+                            <div class="slds-col slds-size--3-of-4 slds-m-top_x-small">
+                                <!-- Custom Field: determine field type based on data type if picklist/textbox
+										hidden field used to write the value to database update -->
+                                <c:AssetAttributePicklist value="{!a.Value__c}" PickListName="{! a.Name}" Category="{! a.Category__c}" Label="{! a.Name }" />
+                                <apex:inputHidden value="{! a.Value__c }" id="idInputVal"/>
+                                <!-- /Custom Field -->
+                            </div>
+                        </apex:repeat>
+                        <div class="slds-col slds-size--1-of-4 slds-m-top_x-small" title="Attribute Name">
+                        </div>
+                        <div class="slds-col slds-size--3-of-4 slds-m-top_x-small">
+                            <apex:commandButton value="Update" action="{!save}" styleClass="slds-button slds-button_brand slds-m-top_x-small"/>
+                        </div>
+                        <!-- Input Values -->
+                    </div>
+                    <!-- /System Attributes -->
+                </apex:pageBlock>
+            </apex:Form>
+        </div>
+    </body>
+</apex:page>

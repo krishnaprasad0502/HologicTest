@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>37.0</apiVersion>
+    <availableInTouch>true</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>Visualforce page to provide ability for Project Coordinator to relate multiple Order Line Items to a B&amp;SH Install case.</description>
+    <label>CaseAddOrderLineItems</label>
+</ApexPage>

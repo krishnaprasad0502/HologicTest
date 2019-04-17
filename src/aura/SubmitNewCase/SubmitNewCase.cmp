@@ -1,0 +1,699 @@
+<!--
+*********************************************************************************************************************
+ Author       : Vrushabh Katariya
+ Company      : Hexaware Technologies
+ Created Date : 8/16/2018
+ Description  : This lightning component is used to create Service Request from multiple locations. 
+
+ History:
+ <Date>              <Author Name>        	<Brief description of change >		    					<Copa.do US#>
+ 8/16/2018			Vrushabh Katariya		Initial Creation 					    					US-0005701
+ 02/11/2018			Nomita Walke			Added Site URL to all navigation.
+ 22/11/2018			Nikhil Mutyam			Code changes to improve performance     					US-0006166
+ 03/12/2018			Nikhil Mutyam			Code changes to close pop up after case creation    		US-0006257 
+ 04/12/2018			Nikhil Mutyam			Code changes to swictch between case deflection 
+ 											and normal case creation     								US-0006257
+ 18/12/2018			Vrushabh Katariya		Schedule PM Future and Historic data						US-0006345
+ 31/12/2018			Vrushabh Katariya		Default the Priority for Submit an Issue to 'Sev 2'			US-0006454
+ 3/1/2019		    Yogitha Malireddy		Updated to resolve the help text font issue					US-0006454 
+ 01/11/2019     	Nomita Walke            Added condition for restricting third party users. 			US-0006454
+ 01/14/2019			Vrushabh Katariya		PM Schedule on case creation (Remove Schedule End Column)	US-0006454
+*********************************************************************************************************************
+-->
+
+<aura:component controller="SubmitNewCaseController" implements="lightning:actionOverride,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    
+    <!-- Attribute Declaration -->
+    <!-- Objects -->
+    <aura:attribute name="NewSR" type="Case" default="{ sobjectType: 'Case' }"/>
+    <!--<aura:attribute name="parentProduct" type="Product2" default="{ sobjectType: 'Product2' }"/>-->
+    <aura:attribute name="userContactInfo" type="Contact" default="{ sobjectType: 'Contact' }"/>
+    <aura:attribute name="customerAccount" type="object"/>
+    
+    
+    <!-- Service Request Dynamic Attributes coming from invocations-->
+    <aura:attribute name="assetRecordId" type="string"/>
+    <aura:attribute name="CaseType" type="string"/>
+    <aura:attribute name="CaseSubType" type="string"/>
+    <aura:attribute name="CaseSubject" type="String"/>
+    <aura:attribute name="buttonClicked" type="string"/>
+    <aura:attribute name="CasePriority" type="String"/>
+    <aura:attribute name="dynamicPriority" type="String"/>
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="CaseId" type="String"/>
+    <!-- Default the Priority for Submit an Issue to 'Sev 2' US-0006454 -->
+    <aura:attribute name="CaseTitle" type="String"/>
+    
+    <!--Question Controls-->
+    <aura:attribute name="q1Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q1Value" type="string"/>
+    <aura:attribute name="q1Answer" type="string"/>
+    <aura:attribute name="displayQ1TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q2Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q2Value" type="string"/>
+    <aura:attribute name="q2Answer" type="string"/>
+    <aura:attribute name="displayQ2TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q3Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q3Value" type="string"/>
+    <aura:attribute name="q3Answer" type="string"/>
+    <aura:attribute name="displayQ3TextBox" type="boolean" default="false"/>
+    
+    <aura:attribute name="q4Options" type="List" default="[
+    	{'label': 'Yes', 'value': 'Yes'},
+    	{'label': 'No', 'value': 'No'}
+    ]"/>
+    <aura:attribute name="q4Value" type="string"/>
+    <aura:attribute name="q4Answer" type="string"/>
+    <aura:attribute name="displayQ4TextBox" type="boolean" default="false"/>
+    <aura:attribute name="displayQuestionnaire" type="boolean" default="false"/>
+    
+    <!-- UI Settings -->
+    <aura:attribute name="Screen1" type="boolean" default="false"/>
+    <aura:attribute name="Screen2" type="boolean" default="false"/>
+    <aura:attribute name="Screen3" type="boolean" default="false"/>
+    <aura:attribute name="SAScreen" type="boolean" default="false"/>
+    
+    <aura:attribute name="disableCreateFinish" type="boolean" default="false"/>
+    <aura:attribute name="disableFinish" type="boolean" default="false"/>
+    <aura:attribute name="showAsset" type="boolean" default="false"/>
+    <aura:attribute name="disableAsset" type="boolean" default="false"/>
+    <aura:attribute name="disableProduct" type="boolean" default="false"/>
+    <aura:attribute name="showProduct" type="boolean" default="false"/>
+    <aura:attribute name="showProductName" type="boolean" default="false"/>
+    
+    <aura:attribute name="showSSN" type="boolean" default="false"/>
+    <aura:attribute name="showSL" type="boolean" default="false"/>
+    <aura:attribute name="showPD" type="boolean" default="false"/>
+    <aura:attribute name="showST" type="boolean" default="false"/>
+    <aura:attribute name="showProductDesc" type="boolean" default="false"/>
+    <aura:attribute name="showScreen2Back" type="boolean" default="false"/>
+    
+    <aura:attribute name="errorMessage" type="string" default=""/>
+    <aura:attribute name="PriorityErrorMessage" type="string" default=""/>
+    
+    <aura:attribute name="showComplianceQ1Section" type="boolean" default="false"/>
+    <aura:attribute name="showQ1Error" type="boolean" default="false"/>
+    <aura:attribute name="showQ2Error" type="boolean" default="false"/>
+    <aura:attribute name="showQ3Error" type="boolean" default="false"/>
+    <aura:attribute name="q2Required" type="boolean" default="false"/>
+    <aura:attribute name="q3Required" type="boolean" default="false"/>
+    <aura:attribute name="assetDetail" type="boolean" default="false"/>
+    
+    <!-- Asset & Product Selection -->
+    <aura:attribute name="AssetId" type="string"/>
+    <aura:attribute name="AssetName" type="string"/>
+    <aura:attribute name="AssetAccountId" type="string"/>
+    <aura:attribute name="customerAccountId" type="string"/>
+    <aura:attribute name="customerAccountName" type="string"/>
+    <aura:attribute name="SerialNumber" type="string"/>
+    <aura:attribute name="Status" type="string"/>
+    <aura:attribute name="CommunityProductDesc" type="string"/>
+    <aura:attribute name="InstallLocationLabel" type="string"/>
+    <aura:attribute name="ProductName" type="String"/>
+    <aura:attribute name="ProductId" type="String"/>
+    
+    <!-- Service Appointment DataTable Attributes-->
+    <!-- PM Schedule data while case creation  US-0006345  START-->
+    <aura:attribute name="SAList" type="List"/>
+    <aura:attribute name="SAFieldSetName" type="String" default="CommunitySAFieldsOnSchedulePM"/>
+    <aura:attribute name="SAsObjectName" type="String" default="ServiceAppointment"/>
+    <aura:attribute name="showSAScreenBack" type="boolean" default="false"/>
+    <aura:attribute name="showSAEmptyMessage" type="boolean" default="false"/>
+    <aura:attribute name="CurrentDate" type="Date" />
+    <aura:attribute name="PastDate" type="Date" />
+    <aura:attribute name="FutureDate" type="Date" />
+    <aura:attribute name="currentUser" type="User" />
+    <!-- PM Schedule data while case creation  US-0006345 END-->
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.AssetId}" action="{!c.onAssetChange}"/>
+    <aura:handler name="change" value="{!v.ProductId}" action="{!c.onProductChange}"/>
+    <aura:registerEvent name="closeModalEvent" type="c:CloseModal"/>
+    
+    <div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+		<!-- Error Message -->
+			<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+				<p class="TextErrorMessage">{!v.errorMessage}</p>
+			</div>
+		<!-- Error Message -->
+		
+		<!-- Screen 1 Open -->
+		<aura:if isTrue="{!v.Screen1}">
+			<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-4"></div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_2-of-4"><!-- slds-align_absolute-center -->
+            	<aura:if isTrue="{!v.CaseSubType=='PM'}">
+            		<h2 id="modal-heading-01" class="slds-align_absolute-center slds-text-heading_Medium ">
+                        SELECT SYSTEM
+                    </h2>
+            		<aura:set attribute="else">
+            			<h2 id="modal-heading-01" class="slds-align_absolute-center slds-text-heading_Medium ">
+                            SELECT SYSTEM OR PRODUCT
+                        </h2>
+            		</aura:set>
+            	</aura:if>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-4"></div>
+			<!-- Asset Product Selection Window -->
+			<aura:if isTrue="{!v.showAsset}">
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="margin-top:25px">
+<!-- 					disabled="{!v.disableAsset}" -->
+					<c:CustomLookup objectAPIName="Asset" IconName="standard:Account" label="Select System" selectedRecordName="{!v.AssetName}" selectedRecordId="{!v.AssetId}" 
+									customerAccountId="{!v.customerAccountId}" customerAccountName="{v.customerAccountName}" SerialNumber="{!v.SerialNumber}" Status="{!v.Status}" 
+									CommunityProductDesc="{!v.CommunityProductDesc}" InstallLocationLabel="{!v.InstallLocationLabel}" disableInput="{!v.disableAsset}"
+									AssetAccountId="{!v.AssetAccountId}" customerAccount="{!v.customerAccount}" placeHolderName="Specify Serial Number.."/>
+				</div>
+				<br/><br/>
+			</aura:if>
+			<aura:if isTrue="{!v.currentUser.Profile.Name != $Label.c.Community_Profile_Third_Party}">
+            
+			<aura:if isTrue="{!!($Browser.isPhone|| $Browser.isTablet || $Browser.isIPad)}"> 
+				<aura:if isTrue="{!v.CaseSubType != 'PM'}"> 
+					<div class="slds-grid" style ="padding-left:35px;margin-top:25px;color: #333333!important;font-size: 13px;font-family: ProximaNova-rg,sans-serif;line-height:1;">
+						<div>
+						OR<br/><br/><br/>If your request pertains to a Disposable Product, select the Product name below:
+                        </div> 
+					</div>
+				</aura:if>
+               	<aura:set attribute="else">
+					<aura:if isTrue="{!v.CaseSubType != 'PM'}"> 
+						<div class="slds-grid" style ="padding-left:20px;margin-top:25px;color: #333333!important;font-size: 13px;font-family: ProximaNova-rg,sans-serif;line-height:1;">
+							<div>
+							OR<br/><br/><br/>If your request pertains to a Disposable Product, select the Product name below:
+							</div>
+						</div>    
+					</aura:if>
+				</aura:set>
+			</aura:if>
+
+			<aura:if isTrue="{!v.showProduct}">
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="margin-top:25px;">
+					<!-- disabled="{!v.disableProduct}" -->
+					<c:CustomLookup objectAPIName="Product2" IconName="standard:Account" label="Select Product" selectedRecordName="{!v.ProductName}" 
+									selectedRecordId="{!v.ProductId}" CommunityProductDesc="{!v.CommunityProductDesc}" disableInput="{!v.disableProduct}"
+									placeHolderName="Specify Product Name.."/>
+				</div>
+				<br/><br/>
+			</aura:if>
+            </aura:if>
+			<br/>
+	    	<!-- Asset Product Selection Window -->
+		
+			<br/><br/>
+		
+	    	<!-- Compliance Question 1 -->
+	    	<aura:if isTrue="{!v.showComplianceQ1Section}">
+		    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="margin-top:25px;">
+		    		<div class="slds-grid slds-text-heading_Small">
+			            <abbr class="slds-required" title="required">*</abbr>
+			            <b>{!$Label.c.Community_Case_Comment_Q1}</b><br/>
+			        </div>
+			        <aura:if isTrue="{!v.showQ1Error}">
+			            <div class="slds-grid slds-has-error">
+			                <lightning:radioGroup aura:id="radioGroupID" name="radioGroup" options="{!v.q1Options}" value="{! v.q1Value }" 
+			                                      type="radio" variant="label-hidden" class="customRadioCls " 
+			                                      onchange="{!c.handleQ1Change}"/>
+			            </div> 
+			            <aura:set Attribute="else">
+			                <div class="slds-grid">
+			                    <lightning:radioGroup aura:id="radioGroupID" name="radioGroup" options="{!v.q1Options}" value="{! v.q1Value }" 
+			                                          type="radio" variant="label-hidden" class="customRadioCls " 
+			                                          onchange="{!c.handleQ1Change}"/>
+			                </div> 
+			            </aura:set>
+			        </aura:if>
+			        <!-- Error message if answer for compliance question is not selected-->
+			        <div class="slds-grid TextErrorMessage" >
+			            <aura:if isTrue="{!v.showQ1Error}">
+			                <br/>{!$Label.c.Communtiy_Case_Creation_Q1_Error}
+			            </aura:if>
+			        </div>
+		    	</div>
+			</aura:if>
+	    	<!-- Compliance Question 1 -->
+	    
+	    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="height:75px">
+	    		<br/>&nbsp;<br/>
+	    	</div>
+	    	
+	    	<!-- Screen 1 Button -->
+	    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="text-align:right">
+	    		<br/><br/>
+	    		<lightning:button aura:id="Screen1Next" label="NEXT" variant="brand" onclick="{!c.Screen1Next}" class="sfdc_page_button"/>
+	    	</div>
+		</aura:if>
+	</div>
+		
+	<!-- Screen 2 Open -->	
+	<div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+    	<aura:if isTrue="{!v.Screen2}">
+    		<div class="{! and(v.CaseType == 'Web',$Label.c.Community_Show_Deflection == 'Yes') ? 'slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2' : 'slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1'}">
+				<!-- SLDS Page Header -->
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1">
+					<div class="slds-text-title_caps slds-text-heading_Medium slds-text-align_center">Create Case</div>
+				</div>
+				<!-- SLDS Page Header -->
+				
+				<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of1 slds-large-size_1-of-1" style="margin-top:25px">
+					<!-- Space Adjustments -->
+					&nbsp;
+				</div>
+				
+				<div class="slds-grid slds-wrap slds-gutters case-form-style">
+			    	<!-- Section 1 Start -->
+			    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="true" value="{!v.customerAccountName}" label="Customer Name"/>
+			  				</div>
+						</div>
+						
+						<aura:if isTrue="{!v.showSSN}">
+							<div class="slds-form-element">
+				  				<div class="slds-form-element__control">
+				    				<lightning:input name="input5" disabled="true" value="{!v.SerialNumber}" label="System Serial Number"/>
+				  				</div>
+							</div>
+						</aura:if>
+						
+						<aura:if isTrue="{!v.showProductName}">
+							<div class="slds-form-element">
+				  				<div class="slds-form-element__control">
+				    				<lightning:input name="input5" disabled="true" value="{!v.ProductName}" label="Product"/>
+				  				</div>
+							</div>
+						</aura:if>
+		
+						<aura:if isTrue="{!v.showProductDesc}">
+							<div class="slds-form-element">
+				  				<div class="slds-form-element__control">
+				    				<lightning:input name="input5" disabled="true" value="{!v.CommunityProductDesc}" label="Product Description"/>
+				  				</div>
+							</div>
+						</aura:if>
+						
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="true" value="{!v.userContactInfo.Phone}" label="Contact Phone Number"/>
+			  				</div>
+						</div>
+						
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="true" value="{!v.NewSR.Type}" label="Type"/>
+			  				</div>
+						</div>
+						
+						<aura:if isTrue="{!v.CaseType != 'Web'}">
+							<div class="slds-form-element">
+				  				<div class="slds-form-element__control">
+				    				<lightning:input name="input5" disabled="true" value="{!v.CaseSubType}" label="Sub Type"/>
+				  				</div>
+							</div>
+						</aura:if>
+			    	</div>
+			    	<!-- Section 1 Close -->
+	    	
+			    	<!-- Section 2 Start -->
+			    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2  leftAlign rightAlign">
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="true" value="{!v.userContactInfo.Name}" label="Contact Name"/>
+			  				</div>
+						</div>
+						
+						<aura:if isTrue="{!v.showSL}">
+							<div class="slds-form-element">
+				  				<div class="slds-form-element__control">
+				    				<lightning:input name="input5" disabled="true" value="{!v.InstallLocationLabel}" label="System Location"/>
+				  				</div>
+							</div>
+						</aura:if>
+						
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="true" value="{!v.NewSR.Status}" label="Status"/>
+			  				</div>
+						</div>
+						
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="false" value="{!v.NewSR.Case_Phone_Number__c}" label="Case Phone Number"/>
+			  				</div>
+						</div>
+		
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			  					<label class="slds-form-element__label"> Priority </label>
+		                        <button class="slds-button slds-button slds-button--icon" aria-describedby="help">
+		                        	<span class="helptext">                                    
+                                        <a>
+                                            <lightning:icon iconName="utility:info" size="xx-small" alternativeText="Please Select Priority"/>
+                                            <span escape="false"><aura:unescapedHtml value="{!$Label.c.Service_Priority_Help_Text}" /></span>
+                                        </a>
+                            		</span>
+                                </button>
+                                
+			  					<lightning:select name="mySelect" aura:id="mySelect" value="{!v.CasePriority}" class="hideLabel">
+			  						<aura:iteration items="{!v.options}" var="item">
+			  							<option value="{!item.label}" selected="{!item.label==v.CasePriority}">{!item.label}</option>
+			  						</aura:iteration>
+			  					</lightning:select>
+			  					<p class="TextErrorMessage">{!v.PriorityErrorMessage}</p>
+			  				</div>
+			  			</div>
+			    	</div>
+			    	<!-- Section 2 close -->
+			    	
+			    	<!-- Section 3 start -->
+			    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+			    		<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:input name="input5" disabled="false" value="{!v.NewSR.Subject}" label="Subject" onchange="{!c.callChildCompMethod}"/>
+			  				</div>
+						</div>
+						
+						<div class="slds-form-element">
+			  				<div class="slds-form-element__control">
+			    				<lightning:textarea aura:id="field" label="Description" name="reason" value="{!v.NewSR.Description}"/>
+			  				</div>
+						</div>
+			    	</div>
+			    	<!-- Section 3 close -->
+		    		
+		    		<!-- Section 4 start - Compliance Question 1 -->
+			    	<aura:if isTrue="{!v.assetDetail}">
+				    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+				    		<div class="slds-grid ">
+					            <abbr class="slds-required" title="required">*</abbr>
+					            <b>{!$Label.c.Community_Case_Comment_Q1}</b><br/>
+					        </div>
+					        
+					        <aura:if isTrue="{!v.showQ1Error}">
+					            <div class="slds-grid slds-has-error">
+					                <lightning:radioGroup aura:id="radioGroupID" name="radioGroup" options="{!v.q1Options}" value="{! v.q1Value }" 
+					                                      type="radio" variant="label-hidden" class="customRadioCls " 
+					                                      onchange="{!c.handleQ1Change}"/>
+					            </div> 
+					            <aura:set Attribute="else">
+					                <div class="slds-grid">
+					                    <lightning:radioGroup aura:id="radioGroupID" name="radioGroup" options="{!v.q1Options}" value="{! v.q1Value }" 
+					                                          type="radio" variant="label-hidden" class="customRadioCls " 
+					                                          onchange="{!c.handleQ1Change}"/>
+					                </div> 
+					            </aura:set>
+					        </aura:if>
+					        <!-- Error message if answer for compliance question is not selected-->
+					        <div class="slds-grid TextErrorMessage" >
+					            <aura:if isTrue="{!v.showQ1Error}">
+					                <br/>{!$Label.c.Communtiy_Case_Creation_Q1_Error}
+					            </aura:if>
+					        </div>
+				    	</div>
+					</aura:if>
+				    <!-- Section 4 close - Compliance Question 1 -->
+				    
+				    <!-- Section 5 Screen 2 Buttons -->
+			    	<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="text-align:right">
+			    		<br/>&nbsp;<br/>
+			    	</div>
+
+		    		<!-- Section 5 Screen 2 Buttons -->
+		    		
+		    		<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="text-align:right">
+			    		<div class="slds-clearfix">
+	  						<div class="slds-clearfix">
+	    						<div class="slds-float_left">
+	    							<aura:if isTrue="{! v.showScreen2Back }">
+						    			<lightning:button aura:id="Screen2Back" label="BACK" variant="brand" onclick="{!c.Screen2Back}" class="sfdc_page_button "/>
+						    		</aura:if>
+	    						</div>
+	    						<div class="slds-float_right">
+	    							<aura:if isTrue="{! v.q1Value == 'Yes'}">
+						    			<lightning:button aura:id="Screen2Next" label="NEXT" variant="brand" onclick="{!c.Screen2Next}" 
+						    				disabled="{!v.disableCreateFinish}" class="{!v.disableCreateFinish == true ? 'sfdc_page_button_disable' : 'sfdc_page_button '}" />
+						    			<aura:set attribute="else">
+						    				<lightning:button aura:id="Screen3Save" label="Create" variant="brand" onclick="{!c.Screen2Save}" 
+						    				disabled="{!v.disableCreateFinish}" class="{!v.disableCreateFinish == true ? 'sfdc_page_button_disable' : 'sfdc_page_button '}" />
+						    			</aura:set>
+									</aura:if>
+	    						</div>
+	    					</div>
+	    				</div>
+					</div>
+    			</div>
+	    	</div>
+	    	
+	    	<!-- SUGGESTED ARTICLES -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2">
+		    	<aura:if isTrue="{! and(v.CaseType == 'Web',$Label.c.Community_Show_Deflection == 'Yes')}">
+	                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1">
+	                    <aura:if isTrue="{!v.currentUser.Profile.Name != $Label.c.Community_Profile_Third_Party}">
+                        <c:SuggestedArticles aura:id='childCmp' />
+                        </aura:if>
+	                </div>
+	            </aura:if>
+            </div>
+            
+    	</aura:if>
+	</div>
+	<!-- Screen 2 Close -->
+	
+	<!-- Screen 3 Open -->
+	<div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+    	<!-- Screen 3 Open -->
+    	<aura:if isTrue="{!v.Screen3}">
+			<!-- Compliance Question 2-->
+	        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign">
+	            <div class="slds-grid slds-text-heading_Small">
+	                <abbr class="slds-required" title="required">*</abbr>
+	                <b>{!$Label.c.Community_Case_Comment_Q2}</b><br/>
+	            </div>
+	            <aura:if isTrue="{!v.q2Required}">
+	                <div class="slds-grid slds-has-error">
+	                    <lightning:radioGroup name="radioGroup2" options="{!v.q2Options}" value="{! v.q2Value }" 
+	                                         type="radio" variant="label-hidden" class="customRadioCls" 
+	                                         onchange="{!c.handleQ2Change}"/>
+	                </div>
+	                <aura:set Attribute="else">
+	                    <div class="slds-grid">
+	                        <lightning:radioGroup name="radioGroup2" options="{!v.q2Options}" value="{! v.q2Value }" 
+	                                             type="radio" variant="label-hidden" class="customRadioCls" aria-describedby="error-01"
+	                                             onchange="{!c.handleQ2Change}"/>
+	                       
+	                    </div>  
+	                </aura:set>
+	           </aura:if>
+	            <div class="slds-grid TextErrorMessage" id="error-01">
+	                <aura:if isTrue="{!v.q2Required}">
+	                    <br/>{!$Label.c.Communtiy_Case_Creation_Q1_Error}
+	                </aura:if>
+	            </div> 
+	            <aura:if isTrue="{!v.displayQ2TextBox}">
+	                <aura:if isTrue="{!v.showQ2Error}">
+	                    <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+	                        <lightning:textarea class="TextAreaStyle slds-text-color_weak" aria-describedby="error-02" name="input3" value="{!v.q2Answer}" placeholder="type here..."/>
+	                        <div class="slds-form-element__help TextErrorMessage" id="error-02">This field is required</div>
+	                    </div> 
+	                    <aura:set Attribute="else">
+	                        <div>
+	                            <lightning:textarea class="TextAreaStyle slds-text-color_weak" name="input3" value="{!v.q2Answer}" placeholder="type here..."/>
+	                        </div> 
+	                    </aura:set>
+	                </aura:if>
+	            </aura:if>    
+	        </div><br/><br/>
+			<!-- Compliance Question 2-->
+			
+			<!-- Compliance Question 3-->
+			<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1 leftAlign rightAlign" style="margin-top:25px">
+	            <div class="slds-grid slds-text-heading_Small">
+	                <abbr class="slds-required" title="required">*</abbr>
+	                <b>{!$Label.c.Community_Case_Comment_Q3}</b><br/>
+	            </div>    
+	            <aura:if isTrue="{!v.q3Required}">
+	                <div class="slds-grid slds-has-error">
+	                    <lightning:radioGroup name="radioGroup3" options="{!v.q3Options}" value="{! v.q3Value }" 
+	                                          type="radio" variant="label-hidden" class="customRadioCls" 
+	                                          onchange="{!c.handleQ3Change}"/>
+	                </div>
+	                <aura:set Attribute="else">
+	                    <div class="slds-grid">
+	                        <lightning:radioGroup name="radioGroup3" options="{!v.q3Options}" value="{! v.q3Value }" 
+	                                              type="radio" variant="label-hidden" class="customRadioCls" 
+	                                              onchange="{!c.handleQ3Change}"/>
+	                        
+	                    </div>  
+	                </aura:set>
+	            </aura:if>
+	            <div class="slds-grid TextErrorMessage" id="error-01">
+	                <aura:if isTrue="{!v.q3Required}">
+	                    <br/>{!$Label.c.Communtiy_Case_Creation_Q1_Error}
+	                </aura:if>
+	            </div>
+	            <aura:if isTrue="{!v.displayQ3TextBox}">
+	                <aura:if isTrue="{!v.showQ3Error}">
+	                        <div style="margin-top: -10px;" class ="slds-form-element slds-has-error ">
+	                            <lightning:textarea class="TextAreaStyle slds-text-color_weak"  aria-describedby="error-03" name="input3" value="{!v.q3Answer}" placeholder="type here..."/>
+	                            <div class="slds-form-element__help TextErrorMessage" id="error-03">This field is required</div>
+	                        </div> 
+	                        <aura:set Attribute="else">
+	                            <div>
+	                                <lightning:textarea class="TextAreaStyle slds-text-color_weak"  name="input3" value="{!v.q3Answer}" placeholder="type here..."/>
+	                            </div> 
+	                        </aura:set>
+	                    </aura:if>
+	            </aura:if> 
+	            
+	            <!-- Screen 3 Button -->	           
+	    		<div class="slds-clearfix" style="margin-top:25px;">
+	    			<div class="slds-float_left">
+<!-- 	    				<lightning:button aura:id="Screen3Back" label="BACK" variant="brand" onclick="{!c.Screen3Back}" class="sfdc_page_button "/> -->
+	    			</div>
+	    				
+	    			<div class="slds-float_right">
+	    				<lightning:button aura:id="Screen3Save" label="Finish" variant="brand" onclick="{!c.Screen3Save}"
+	    				 disabled="{!v.disableFinish}" class="{!v.disableFinish == true ? 'sfdc_page_button_disable' : 'sfdc_page_button '}" />
+	    			</div>	
+	    		</div>
+		    	
+		    	
+	        </div>
+			<!-- Compliance Question 3-->
+		</aura:if>
+    </div><!-- slds-grid slds-wrap - close -->
+    <!-- Screen 3 Close -->
+    
+    <!-- SAScreen Open -->
+    <!-- PM Schedule data while case creation  US-0006345  START-->
+    <div class="slds-grid slds-wrap slds-gutters case-form-style" style="font-family: ProximaNova-Semibold,sans-serif !important;">
+        <!-- SAScreen Open -->
+        <aura:if isTrue="{!v.SAScreen}">
+            <div class="{! ($Label.c.Community_Show_Deflection == 'Yes') ? 'slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2' : 'slds-col slds-size_1-of-1 slds-small-size_1-of-1 slds-small-size_1-of-1'}" style="text-align:center">
+            <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="text-align:center">-->
+                <!--<div>-->
+                <lightning:card title="{!$Label.c.Community_Schedule_Preventive_Maintenance}" >
+                    <div class="slds-col slds-size_1-of-1 " style="text-align:left">
+                        <lightning:recordViewForm recordId="{!v.AssetId}" objectApiName="Asset" >
+                            <div class="slds-form-element__label ">
+                                System Name: 
+                            </div>
+                            <lightning:outputField fieldName="Name" variant="label-hidden"/>
+                            <div class="slds-form-element__label ">
+                                Serial Number: 
+                            </div> 
+                            <lightning:outputField fieldName="SerialNumber" variant="label-hidden"/>
+                            <br/>
+                            
+                        </lightning:recordViewForm>
+                    </div>
+                    <aura:if isTrue="{!v.showSAEmptyMessage}">
+                        <div class="TextFormat">
+                            {! $Label.c.Community_No_Scheduled_PMs } 
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="TextFormat">
+                                {!$Label.c.Community_Previously_Scheduled_PMs} &nbsp; <br/> <ui:outputDate value="{!v.PastDate}"/> - <ui:outputDate value="{!v.FutureDate}"/>
+                            </div>
+                            <br/>
+                            <div class="slds-scrollable " >
+                                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal ">
+                                    <thead>
+                                        <tr class="slds-line-height_reset " >
+                                            <th class="slds-text-title_caps" scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Work Order Number">Work Order No</div>
+                                            </th>
+                                            <th class="slds-text-title_caps " scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Appt No">Appt No</div>
+                                            </th>
+                                            <th class="slds-text-title_caps " scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Status ">Status</div>
+                                            </th>
+                                            <th class="slds-text-title_caps " scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Scheduled Start ">Scheduled Start</div>
+                                            </th>
+                                            <th class="slds-text-title_caps " scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Actual Start ">Actual Start</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="FSE">FSE</div>
+                                            </th>
+                                            <th class="slds-text-title_caps " scope="col" style="text-align:center">
+                                                <div class="slds-truncate" title="Actual End ">Actual End</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.SAList}" var="item">
+                                            <tr class="slds-hint-parent ">
+                                                <th data-label="Work Order No" scope="row" >
+                                                    <div class="slds-truncate" title="WorkOrderNumber">{!item.Related_Work_Order__r.WorkOrderNumber}</div>
+                                                </th>
+                                                <th data-label="Appt No" scope="row" >
+                                                    <div class="slds-truncate" title="AppointmentNumber">{!item.AppointmentNumber}</div>
+                                                </th>
+                                                <th data-label="Status" scope="row" >
+                                                    <div class="slds-truncate" title="Status">{!item.Status}</div>
+                                                </th>
+                                                <th data-label="Scheduled Start" scope="row" >
+                                                    <div class="slds-truncate" title="SchedStartTime">
+                                                        <ui:outputDate value="{!item.SchedStartTime}"/>
+                                                    </div>
+                                                </th>
+                                                <th data-label="Actual Start" scope="row" >
+                                                    <div class="slds-truncate" title="ActualStartTime">
+                                                        <ui:outputDate value="{!item.ActualStartTime}"/>
+                                                    </div>
+                                                </th>
+                                                <th data-label="FSE" scope="row" >
+                                                    <div class="slds-truncate" title="Owner">{!item.Owner.Name}</div>
+                                                </th>
+                                                <th data-label="Actual End" scope="row" >
+                                                    <div class="slds-truncate" title="ActualEndTime">
+                                                        <ui:outputDate value="{!item.ActualEndTime}"/>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </lightning:card> 
+                
+                <div class="slds-clearfix">
+                    <div class="slds-clearfix">
+                        <div class="slds-float_left">
+                            <aura:if isTrue="{! v.showSAScreenBack }">
+                                <br/><br/>
+                                <lightning:button aura:id="SAScreenBack" label="BACK" variant="brand" onclick="{!c.SAScreenBack}" class="sfdc_page_button "/>
+                            </aura:if>
+                        </div>
+                        <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1  leftAlign rightAlign" style="text-align:right">-->
+                        <div class="slds-float_right">
+                            <br/><br/>
+                            <lightning:button aura:id="SAScreenNext" label="NEXT" variant="brand" onclick="{!c.SAScreenNext}" class="sfdc_page_button"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div><!-- slds-grid slds-wrap - close -->
+    <!-- PM Schedule data while case creation  US-0006345  END-->
+    <!-- SAScreen Close -->
+    
+    
+</aura:component>

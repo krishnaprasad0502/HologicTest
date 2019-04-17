@@ -1,0 +1,409 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Kasmoor Reddy
+Description:    VF page button on Quote object which allows lookup to billto,shipto,deliverto site locations.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+01/02/2018      Kasmoor Reddy       Initial Creation (US3714)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page controller="SiteLocationLookup" showHeader="false" sidebar="false" id="popuppage">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/JavaScript" /> 
+<apex:form id="Formid">
+
+<apex:outputPanel style="margin:10px;height:400px;overflow-Y:auto;" layout="block"  id="outputpanelid">
+   
+    <apex:pageBlock id="searchResults" rendered="{!IF(a == 2, true, false)}"> 
+       
+      
+                <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchString}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResults,errormsg1,previous,next"/>
+               
+                </apex:inputText>  
+               <br/>
+                <br/>
+        <apex:pageBlockTable value="{!ShiptositeQuote}" var="record" id="userResults"  rendered="{!ShiptositeQuote.size >= 0}"> 
+   
+            <apex:column >
+                <apex:facet name="header">Ship to Site</apex:facet>
+                <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="shiptosite,shiptositeid">
+                    
+                    {!record.Site_Address}
+                    
+                    <apex:param name="shiptositepopup" assignTo="{!shiptositepopup}" value="{!record.Site_Address}" />
+                     <apex:param name="shiptositepopupid" assignTo="{!shiptositepopupid}" value="{!record.Site_id}" />
+               </apex:commandlink>
+            </apex:column>
+                      
+</apex:pageBlockTable>
+     <apex:outputText id="errormsg1"  value="{!if(ShiptositeQuote.size = 0,'There are no Ship to Site address to display.','')}"/>  
+     <apex:inputHidden value="{!shiptositeadd}" id="shiptosite"/>
+           <apex:inputHidden value="{!shiptositeaddid}" id="shiptositeid"/> 
+         <apex:commandButton value="Previous" rerender="searchResults" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults" action="{!next}" disabled="{!nxt}" id="next"/>
+         </apex:pageBlock>
+    
+    <apex:pageBlock id="searchResults1" rendered="{!IF(a == 1, true, false)}">
+    
+    <!--<apex:pageBlock id="searchResults1"> -->
+        
+     
+              <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchStringbill}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResults1,errormsg2,previous,next" />
+        </apex:inputText>
+              <br/>
+                <br/>
+        <apex:pageBlockTable value="{!BilltositeQuote}" var="bill" id="userResults1"  rendered="{!BilltositeQuote.size >= 0}">  
+           
+    
+            <apex:column >
+                <apex:facet name="header">Bill to Site</apex:facet>
+              
+                    <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="billtosite,billtositeid">  
+                    {!bill.Site_Address}
+                     <apex:param name="billtositepopup" assignTo="{!billtositepopup}" value="{!bill.Site_Address}" />
+                           <apex:param name="billtositepopupid" assignTo="{!billtositepopupid}" value="{!bill.Site_id}" />
+                    </apex:commandlink>
+            </apex:column>
+                           
+            
+        </apex:pageBlockTable>
+  <apex:outputText id="errormsg2"  value="{!if(BilltositeQuote.size = 0,'There are no Bill to Site address to display.','')}"/> 
+           <apex:inputHidden value="{!billtositeadd}" id="billtosite"/>
+                <apex:inputHidden value="{!billtositeaddid}" id="billtositeid"/> 
+                     <apex:commandButton value="Previous" rerender="searchResults1" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults1" action="{!next}" disabled="{!nxt}" id="next"/>
+    </apex:pageBlock>
+    
+  <apex:pageBlock id="searchResults2"  rendered="{!IF(a == 3, true, false)}">  
+ 
+    
+          <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchStringdelv}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResults2,errormsg,previous,next"/>
+        </apex:inputText>
+            <br/>
+                <br/>
+        <apex:pageBlockTable value="{!DelvtositeQuote}" var="dell" id="userResults2"  rendered="{!DelvtositeQuote.size >= 0}" > 
+      
+                
+            <apex:column >
+                <apex:facet name="header">Delivery to Site</apex:facet>
+              
+                <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="devtosite,devtositeid"> 
+                    
+                    {!dell.Site_Address}
+                  <apex:param name="devtositepopup" assignTo="{!devtositepopup}" value="{!dell.Site_Address}" />
+                         <apex:param name="devtositepopupid" assignTo="{!devtositepopupid}" value="{!dell.Site_id}" />
+                      </apex:commandlink>
+            </apex:column>
+                          
+            
+         
+        </apex:pageBlockTable> 
+                            <apex:outputText id="errormsg"  value="{!if(DelvtositeQuote.size = 0,'There are no Delivery to Site address to display.','')}"/>
+                  <apex:inputHidden value="{!devtositeadd}" id="devtosite"/>
+                       <apex:inputHidden value="{!devtositeaddid}" id="devtositeid"/>
+                            <apex:commandButton value="Previous" rerender="searchResults2" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults2" action="{!next}" disabled="{!nxt}" id="next"/>
+        
+    </apex:pageBlock>
+   <apex:pageBlock id="searchResults3" rendered="{!IF(a == 4, true, false)}">  
+     
+      <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchStringbillline}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResultsbill,errormsg4,previous,next"/>
+        </apex:inputText> 
+        <br/>
+                <br/>
+        <apex:pageBlockTable value="{!Billtositeline}" var="record" id="userResultsbill" rendered="{!Billtositeline.size >= 0}" >  
+
+            <apex:column >
+                <apex:facet name="header">Bill to Site</apex:facet>
+                <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="billtosite1,billtosite1id">
+                    
+                    {!record.Site_Address}
+                    
+                    <apex:param name="billtositepopupline" assignTo="{!billtositepopupline}" value="{!record.Site_Address}" />
+                    <apex:param name="billtositepopuplineid" assignTo="{!billtositepopuplineid}" value="{!record.Site_id}" />
+                    
+                    
+                </apex:commandlink>
+            </apex:column>
+                     
+            
+        </apex:pageBlockTable>
+     
+<apex:outputText id="errormsg4"  value="{!if(Billtositeline.size = 0,'There are no Bill to Site address to display.','')}"/>
+                  <apex:inputHidden value="{!billtositeaddline}" id="billtosite1"/>  
+                       <apex:inputHidden value="{!billtositeaddlineid}" id="billtosite1id"/> 
+                            <apex:commandButton value="Previous" rerender="searchResults3" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults3" action="{!next}" disabled="{!nxt}" id="next"/>
+         </apex:pageBlock>
+      <apex:pageBlock id="searchResults4" rendered="{!IF(a == 5, true, false)}">  
+    
+      <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchStringLine}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResultsb,errormsg6,previous,next"/>
+        </apex:inputText> 
+        <br/>
+                <br/>
+        <apex:pageBlockTable value="{!Shiptositeline}" var="record" id="userResultsb" rendered="{!Shiptositeline.size >= 0}">  
+             
+            <apex:column >
+                <apex:facet name="header">Ship to Site</apex:facet>
+                <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="shiptosite1,shiptosite1id">
+                    
+                    {!record.Site_Address}
+                    
+                    <apex:param name="shiptositepopupline" assignTo="{!shiptositepopupline}" value="{!record.Site_Address}" />
+                    <apex:param name="shiptositepopuplineid" assignTo="{!shiptositepopuplineid}" value="{!record.Site_id}" />
+                    
+                    
+                </apex:commandlink>
+            </apex:column>
+                     
+            
+        </apex:pageBlockTable>
+        <apex:outputText id="errormsg6"  value="{!if(Shiptositeline.size = 0,'There are no Ship to Site address to display.','')}"/>  
+     <apex:inputHidden value="{!shiptositeaddline}" id="shiptosite1"/>
+         <apex:inputHidden value="{!shiptositeaddlineid}" id="shiptosite1id"/>
+          <apex:commandButton value="Previous" rerender="searchResults4" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults4" action="{!next}" disabled="{!nxt}" id="next"/>
+         </apex:pageBlock>
+      <apex:pageBlock id="searchResults5" rendered="{!IF(a == 6, true, false)}" >  
+ 
+        <apex:outputLabel >Enter Searchkey</apex:outputLabel>
+        <apex:inputText value="{!searchStringdelvline}"  >
+            <apex:actionSupport event="onkeyup" action="{!Search}" rerender="userResultsd,errormsg5,previous,next"/>
+        </apex:inputText>
+           <br/>
+                <br/>
+        <apex:pageBlockTable value="{!Delvtositeline}" var="dell" id="userResultsd" rendered="{!Delvtositeline.size >=0}">  
+            <apex:column >
+                <apex:facet name="header">Delivery to Site</apex:facet>
+                <apex:commandlink action="{!onselect}" oncomplete="fillIn();" id="outputlinid" rerender="devtosite1,devtosite1id"> 
+                    
+                    {!dell.Site_Address}
+                  <apex:param name="devtositepopupline" assignTo="{!devtositepopupline}" value="{!dell.Site_Address}" />
+                       <apex:param name="devtositepopuplineid" assignTo="{!devtositepopuplineid}" value="{!dell.Site_id}" />
+                      </apex:commandlink>
+            </apex:column>
+                        
+            
+           
+                          
+        </apex:pageBlockTable> 
+                        <apex:outputText id="errormsg5"  value="{!if(Delvtositeline.size = 0,'There are no Delivery to Site address to display.','')}"/>
+                  <apex:inputHidden value="{!devtositeaddline}" id="devtosite1"/>
+                      <apex:inputHidden value="{!devtositeaddlineid}" id="devtosite1id"/>
+     <apex:commandButton value="Previous" rerender="searchResults5" action="{!previous}" disabled="{!prev}" id="previous"/>
+<apex:commandButton value="Next" rerender="searchResults5" action="{!next}" disabled="{!nxt}" id="next"/>   
+    </apex:pageBlock>
+   
+</apex:outputPanel>
+<apex:inputHidden value="{!qlsize}" id="qlinesize"/>
+      <apex:inputHidden value="{!linenumber}" id="linenumber"/>
+          <apex:inputHidden value="{!quotelineid}" id="quotelineid"/>
+</apex:form>
+<script>
+    function fillIn(){                
+    var shiptosite = $('input[id$=shiptosite]').val();
+    var billtosite = $('input[id$=billtosite]').val();
+    var devtosite = $('input[id$=devtosite]').val();
+    var billtosite1 = $('input[id$=billtosite1]').val();
+    var shiptosite1 = $('input[id$=shiptosite1]').val();
+    var billtositeid = $('input[id$=billtositeid]').val();
+    var billtositeid1 = $('input[id$=billtosite1id]').val();
+    var shiptositeid = $('input[id$=shiptositeid]').val();
+    var shiptositeid1 = $('input[id$=shiptosite1id]').val();
+    var delivertositeid = $('input[id$=devtositeid]').val();
+    var delivertositeid1 = $('input[id$=devtosite1id]').val();
+    var qlinesize = $('input[id$=qlinesize]').val();
+           
+    var linenumber = $('input[id$=linenumber]').val();
+    var devtosite1 = $('input[id$=devtosite1]').val();
+    var qliid= $('input[id$=quotelineid]').val();            
+    var winMain1 = window.opener;
+    if (null == winMain1){
+             winMain1=window.parent.opener;
+        }   
+   if(shiptosite!=null&&shiptosite1==null)
+       {
+          
+        var elem =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:ShipToSiteItem:it');            
+
+        elem.value = shiptosite ;//document.getElementById('mainPageId:mainFormId:csvPhoneNumberId').value; 
+        var elem3 =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:ShipToSiteItem:shipToSiteId');            
+
+        elem3.value = shiptositeid ;
+           var i;
+           if(qlinesize > 0){
+           for (i = 0; i < qlinesize; i++) 
+           { 
+               var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':ShipToSiteItem:it1'); 
+               elem1.value = shiptosite ;
+                var elem2 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':ShipToSiteItem:shipToSiteId1');            
+
+        elem2.value = shiptositeid ;
+              
+           }
+               }
+
+          
+    }
+          if(shiptosite1!=null)
+       {
+           
+            
+           var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':ShipToSiteItem:it1');            
+        elem1.value = shiptosite1 ;
+         var elem =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':ShipToSiteItem:shipToSiteId1');            
+        elem.value = shiptositeid1 ;
+        
+        var elem =winMain1.document.getElementById('mainid:formId:PageBlock:qutolirelatedshiptosite');  
+    
+           if(elem.value==null||elem.value=='')
+           {
+             elem.value=qliid+'-'+shiptositeid1 ;
+           }
+           else
+            {
+              
+               elem.value=elem.value+","+qliid+"-"+shiptositeid1 ;
+            }
+               
+               
+           
+       }   
+    
+if(billtosite!=null)
+       {
+       
+        if(winMain1.location.href.includes('Payment')){
+            
+            var payment = winMain1.document.getElementById('mainid:formId:pgblk:pgblksec3:pgblk3item3:bt');
+            payment.value = billtosite;
+            
+            var paymentId = winMain1.document.getElementById('mainid:formId:pgblk:pgblksec3:pgblk3item3:billToSiteId');
+            paymentId.value = billtositeid; 
+ 
+        }
+      
+        if(!winMain1.location.href.includes('Payment')){
+        var elem =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:BillToSiteItem:bt');            
+
+        elem.value = billtosite ;//document.getElementById('mainPageId:mainFormId:csvPhoneNumberId').value;
+            var elem3 =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:BillToSiteItem:billToSiteId');            
+ 
+        elem3.value = billtositeid ;
+    
+    
+        if(qlinesize > 0){
+            for (i = 0; i < qlinesize; i++) 
+           {
+        
+            var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':BillToSiteItem:bti');            
+       
+        elem1.value = billtosite ;
+
+        var elem2 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':BillToSiteItem:billToSiteId1');            
+       
+        elem2.value = billtositeid ;
+    
+               }
+              }
+         }
+            
+        
+        
+        
+         
+        
+    }
+           if(billtosite1!=null)
+       {
+            
+            var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':BillToSiteItem:bti');            
+
+        elem1.value = billtosite1 ;
+                var elem =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':BillToSiteItem:billToSiteId1');            
+   
+        elem.value = billtositeid1;
+        
+             var elem3 =winMain1.document.getElementById('mainid:formId:PageBlock:qutolirelatedbilltosite');  
+    
+           if(elem3.value==null||elem3.value=='')
+           {
+             elem3.value=qliid+'-'+billtositeid1 ;
+           }
+           else
+            {
+               elem3.value=elem3.value+","+qliid+"-"+billtositeid1 ;
+            }
+
+                  }
+if(devtosite!=null)
+       {
+    
+           var elem =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:DeliverToSiteItem:dt');            
+        elem.value = devtosite ;
+          
+             var elem3 =winMain1.document.getElementById('mainid:formId:PageBlock:PBS:DeliverToSiteItem:deliverToSiteId');            
+
+        elem3.value = delivertositeid ;
+    
+           if(qlinesize > 0){
+        
+            for (i = 0; i < qlinesize; i++) 
+           {
+                
+              var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':DeliverToSiteItem:dt1');            
+
+        elem1.value = devtosite ;
+               var elem2 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+i+':DeliverToSiteItem:deliverToSiteId1');            
+  
+        elem2.value = delivertositeid ;
+               }
+               }
+          
+         }
+ if(devtosite1!=null)
+       {
+       
+           var elem1 =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':DeliverToSiteItem:dt1');            
+
+        elem1.value = devtosite1 ;
+      var elem =winMain1.document.getElementById('mainid:formId:PageBlock:qls:repeat:'+linenumber+':DeliverToSiteItem:deliverToSiteId1');            
+  
+        elem.value = delivertositeid1 ;
+            var elem4 =winMain1.document.getElementById('mainid:formId:PageBlock:qutolirelateddelivertosite');  
+    
+           if(elem4.value==null||elem4.value=='')
+           {
+             elem4.value=qliid+'-'+delivertositeid1 ;
+           }
+           else
+            {
+               elem4.value=elem4.value+","+qliid+"-"+delivertositeid1 ;
+            }
+ 
+          
+         }
+         
+    onClose();
+         }
+    function onClose(){
+     
+      var winMain=window.opener;
+      if (null==winMain)
+      {
+         winMain=window.parent.opener;
+      }
+      winMain.closeLookupPopup();
+   }          
+  
+   
+</script>
+</apex:page>

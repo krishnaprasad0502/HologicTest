@@ -1,0 +1,11 @@
+<apex:component controller="GetKnowledgeDetails" access="global">
+    <apex:attribute type="Id" name="articleFeedbackId" assignTo="{!artFedId}" description="the relatedTo Article Feedback Id"/>
+    <apex:attribute type="String" name="agentTemplate" description="to get the template type"/>
+    <b>Article Number:</b>  {!articleDetails.ArticleNumber}<br/>
+    <b>Title:</b>           {!articleDetails.Title}<br/>
+    <b>Product:</b>         {!articleDetails.Product_Name__c}<br/>
+    <apex:outputPanel layout="none" rendered="{!NOT(ISNULL(agentTemplate))}">
+        <b>Owner:</b>           {!articleDetails.AssignedTo.Name}<br/>
+    </apex:outputPanel>
+    <b>URL: </b>            <a href="{!articleDetails.UrlName}" target="_blank" >{!articleDetails.UrlName} </a> <br/><br/>
+</apex:component>

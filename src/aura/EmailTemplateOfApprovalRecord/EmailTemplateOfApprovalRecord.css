@@ -1,0 +1,16 @@
+.THIS .sWrapTest {
+height:400px;
+width:800px;
+
+}
+.THIS .sWrapTest1 {
+height:100%;
+width:100%;
+border-radius:0px;
+}
+.THIS.outerScroller {
+border-radius: 11px;
+}
+.THIS.innerScroller {
+border-radius: 10px;
+}

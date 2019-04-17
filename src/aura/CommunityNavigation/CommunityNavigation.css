@@ -1,0 +1,65 @@
+.THIS .navigation {
+    min-width: 225px;
+    border-right: 1px solid #e7e7e7;
+}
+.THIS .slds-nav-vertical__title{
+	color: #131F6B;
+	opacity: 100%;
+	font-size: 15px;
+	font-family: ProximaNova-Semibold,sans-serif ;
+	line-height: 21px;
+    font-weight: bold;
+}
+
+.THIS .slds-nav-vertical__action{
+    color: #008AAD !important;
+}
+.THIS .Header3Style{
+	color: #008AAD !important;
+	opacity: 100%;
+	font-size: 14px;
+	font-family: ProximaNova-Semibold,sans-serif;
+	line-height: 14px;
+    font-weight: normal;
+}
+.THIS .ComponentHeader{
+    color: #131F6B;
+	opacity: 100%;
+	font-size: 22px;
+	font-family: ProximaNova-bold,sans-serif;
+	line-height: 26px;
+    font-weight: bold;
+}
+
+.THIS .livechat-header{
+    text-align:center ;
+    font-size:15px;
+    font-weight:bold;
+    color:#008aad !important;
+}
+
+.THIS .livechat-radio{
+    font-size:15px;
+    font-weight:bold;
+    color:#008aad !important; 
+}
+.THIS .option-list{
+    width:200px ;
+}
+
+.THIS .livechatcontainer{
+    min-height:40rem !important;
+    max-width: 50rem !important ;
+}
+
+.THIS .option-list .slds-combobox__input{
+    border:1px solid ; 
+}
+
+.THIS .option-list .slds-listbox {
+    overflow-y: scroll;
+    height: 130px;
+}
+.THIS .hidenavigation {
+    display: none !important;
+}

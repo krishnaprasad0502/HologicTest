@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>
+    	This is a dynamic component to show object fields based on whatever field set is selected.
+        Layout can be easily configured to single column or double column.
+    </aura:description>
+</aura:documentation>

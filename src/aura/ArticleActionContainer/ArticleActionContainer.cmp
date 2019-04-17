@@ -1,0 +1,105 @@
+<!--
+*******************************************************************************************
+    Author 		 : Sunil Kumar Sharma
+    Company 	 : Hexaware Technologies
+    Created Date : 1/09/2019 
+	Description  : This component is used to show the action buttons on article detail page.
+
+    History:
+    <Date>			<Author Name>					<Brief Description of Change>  <Copa.do US#>
+	01/09/2019		Sunil Kumar Sharma				Initial Creation  
+    01/18/2019		Sunil Kumar Sharma				Article feedback implementation. 	US-0006553
+*******************************************************************************************
+-->
+<aura:component controller="UpdateFavouritesController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+	
+    <!-- Attribute Declaration -->
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="display" type="string" default="False"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+    <aura:attribute name="newarticleFeedback" type="Object"/>
+    <aura:attribute name="simpleArticleFeedback" type="Object"/>
+    <aura:attribute name="newFeedbackError" type="String"/>
+    <!-- Handler(s) -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <force:recordData aura:id="feedbackRecordCreator"
+                      layoutType="FULL"
+                      targetRecord="{!v.newarticleFeedback}"
+                      targetFields="{!v.simpleArticleFeedback}"
+                      targetError="{!v.newFeedbackError}" />
+    
+    
+    <!-- List of Buttons to be displayed on Listview -->
+	<div class="slds-grid slds-wrap slds-gutters slds-align_absolute-center">       
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" style="text-align:right">
+            <aura:if isTrue="{!!v.display}">
+                <lightning:button label="Add to Favorite" title="Add to Favorite" onclick="{!c.UpdateRecordtoFavourite}" 
+					class="ButtonStyle"/>
+            </aura:if>
+            <aura:if isTrue="{!v.display}">
+                <lightning:button label="Remove Favorite" title="Remove Favorite" onclick="{!c.RemoveFavourite}" class="ButtonStyle1"/>
+            </aura:if>
+        </div> 
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12" style="text-align:right">
+        	<lightning:button label="Article Feedback"
+                          title="Article Feedback"
+                          onclick="{! c.openModel }" />
+        </div>
+    </div>
+    <div class="slds-m-around_xx-large">
+        
+        
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Article Feedback</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!-- Display the new contact form -->
+                        <div class="create-feedback">
+                            <lightning:card  title="Article Feedback">
+                                <div class="slds-p-horizontal--small">
+									<lightning:textarea aura:id="feedbackField" class="text-area" label="Feedback" value="{!v.simpleArticleFeedback.Community_Feedback__c}"/>
+                                </div>
+                            </lightning:card>
+                        </div>
+                        
+                        <!-- Display Lightning Data Service errors -->
+                        <aura:if isTrue="{!not(empty(v.newContactError))}">
+                            <div class="recordError">
+                                {!v.newContactError}</div>
+    					</aura:if>
+                    </div>
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          class="ButtonStyle2"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        <lightning:button variant="brand" 
+                                          label="Submit"
+                                          title="Submit"
+                                          onclick="{! c.SubmitFeedback }"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+    </div>
+</aura:component>

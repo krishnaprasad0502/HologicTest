@@ -1,0 +1,145 @@
+<!--------------------------------------------------------------------------------------------------------------------
+Author:     Mani Sundaresan & Alex Powning
+Description:  GenerateQRCode VF page used by Diag FSE's for dashboard access.
+
+History:
+<Date>      <Authors Name>    				<Brief Description of Change>
+03/21/2019   Mani Sundaresan & Alex Powning    Initial Creation
+---------------------------------------------------------------------------------------------------------------------->
+<apex:page docType="html-5.0" standardStylesheets="false" showHeader="false" applyHtmlTag="false" sidebar="false" controller="GenerateQRCode" action="{!generateSoftVersions}">
+  <head>
+      <apex:slds />
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta http-equiv="cache-control" content="no-cache, no-store, max-age=0, must-revalidate" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_SF1, 'dist/css/bootstrap.css')}"/>
+      <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_SF1, 'dist/css/bootstrap.min.css')}"/>
+      
+      <style>
+
+#inPanel {
+  margin: auto;
+  width: 100%;
+  padding: 10px;
+}
+         
+</style>
+<script>
+
+    function fnDownloadContent(ID, compID)
+    {
+        actDnldContent(ID, compID);         
+    }  
+    function download(filename,text) 
+    {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/html;charset=utf-8;base64,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+      
+    function openNewWin(base64QrDownload) {
+        //alert("here");
+       	var myWindow = window.open("", "QrDownload", "width=700,height=400");
+        myWindow.document.open();
+    	myWindow.document.write(atob(base64QrDownload));
+    }
+
+</script>
+      
+  </head>
+  <body class="slds-scope" id="body">
+      
+  <apex:form >
+
+        <apex:actionfunction name="actDnldContent" action="{!downloadTxt}" reRender="outputTable" oncomplete="javascript:download('QRCodeInfo.html','{!txtDoc}');">
+            <apex:param name="downloadId" value="" assignTo="{!downloadId}" />
+            <apex:param name="downloadCompId" value="" assignTo="{!downloadCompId}"/>                                                                     
+            </apex:actionfunction>
+
+      
+      <center>
+          
+          <div id="inPanel">
+            <label for="versions">Software:</label>
+            
+              <br/>
+            <!--<apex:selectList size="1" value="{!vVersion}" multiselect="false" id="versionList">
+              <apex:selectOptions value="{!versionOptions}"/>
+            </apex:selectList>-->
+                <apex:selectList size="5" value="{!selectedVersions}" multiselect="true" id="versionList">
+              	<apex:selectOptions value="{!versionOptions}"/>
+              </apex:selectList><br/>
+            <!-- Theme4t is for mobile  -->
+            <apex:outputPanel rendered="{!IF(sfTheme != 'Theme4t', 'true', 'false')}">
+                <span title="CTRL key + Left Mouse Button Click: select multiple items."><img style="vertical-align: middle;" src="http://png-3.findicons.com/files/icons/1156/fugue/16/question_frame.png" /></span>
+			</apex:outputPanel>
+          </div>
+          
+        <div id="inPanel">
+      
+        <label for="timespan">Month valid:</label>
+            <br/>
+        <apex:selectList size="1" value="{!vTimespan}" multiselect="false" title="The month for which this QR Code is valid.">
+          <apex:selectOptions value="{!timespanOptions}"/>
+        </apex:selectList>
+          </div>
+            
+          <div id="inPanel">
+        <apex:outputText value="User: "/>
+                <apex:outputText value="{!currentUser}" id="userName"/>
+          </div>
+          
+          <apex:commandButton action="{!generateqr}" value="Generate QR Codes" id="theButton" status="qrStatus" rerender="qrStatus, outPanel, txtButton"/> 
+          
+          <br/><br/>
+            <apex:actionStatus id="qrStatus">
+                <apex:facet name="start" >
+                    <apex:outputPanel >
+                        <img src="/img/loading32.gif" width="25" height="25" />
+                    </apex:outputPanel>            
+                </apex:facet>
+            </apex:actionStatus>
+      
+      <apex:outputPanel id="outPanel" >
+      <div id="inPanel">
+          <hr/>
+          
+      <apex:commandButton id="txtButton2" value="Downloadable Doc" onClick="javascript:openNewWin('{!txtDoc}');"                                 rerender="outputTable" rendered="{!IF(AND(displayOutput, sfTheme != 'Theme4t'), 'true', 'false')}"/>     
+<!--      <apex:commandButton id="txtButton" value="Generate Text Doc" onClick="javascript:fnDownloadContent('{!downloadId}','{!downloadCompId}');" rerender="outputTable" rendered="{!IF(AND(displayOutput, sfTheme != 'Theme4t'), 'true', 'false')}"/> -->
+          <br/><br/>
+      <!--<b><apex:outputText value="{!vVersion}" id="txt0"/></b><br/>-->
+      <b><apex:outputText value="{!Account}" id="txt1"/></b><br/>
+      <b><apex:outputText value="{!validFrom} - {!validTo}" id="txt2"/></b><br/>
+      <br/>
+      <!--<a href="{!otpauth}"><apex:image url="{!imageurl}" id="img1"/></a><br/><br/>
+      <br/>
+      <b><apex:outputText value="{!key}" id="txt"/></b><br/>-->
+      
+      <apex:pageBlock id="outputTable">
+        <apex:pageBlockTable value="{!qrCodeOutputs}" var="outputs">
+          <apex:column >
+              <center>
+                  <b><apex:outputText value="{!outputs.vVersion}" /></b><br/>
+                  <a href="{!outputs.otpauth}"><apex:image url="{!outputs.imageurl}" id="img1"/></a><br/>
+                  <!--<b><apex:outputText value="{!outputs.key}" /></b><br/>--><br/>
+              </center>
+          </apex:column>
+        </apex:pageBlockTable>
+      </apex:pageBlock>    
+
+      </div>
+      </apex:outputPanel>
+      
+      </center>
+      
+            <!--<b>Debug:<apex:outputText value="{!data}" id="data"/></b><br/>-->
+      
+
+        </apex:form>
+
+  </body>
+</apex:page>

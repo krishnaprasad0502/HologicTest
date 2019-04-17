@@ -1,0 +1,144 @@
+<apex:page standardController="ServiceContract" extensions="ContractANDLinesCloneController">
+    <script type="text/javascript">
+        function selectCheckboxes(inpt, receivedInptID)
+        {
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+                    inputCheckBox[i].checked = inpt.checked;
+                }
+            }
+        }
+    </script>
+    <apex:form >
+        <apex:sectionHeader title="ServiceContracts" subtitle="{!ServiceContract.Name}"/>
+        <apex:PageMessages />
+        <apex:pageBlock title="Service Contract Detail" mode="edit">
+            <apex:pageBlockButtons >               
+                <apex:commandButton value="Clone Header & Lines" action="{!saveHeaderAndChild}"/>
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+                       <apex:pageBlockSection collapsible="false" columns="2">
+                <apex:pageBlockSectionItem >
+                        <apex:outputLabel >Service Contract Name</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Name}"/>
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                        <apex:outputLabel >Account</apex:outputLabel>
+                        <apex:outputText value="{!ServiceContract.Account.Name}"></apex:outputText>
+                </apex:pageBlockSectionItem>             
+                 <apex:pageBlockSectionItem >
+                        <apex:outputLabel >Start Date</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.StartDate}"/>
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                        <apex:outputLabel >End Date</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.EndDate}"/>
+                </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Bill To Account</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Bill_To_Account__c}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Ship To Account</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Ship_To_Account__c}"/>
+                </apex:pageBlockSectionItem> 
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Bill To Site Location</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Bill_To_Site_Location__c}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Ship To Site Location</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Ship_To_Site_Location__c}"/>
+                </apex:pageBlockSectionItem> 
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Transaction Type</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Transaction_Type__c}"/>
+                </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Contract Source</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Contract_Source__c}"/>
+                </apex:pageBlockSectionItem>                
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Payment Term</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Payment_Term__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                        <apex:outputLabel >PO Number</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.PO_Number__c}"/>
+                </apex:pageBlockSectionItem>  
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Contract Group</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Contract_Group__c}"/>
+                </apex:pageBlockSectionItem>                   
+
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Account Rule</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Accounting_Rule__c}"/>
+                </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel >Invoiceing Rule</apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Invoicing_Rule__c}"/>
+                </apex:pageBlockSectionItem>  
+  <apex:pageBlockSectionItem >
+                        <apex:outputLabel > Operating Unit </apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Operating_Unit__c}"/>
+                </apex:pageBlockSectionItem>                                
+                <apex:pageBlockSectionItem >
+                        <apex:outputLabel > Internal Contact </apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Internal_Contact__c}"/>
+                </apex:pageBlockSectionItem>                 
+               <apex:pageBlockSectionItem >
+                        <apex:outputLabel > Description </apex:outputLabel>
+                        <apex:inputField value="{!ServiceContract.Description}"/>
+                </apex:pageBlockSectionItem>                                
+          </apex:pageBlockSection>            
+        </apex:pageBlock>
+        <apex:pageBlock title="Contract Lines " >
+            <apex:pageBlockButtons location="top">
+                
+            </apex:pageBlockButtons>
+            <div style="overflow-y: auto; height: 300px; ">
+                <apex:pageBlockTable value="{!ListOfConLineLines}" var="ConLine" columns="9" id="ConLines" rendered="{!(ListOfConLineLines != null)}" >
+                <apex:column >
+                        <apex:facet name="header">Select</apex:facet>
+                      <apex:inputCheckbox value="{!ConLine.selected}"/>           
+                    </apex:column>
+                <apex:column >
+                        <apex:facet name="header">LineItemNumber</apex:facet>
+                        <apex:outputText value="{!ConLine.obj2Line.LineItemNumber}"></apex:outputText>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Product</apex:facet>
+                        <apex:outputText value="{!ConLine.obj2Line.PricebookEntry.Name}"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Asset</apex:facet>
+                        <apex:outputText value="{!ConLine.obj2Line.Asset.Name}"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Quantity</apex:facet>
+                        <apex:inputField value="{!ConLine.obj2Line.Quantity}"/>
+                    </apex:column> 
+                    <apex:column >
+                        <apex:facet name="header">Unit Price</apex:facet>
+                        <apex:inputField value="{!ConLine.obj2Line.UnitPrice}"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Status</apex:facet>
+                        <apex:outputText value="{!ConLine.obj2Line.Status}"/>
+                    </apex:column>  
+                   <apex:column >
+                        <apex:facet name="header">Start Date</apex:facet>
+                        <apex:inputField value="{!ConLine.obj2Line.StartDate}"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">End Date</apex:facet>
+                        <apex:inputField value="{!ConLine.obj2Line.EndDate}"/>
+                    </apex:column>                     
+                </apex:pageBlockTable>   
+            </div>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,48 @@
+<!------------------------------------------------------------
+Author:         Krishna Prasad
+Company:        Apps Associates
+Description:    Selecting the pricebook for an order if the order does not have the pricebook.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+05/05/2017      Krishna Prasad       Initial Creation(US-0002725)
+------------------------------------------------------------>
+<apex:page standardController="Order" extensions="OrderItemProductSearchWithWarehouse" showHeader="true" sidebar="false"
+            tabStyle="Order" title="Order Item Selector" >
+<script type = "text/javascript">
+    window.onload=function()       
+    {        
+        orderTypeSelected();
+    };
+</script>
+<apex:sectionHeader title="New Order" subtitle="with Order Items" />
+<apex:form >
+    <apex:pageBlock title="Order Details" mode="edit" > 
+        <div align="center" draggable="false" >
+          <apex:commandButton action="{!backToOrder}" value="Back To Order" />
+        </div>
+        <div align="center" draggable="false" >
+           <apex:commandButton action="{!UpdateOrderAddOLi}" value="Update Order/Add Order Line" />
+        </div>
+        <apex:facet name="header" >
+           <apex:outputField value="{!order.Name}"/>
+        </apex:facet>
+        <apex:pageBlockSection title="Order Details" collapsible="false" >
+            <apex:outputField value="{!order.AccountId}" />
+            <apex:outputField value="{!order.Status}"/> 
+            <apex:outputField value="{!order.Type}" >
+            </apex:outputField>
+            <apex:outputField value="{!order.RecordTypeId}" />
+            <apex:outputField value="{!order.EffectiveDate}" />
+            <apex:outputField value="{!order.EndDate}" />
+            <apex:outputField value="{!order.case__r.productid}" />
+              <apex:outputPanel layout="inline" >
+                      <apex:outputLabel for="pricebookselector" value="Select Pricebook: " style="font-weight: bold;" />
+                         <apex:selectList id="pricebookselector" value="{!SelectedPricebook}" multiselect="false" size="1" >
+                         <apex:selectOptions value="{!PricebookOptions}" />
+                        </apex:selectList>
+                </apex:outputPanel>  
+       </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Helps in closing the Modal window which is opened from Footer of Case detail page">
+	
+</aura:event>

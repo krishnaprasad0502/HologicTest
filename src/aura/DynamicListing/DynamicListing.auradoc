@@ -1,0 +1,7 @@
+<aura:documentation>
+	<aura:description>
+    	<p>
+        	This lightning component is used to show the product summary based on the product family.
+        </p>
+    </aura:description>
+</aura:documentation>

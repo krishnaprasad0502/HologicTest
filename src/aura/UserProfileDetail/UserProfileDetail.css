@@ -1,0 +1,12 @@
+.THIS .ButtonStyle{
+    width: 15%;
+}
+.THIS .TextErrorMessage{
+    color:#c62721;
+    font-weight: 600;
+    font-size: 12px
+}
+
+.THIS .form-style{
+	font-family: ProximaNova-Semibold,sans-serif !important;
+}

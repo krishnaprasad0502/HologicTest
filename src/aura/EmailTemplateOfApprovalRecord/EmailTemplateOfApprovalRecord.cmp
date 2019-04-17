@@ -1,0 +1,101 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="DisplayApprovalRecordsClass">
+<aura:attribute name="recordId" type="Id" />
+<!--<aura:attribute name="ApprovalDetails" type="sbaa__Approval__c" /> -->
+<aura:handler name="init" value="{!this}" action="{!c.DisplayEmailTemplateApprovalDetails}"/>
+     <aura:attribute name="objClassController" type="DisplayApprovalRecordsClass"/>
+    <aura:attribute name="Subject" type="String"/>
+<div class="mainWrap" style="margin-left:50px;">
+<ui:scrollerWrapper class="{!$Browser.isIPad?'sWrapTest':'sWrapTest1'}">
+      <p>
+    <b>APPROVAL REQUEST: &nbsp;  </b> {!v.Subject}</p>
+    <br/>
+ 
+   <p> <b>Sales Person: </b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.SBQQ__Opportunity2__r.Owner.Name}<br/>
+    <b>Price Agreement Source Account: </b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Price_Agreement__r.Account.Name}<br/>
+    <b>Price Agreement: </b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Price_Agreement__r.Name}<br/>
+    <b>Quote: </b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Name}<br/>
+    <b>Marketing Program: </b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Marketing_Program__c}<br/>
+    <b>Margin:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Margin__c}<br/>
+    <b>Quote Total:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.SBQQ__CustomerAmount__c} <br/>
+    <b>FOB:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.FOB__c} <br/>
+    <b>Payment Terms:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.SBQQ__PaymentTerms__c} <br/>
+    <b>Freight Terms:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Payment_Terms_Freight__c} <br/>
+    <b>Created Date:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Created_Date__c} <br/>
+    <b>Expiration Date:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Expiration_Date__c} <br/>
+    <b>Internal Notes:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.SBQQ__Notes__c} <br/>
+    <b>External Notes:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.External_Notes__c} <br/>
+    <b>Loaner/Rental - Evaluation Period:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Loaner_Eval_Period__c} <br/>
+    <b>Buyout:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Buyout_Price__c} <br/>
+    <b>Fee:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Rental_Fee__c} <br/>
+<b>Contract Language Change Request:</b>&nbsp;{!v.objClassController.ApprovalDetails.Quote__r.Contract_Language_Edit_Request__c}</p><br/>
+
+<aura:if isTrue="{!not(empty(v.objClassController.approvalsOfQuote))}">
+<label class="slds-form-element__label" for="search" >Approvers</label>
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                <thead>
+                    <tr class="slds-text-title--caps ">
+                        <aura:iteration items="{!v.objClassController.fieldNames}" var="Name">
+                        <th>       
+                             <span title="Id"><b>{!Name}</b></span>
+                        </th>
+                        </aura:iteration>
+                     
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.objClassController.approvalsOfQuote}" var="Approval">
+                        <tr class="slds-size--1-of-2">
+                           <aura:iteration items="{!v.objClassController.fieldAPINames}" var="fieldName">
+                             <td>
+                                <c:ApprovalAndFieldName Approval="{!Approval}" fieldName="{!fieldName}" />
+
+                            </td>
+                           </aura:iteration>
+                         </tr>
+                    </aura:iteration>
+                    
+                </tbody>
+                <tr/>
+            </table>
+      </aura:if>
+    <br/>
+      <aura:if isTrue="{!not(empty(v.objClassController.quoteLineRecords))}">
+    <label class="slds-form-element__label" for="search" >Quote Line Items</label>
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+             <thead>
+                    <tr class="slds-text-title--caps ">
+                        <aura:iteration items="{!v.objClassController.fieldNamesQuoteLine}" var="Name">
+                        <th>       
+                             <span title="Id"><b>{!Name}</b></span>
+                        </th>
+                        </aura:iteration>
+                     
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.objClassController.quoteLineRecords}" var="QuoteLIne">
+           
+                        <tr class="slds-size--1-of-2">
+                           <aura:iteration items="{!v.objClassController.fieldAPINamesQuoteLine}" var="fieldName">
+                             <td>
+                                <c:ApprovalAndFieldName QuoteLIne="{!QuoteLIne}" fieldName="{!fieldName}" />
+
+                            </td>
+                           </aura:iteration>
+                         </tr>
+                    </aura:iteration>
+                    
+                </tbody>
+                <tr/>
+               
+              
+                  
+            </table>
+      </aura:if>
+    <br/>
+   
+   
+    </ui:scrollerWrapper>
+     </div>
+ 
+</aura:component>

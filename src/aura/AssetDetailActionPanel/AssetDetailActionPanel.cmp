@@ -1,0 +1,168 @@
+<!--
+*******************************************************************************************
+    Author 		 : Sunil Kumar Sharma
+    Company 	 : Hexaware Technologies
+    Created Date : 9/18/2018 6:22 AM
+	Description  : This component is used to show the action buttons on asset detail page.
+
+    History:
+    <Date>			<Author Name>					<Brief Description of Change>  <Copa.do US#>
+	9/18/2018		Sunil Kumar Sharma				Initial Creation   				US-0005700 
+	11/05/2018		Nomita Walke					Added dynamic button url.
+ 	1/2/2019		Yogitha Malireddy				Added Submit a case button		US-0006454
+	1/19/2018		Vrushabh Katariya				PM schedule on Home page and 
+													My System detail Page			US-0006553
+*******************************************************************************************
+-->
+<aura:component controller="UpdateFavouritesController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" 
+	access="global" >
+	
+    <!-- Attribute Declaration -->
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="display" type="string"/>
+    <aura:attribute name="ReturnedRecords" type="list"/>
+    <aura:attribute name="assetName" type="string"/>
+    <aura:attribute name="newAssetName" type="string"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="returnedMetadataRecords" type="list"/>
+    <aura:attribute name="submitCaseisOpen" type="boolean" default="false"/>
+    <aura:attribute name="comp" type="Aura.Component"/>
+    <aura:attribute name="recorddetailId" type="Id" />
+    <aura:attribute name="assetActionPanel" type="string"/>
+    
+    <!-- Handler(s) -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- List of Buttons to be displayed on Listview -->
+	<div class="slds-grid slds-wrap slds-gutters slds-align_absolute-center" style="width:100%;margin:auto;">
+        
+        
+        
+        <aura:iteration items="{!v.returnedMetadataRecords}" var="btndetails">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="text-align:center">
+                <a onclick="{!c.InvokeComponent}" class="Header3Style" 
+                   data-value="{!btndetails.Component_Name__c + '#' + btndetails.Value1__c + '#' + btndetails.Value2__c + '#' + btndetails.Value3__c + '#' + btndetails.Subject__c + '#' + btndetails.Quick_Link_Menu_Name__c}">
+                    <lightning:button label="{!btndetails.Quick_Link_Menu_Name__c}" title="{!btndetails.Quick_Link_Menu_Name__c}" 
+                        class="ButtonStyle"/>
+                </a>
+            </div>
+        </aura:iteration>
+        <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="text-align:center">
+                <a data-value="{!v.configSetting.SiteURL__c+menu.Redirect_URL__c+'&amp;Id='+v.recordId}" onclick="{!c.handleClick}">
+                	<lightning:button label="{!menu.MasterLabel}" title="{!menu.MasterLabel}" class="ButtonStyle"/>
+                </a>    
+            </div>
+        </aura:iteration>
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="text-align:left">
+            <lightning:button label="View PM Schedule " title="View PM Schedule " 
+                              onclick="{!c.schedulePM}" class="ButtonStyle"/>
+        </div>
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="text-align:left">
+            <aura:if isTrue="{!v.display == 'False'}">
+                <lightning:button label="Add to Favorite" title="Add to Favorite" onclick="{!c.UpdateRecordtoFavourite}" 
+					class="ButtonStyle"/>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.display == 'True'}">
+                <lightning:button label="Remove Favorite" title="Remove Favorite" onclick="{!c.RemoveFavourite}" 
+					class="ButtonStyle"/>
+            </aura:if>
+        </div>
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="text-align:left">
+            <lightning:button label="{!$Label.c.Community_Rename_Asset}" title="{!$Label.c.Community_Rename_Asset}" 
+                              onclick="{!c.openModel}" class="ButtonStyle"/>
+        </div>
+        
+        
+        <aura:if isTrue="{!v.isOpen}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-modal__header_empty">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{!c.closeModel}"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <div style="text-align:left;padding-top: 10px;padding-left: 5px;">
+                            <h4 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" 
+                                style="color: #008AAD !important;font-size: 14px;font-weight: bold;font-family: ProximaNova-light,Sans-Serif !important;">
+								System Name and Room Location
+                            </h4>
+                        </div>    
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:input value="{!v.assetName}" label="Current System Name" name="input3" disabled="true"/>
+                            </div>    
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning:input value="{!v.newAssetName}" label="Enter New" placeholder="e.g Room 1 Dimensions System" name="input4"/>
+                            </div>    
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                    	<lightning:button label="Save" title="Save" onclick="{!c.updateAssetName}"/>
+                  	</footer>
+                </div>    
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <!--
+			Popup code to be invoked when 'Invoke Component' is checked in Community Menu metadata.
+		-->
+		<aura:if isTrue="{!v.submitCaseisOpen}">
+            <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+					aria-describedby="modal-content-id-1"
+					class="{! $Label.c.Community_Show_Deflection == 'Yes' ? 'slds-modal slds-fade-in-open slds-modal_large' : 'slds-modal slds-fade-in-open'}">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                  onclick="{!c.closeModel}"
+                                                  alternativeText="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            {!v.comp}
+                        </div>
+                    </div>    
+                </section>
+            	<div class="slds-backdrop slds-backdrop_open"></div>   
+                <aura:set attribute="else">
+                    <div class="PHONE comm-panels-container uiContainerManager siteforcePanelsContainer" 
+                    	data-aura-rendered-by="45:0" data-aura-class="uiContainerManager siteforcePanelsContainer">
+                        <div aria-labelledby="title_26:1314;a" tabindex="-1" role="dialog" data-aura-rendered-by="30:1314;a" 
+							class="uiPanel--medium uiPanel forceMobileOverlay open active" 
+							data-aura-class="uiPanel--medium uiPanel forceMobileOverlay" aria-hidden="false" 
+                            style="opacity: 1; z-index: 2; visibility: visible;">
+                            <div class="container">
+                                <div class="panel-header">
+                                    <h2 class="title slds-truncate" id="title_26:1314;a" data-aura-rendered-by="1:1321;a">
+                                        New Case: Support
+                                    </h2>
+                                    <lightning:button label="Close" title="Close" onclick="{!c.closeModel}"/>
+                                </div> 
+                                <div class="panel-content scrollable">
+                                    {!v.comp}
+                                </div>
+                                <div class="panel-footer" style="text-align:center">
+                                    
+                                </div>    
+                            </div>
+                        </div>
+                    </div> 
+                </aura:set>    
+            </aura:if>    
+        </aura:if>  
+    </div>
+</aura:component>

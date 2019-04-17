@@ -1,0 +1,14 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader"
+>
+<!-- <aura:component 
+	implements="force:hasRecordId,force:lightningQuickActionWithoutHeader"
+	controller=""
+> -->
+	<aura:attribute name="effortName" type="String" />
+
+	<p>Creating new effort</p>
+	<ul>
+		<lightning:input label="Name" name="effortName" />
+	</ul>
+	<lightning:button variant="neutral" label="Create New Case Effort" onclick="{!c.newEffort}" />
+</aura:component>

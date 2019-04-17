@@ -1,0 +1,625 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Kasmoor Reddy
+Description:    VF page button on Quote object which allows to select the Billto,Shipto,Deliveryto
+                accounts and Billtosite,Shiptosite,Deliverytosite on quote object.
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+01/02/2018      Kasmoor Reddy       Initial Creation (US3714)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="SBQQ__Quote__c" extensions="AccountsAndSites" id="mainid">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/JavaScript"/>
+<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery.blockUI.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-2.2.2.min.js')}"  />
+<input id="hiddenElement" type="hidden" />
+
+
+    
+<style>
+    
+    th.labelCol.vfLabelColTextWrap.first.last {
+    position: relative;
+    right: -132px;
+}
+    td.dataCol.first.last {
+    position: relative;
+    right: -131px;
+}
+  
+    </style>
+    <!--<apex:attribute name="quoteorquoteline" required="true" description="Type of Object(quote or quote line)" type="String" assignTo="{!myObjectType}"></apex:attribute>
+    <apex:attribute name="recordId" required="true" description="quote or quote line ID" type="String" assignTo="{!myParentId}"></apex:attribute>-->
+    <apex:outputPanel id="reloadPanel" rendered="{!reloadNeeded}" >
+     <apex:outputPanel id="sf1ReloadPanel" rendered="{!$User.UIThemeDisplayed == 'Theme4t'}">
+    <script type="text/javascript">
+        sforce.one.navigateToSObject('{!myParentId}');
+    </script>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!$User.UIThemeDisplayed != 'Theme4t'}">
+   <script type="text/javascript">
+ if( (typeof sforce != 'undefined') && sforce && (!!sforce.one) ) {
+    // Salesforce1 navigation
+    sforce.one.navigateToSObject('{!myParentId}');
+}
+else {
+    // Set the window URL using a Visualforce expression
+        window.top.location.href = '{!pageURL}';
+
+}
+       // redirect the top level window
+        //alert(window.top.location.href);
+      
+        
+    </script>   
+    </apex:outputPanel>
+    </apex:outputPanel>
+
+    <apex:form id="formId">
+    <apex:pageMessages ></apex:pageMessages>
+    <!--<apex:outputText value="{!SBQQ__Quote__c.SBQQ__Account__r.Oracle_Party_Id__c}{!SBQQ__Quote__c.Bill_To_Account__c}{!SBQQ__Quote__c.BillTo_Site__c}{!SBQQ__Quote__c.Ship_To_Account__c}{!SBQQ__Quote__c.ShipTo_Site__c}{!SBQQ__Quote__c.Deliver_To_Account__c}{!SBQQ__Quote__c.DeliverTo_Site__c}" rendered="false"/>-->
+        <apex:pageBlock rendered="{!invalidOperatingUnit}">
+                <apex:pageMessage detail="An Operating Unit is Required to Select Shipping/Billing Details" summary="No Operating Unit Selected" severity="Warning" strength="3" title="Operating Unit Error"></apex:pageMessage>
+        </apex:pageBlock>
+           
+
+        <apex:pageBlock rendered="{!invalidOPartyId}">
+                <apex:pageMessage detail="A valid Oracle PartyId is Required to Select Shipping/Billing Details" summary="No Party ID Selected" severity="Warning" strength="3" title="Party ID Error"></apex:pageMessage>
+        </apex:pageBlock>
+        <apex:pageBlock id="PageBlock" title="" mode="edit" rendered="{!AND(!invalidOperatingUnit, !invalidOPartyId)}">
+               <apex:variable var="idx" value="{!0}" /> 
+            <!--<apex:outputPanel id="errorMessages" style="width: 100%;">
+                <apex:pageMessage severity="error" strength="3" title="Unable to Display" rendered="{!errors.size > 0}">
+                    <apex:dataList value="{!errors}" var="specificError">
+                        {!specificError}
+                    </apex:dataList>
+                </apex:pageMessage>
+            </apex:outputPanel>-->
+
+            <apex:pageBlockButtons location="top" id="PageBlock222332">
+                 
+                <apex:commandButton value="Save Address Information" action="{!SaveMe}"/>
+                <apex:commandButton value="Cancel" action="{!Cancel}" rendered="{!showCancel}" />
+            </apex:pageBlockButtons>
+           
+         
+             
+                   
+          
+        
+               <apex:pageBlockSection title="Quote Address Information" columns="2" rendered="{!errors.size = 0}" id="PBS" >
+
+  
+                   <apex:pageBlockSectionItem id="BillToAccountItem" rendered="true" HelpText="Select the Bill To Account before selecting the Bill To Site.">
+                        <apex:outputLabel value="Bill To Account" for="BTA" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <apex:selectList id="BTA" value="{!billToAcct}" size="1" >
+                                    <apex:selectOptions value="{!billToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="BTS,BTAI,qls" action="{!BillToAcctChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="" />
+                                    </apex:actionSupport>
+                                </apex:selectList>
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="BillToSiteItem" rendered="true" HelpText="Select the Bill To Account before selecting the Bill To Site.">
+                        <apex:outputLabel value="Bill To Site" for="BTS" />
+                        <apex:outputPanel id="BTS" >                     
+                            <!--<div class="requiredInput">
+                                <!--<div class="requiredBlock">
+                                <apex:selectList id="BTA" value="{!billToSite}" size="1" >
+                                    <apex:selectOptions value="{!billToSiteOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="qls" action="{!BillToSiteChanged}" /> 
+                                </apex:selectList>
+                            </div>-->
+                           
+                         <apex:inputText id="bt" value="{!billToSite}"/>
+                                   <apex:inputHidden id="billToSiteId" value="{!billToSiteId}"/>
+                            <a href="#" id="acc3" onclick="openLookupBTA(1); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>               
+                        </apex:outputPanel>
+    </apex:pageBlockSectionItem> 
+
+                    <apex:pageBlockSectionItem id="ShipToAccountItem" rendered="true" HelpText="Select the Ship To Account before selecting the Ship To Site." >
+                        <apex:outputLabel value="Ship To Account" for="STA" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div> {!shipToAcct}-->
+                               
+                                <apex:selectList id="STA" value="{!shipToAcct}" size="1" >
+                                    <apex:selectOptions value="{!shipToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="STS,STAI,qls" action="{!ShipToAcctChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="" />
+                                    </apex:actionSupport>
+                                </apex:selectList>
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="ShipToSiteItem" rendered="true" HelpText="Select the Ship To Account before selecting the Ship To Site.">
+                        <apex:outputLabel value="Ship To Site" for="STS" />
+                        <apex:outputPanel id="STS">                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <!--<apex:selectList value="{!shipToSite}" size="1" >
+                                    <apex:selectOptions value="{!shipToSiteOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="qls" action="{!ShipToSiteChanged}" /> 
+                                </apex:selectList>-->
+                                </div>
+                               <!--<apex:inputfield value="{!myquote.ShipTo_Site__c}"/>-->
+                             <apex:inputText id="it" value="{!shipToSite}"/>
+                              <apex:inputHidden id="shipToSiteId" value="{!shipToSiteId}"/>
+                            <a href="#" id="acc3" onclick="openLookupSTA(2); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>
+                                 
+                           
+                           <!-- <apex:image value="/s.gif" StyleClass="lookupIcon" style="cursor:pointer;" onclick="window.open('/apex/SiteLocationPopup?id='+'{!JSENCODE(myParentId)}'+'&accid='+'{!JSENCODE(shipToAcct)}','newwindow', 'width=600, height=350')" />-->
+                                                          
+                        </apex:outputPanel>
+                 </apex:pageBlockSectionItem>                
+
+                    <apex:pageBlockSectionItem id="DeliverToAccountItem" rendered="true" HelpText="Select the Deliver To Account before selecting the Deliver To Site.">
+                        <apex:outputLabel value="Deliver To Account" for="DTA" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <apex:selectList id="DTA" value="{!deliverToAcct}" size="1" >
+                                    <apex:selectOptions value="{!deliverToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="DTS,DTAI,qls" action="{!DeliverToAcctChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="" />
+                                    </apex:actionSupport> 
+                                </apex:selectList>
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                    
+
+                    <apex:pageBlockSectionItem id="DeliverToSiteItem" rendered="true" HelpText="Select the Deliver To Account before selecting the Deliver To Site.">
+                        <apex:outputLabel value="Deliver To Site" for="DTS" />
+                        <apex:outputPanel id="DTS" >                     
+                            <!--<div class="requiredInput">
+                                <!--<div class="requiredBlock">
+                                <apex:selectList value="{!deliverToSite}" size="1" >
+                                    <apex:selectOptions value="{!DeliverToSiteOptions}" />
+                                     <apex:actionSupport event="onchange" reRender="qls" action="{!DeliverToSiteChanged}" /> 
+                                </apex:selectList>
+                            </div>-->
+                              <apex:inputText id="dt" value="{!deliverToSite}"/>
+                                <apex:inputHidden id="deliverToSiteId" value="{!deliverToSiteId}"/>
+                            <a href="#" id="acc3" onclick="openLookupDTA(3); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>
+                                                
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>    
+                  <!--  
+                   <apex:pageBlockSectionItem id="ShipDate" rendered="true" >
+                        <apex:outputLabel value="Expected Ship Date" for="SD" />
+                        <apex:inputField value="{!myquote.Ship_Date__c}" id="SD">
+                            <apex:actionSupport event="onchange" reRender="qls" action="{!ShipDateChanged}" />
+                        </apex:inputField> 
+                  </apex:pageBlockSectionItem>
+                  -->
+                 
+                    
+                        
+                  <apex:pageBlockSectionItem id="RequestedDate" rendered="true"  >
+                        <apex:outputLabel value="Requested Date" for="RD"/>
+                        <apex:inputField value="{!myquote.Requested_Date__c}" id="RD" >
+                            <apex:actionSupport event="onchange" reRender="qls,showmsg" action="{!RequestedDateChanged}" />
+                        </apex:inputField> 
+                   </apex:pageBlockSectionItem>
+                
+                         
+
+
+            </apex:pageBlockSection>
+                  
+        
+                         <apex:pageBlockSection title="Quote Address Information" id="qls" columns="2" rendered="{!lines.size > 0}" >
+                         
+                             
+                               <apex:variable value="{!lines.size}" var="linessize" id="qlinesize" />
+                              <apex:pageBlockSectionItem >
+                               
+                                 
+                                 <apex:outputText ></apex:outputText>
+                                   
+                                 
+                             </apex:pageBlockSectionItem>
+                    
+                         
+                             
+                             <apex:repeat var="line" value="{!lines}" rendered="{!errors.size = 0}" id="repeat">
+                 
+           
+                                <apex:variable var="idx" value="{!idx + 1}" id="id"/>
+                               
+                              
+                                  <apex:outputText />
+                                    <apex:outputText id="idx" value="{!idx}"/>
+              <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="{!line.productNameDescription}"/>
+                  
+              </apex:pageBlockSectionItem> 
+              
+                    <apex:pageBlockSectionItem id="BillToAccountItem" rendered="true" HelpText="Select the Bill To Account before selecting the Bill To Site.">
+                        <apex:outputLabel value="Bill To Account" for="BTAI" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <apex:selectList id="BTAI" value="{!line.billToAcct}" size="1" >
+                                    <apex:selectOptions value="{!billToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="bti,billToSiteId1,qlineidselected,qutolirelatedbilltosite" action="{!BillToAcctLineChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="{!line.count}" />
+                                         <apex:param name="billlineid" assignTo="{!billlineid}" value="{!line.qlid}" />
+                                    </apex:actionSupport>
+                                </apex:selectList>
+                               
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="BillToSiteItem" rendered="true" HelpText="Select the Bill To Account before selecting the Bill To Site.">
+                        <apex:outputLabel value="Bill To Site" for="BTS" />
+                        <apex:outputPanel id="BTS" >                     
+                            <!--<div class="requiredInput">
+                                <!--<div class="requiredBlock">
+                                <apex:selectList id="BTA" value="{!line.billToSite}" size="1" >
+                                    <apex:selectOptions value="{!line.billToSiteOptions}" />
+                                    <!--<apex:actionSupport event="onchange" />
+                                </apex:selectList>
+                            </div>-->
+                           <apex:inputText id="bti" value="{!line.billToSite}"/>
+                                <apex:inputHidden id="billToSiteId1" value="{!billToSiteId1}"/>
+                         
+                            <a href="#" id="acc3_lkwgt" onclick="openLookupBTAI(4,'{!$Component.idx}','{!line.qlId}'); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>              
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="ShipToAccountItem" rendered="true" HelpText="Select the Ship To Account before selecting the Ship To Site.">
+                        <apex:outputLabel value="Ship To Account" for="STAI" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <apex:selectList id="STAI" value="{!line.shipToAcct}" size="1" >
+                                    <apex:selectOptions value="{!shipToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="it1,shipToSiteId1,qutolirelatedshiptosite" action="{!ShipToAcctLineChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="{!line.count}" />
+                                       <apex:param name="shiplineid" assignTo="{!shiplineid}" value="{!line.qlid}" />
+                                    </apex:actionSupport>
+                                </apex:selectList>
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="ShipToSiteItem" rendered="true" HelpText="Select the Ship To Account before selecting the Ship To Site.">
+                        <apex:outputLabel value="Ship To Site" for="STS" />
+                        <apex:outputPanel id="STS">                     
+                            <!--<div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>
+                                <apex:selectList value="{!line.shipToSite}" size="1" >
+                                    <apex:selectOptions value="{!line.shipToSiteOptions}" />
+                                    <!--<apex:actionSupport event="onchange" />
+                                </apex:selectList>
+                            </div>-->
+                              <apex:inputText id="it1" value="{!line.shipToSite}"/>
+                        
+                            
+                                 <apex:inputHidden id="shipToSiteId1" value="{!shipToSiteId1}"/>
+                            
+                            <a href="#" id="acc3_lkwgt" onclick="openLookupSTAI(5,'{!$Component.idx}','{!line.qlId}'); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;" rerender="shipToSitelineId1">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>
+                                                   
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                    
+
+                    <apex:pageBlockSectionItem id="DeliverToAccountItem" rendered="true" HelpText="Select the Deliver To Account before selecting the Deliver To Site.">
+                        <apex:outputLabel value="Deliver To Account" for="DTAI" />
+                        <apex:outputPanel >                     
+                            <div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>-->
+                                <apex:selectList id="DTAI" value="{!line.deliverToAcct}" size="1" >
+                                    <apex:selectOptions value="{!deliverToAcctOptions}" />
+                                    <apex:actionSupport event="onchange" reRender="dt1,deliverToSiteId1,qutolirelateddelivertosite" action="{!DeliverToAcctLineChanged}"> 
+                                        <apex:param name="index" assignTo="{!index}" value="{!line.count}" />
+                                          <apex:param name="deliverlineid" assignTo="{!deliverlineid}" value="{!line.qlid}" />
+                                    </apex:actionSupport> 
+                                </apex:selectList>
+                            </div>                          
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                    
+
+                    <apex:pageBlockSectionItem id="DeliverToSiteItem" rendered="true" HelpText="Select the Deliver To Account before selecting the Deliver To Site.">
+                        <apex:outputLabel value="Deliver To Site" for="DTS" />
+                        <apex:outputPanel id="DTS" >                     
+                            <!--<div class="requiredInput">
+                                <!--<div class="requiredBlock"></div>
+                                <apex:selectList value="{!line.deliverToSite}" size="1" >
+                                    <apex:selectOptions value="{!line.DeliverToSiteOptions}" />
+                                    <!--<apex:actionSupport event="onchange" />
+                                </apex:selectList>
+                            </div>-->
+                            
+                          <apex:inputText id="dt1" value="{!line.deliverToSite}"/>
+                                <apex:inputHidden id="deliverToSiteId1" value="{!deliverToSiteId1}"/>
+                            <a href="#" id="acc3_lkwgt" onclick="openLookupDTAI(6,'{!$Component.idx}','{!line.qlId}'); return false;" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;" >
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>                      
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                               
+                              
+    <apex:pageBlockSection columns="7" id="alignment">
+     
+        <apex:inputField value="{!line.theLine.Requested_Date__c}" id="RD1" label="Requested Date " >
+                      <apex:actionSupport event="onchange" reRender="SD,showmsg" action="{!RequestedLineDateChanged}" >
+                             <apex:param name="linenumber" assignTo="{!lineNum}" value="{!line.count}"/>
+                       </apex:actionSupport>
+                 </apex:inputField>
+           
+      &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;
+        <apex:pageBlockSectionItem HelpText="Change the ship date if this system is going to ship in a prior fiscal month vs the fiscal month of delivery.">
+            <apex:outputLabel value="Expected Ship Date" for="SD"/>
+            <apex:inputField value="{!line.theLine.Ship_Date__c}" id="SD" label="Expected Ship Date" >
+             </apex:inputField>     
+      </apex:pageBlockSectionItem>
+</apex:pageBlockSection>                            
+                              
+<apex:pageBlockSection ></apex:pageBlockSection>
+
+
+            </apex:repeat>
+             
+        </apex:pageBlockSection>
+            
+         <apex:inputhidden id="qutolirelatedshiptosite" value="{!quotelinerelatedshiptosite}"/>
+                              <apex:inputhidden id="qutolirelatedbilltosite" value="{!quotelinerelatedbilltosite}"/>
+                              <apex:inputhidden id="qutolirelateddelivertosite" value="{!quotelinerelateddelivertosite}"/>
+        </apex:pageBlock>
+    </apex:form>
+    <script>
+ var $ = jQuery.noConflict();
+ $(document).ready(function(){
+      $("#toggleId").click(function(){
+        $("#detailTblId").toggle();
+        if($("#detailTblId").css('display')=='none'){
+            $('#linkTextId').html('Click here to show the Contact information in the Tabular form.');
+        }else{
+            $('#linkTextId').html('Click here to Hide.');
+        }
+      });                                           
+    }); 
+ var newWin=null;
+ function openLookupSTA(a){ 
+       var STA = $('select[id$=STA]').val();
+     //var Qlinesize=$('#qlinesize').attr("Value");
+     //line modified due to issue in prod on 02-24-2018 as part of US-0003714.
+       var Qlinesize='{!lines.size}';
+
+     
+    var res=0;
+ 
+       try{            
+            if(STA!=null&&STA!='')
+                {
+                    var emptyval=document.getElementById('mainid:formId:PageBlock:qutolirelatedshiptosite');
+                    emptyval.value='';
+               var url="/apex/SiteLocationPopup?oN="+STA+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+res;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+             else
+               {alert("Please Select Site to Account");
+                   }
+          
+          
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+    function openLookupSTAI(a,num,Qlineid){ 
+        //alert(num);
+   
+           var Qlinesize='{!lines.size}';
+      var linenum=$('input[id$=shipToSitelineId1]').val();
+        //alert(linenum);
+  
+         var str = num;
+        var array = str.split(':');
+        //var n = str.length -5;
+
+        //var m = str.length -4;
+        //alert(str);
+       
+        
+
+        var res = array[array.length-2]; 
+        //alert(res);
+         var STAI = document.getElementById('mainid:formId:PageBlock:qls:repeat:'+res+':ShipToAccountItem:STAI').value;  
+   
+        
+
+        
+      
+       try{            
+            if(STAI!=null&&STAI!='')
+                {
+               var url="/apex/SiteLocationPopup?oN1="+STAI+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+Qlineid;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+             else
+               {alert("Please Select Site to Account in Quote Line");
+                   }
+          
+          
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+    function openLookupBTA(a){ 
+     
+      var BTA = $('select[id$=BTA]').val();
+           var Qlinesize='{!lines.size}';
+        
+    
+      var res=0;
+ 
+       try{            
+            if(BTA!=null&&BTA!='')
+                {
+                  
+                   var emptyval=document.getElementById('mainid:formId:PageBlock:qutolirelatedbilltosite');
+                    emptyval.value='';
+                  
+               var url="/apex/SiteLocationPopup?billaccid="+BTA+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+res;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+             else
+               {alert("Please Select Bill to Account");
+                   }
+         
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+    function openLookupBTAI(a,num,Qlineid){ 
+     
+     
+           var Qlinesize='{!lines.size}';
+  
+
+         var str = num;
+          
+        var array = str.split(':');
+        //var n = str.length -5;
+
+        //var m = str.length -4;
+        //alert(str);
+       
+        
+
+        var res = array[array.length-2]; 
+  
+         var BTAI = document.getElementById('mainid:formId:PageBlock:qls:repeat:'+res+':BillToAccountItem:BTAI').value;  
+   
+        
+
+ 
+      
+   
+       try{            
+            if(BTAI!=null&&BTAI!='')
+                {
+                   
+                    var url="/apex/SiteLocationPopup?billaccid1="+BTAI+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+Qlineid;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+             else
+               {alert("Please Select Bill to Account in QUOTE LINE");
+                   }
+         
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+    function openLookupDTA(a){ 
+      
+        var DTA = $('select[id$=DTA]').val();
+           var Qlinesize='{!lines.size}';
+      
+ var res=0;
+       try{            
+            
+          
+           if(DTA!=null&&DTA!='')
+                {
+                    var emptyval=document.getElementById('mainid:formId:PageBlock:qutolirelateddelivertosite');
+                    emptyval.value='';
+               var url="/apex/SiteLocationPopup?delaccid="+DTA+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+res;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+           else
+               {alert("Please Select Delivery to Account");
+                   }
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+     function openLookupDTAI(a,num,Qlineid){ 
+      
+    
+            var Qlinesize='{!lines.size}';
+
+          var str = num;
+        var array = str.split(':');
+        //var n = str.length -5;
+
+        //var m = str.length -4;
+        //alert(str);
+       
+        
+
+        var res = array[array.length-2]; 
+    var DTAI = document.getElementById('mainid:formId:PageBlock:qls:repeat:'+res+':DeliverToAccountItem:DTAI').value;  
+   
+        
+
+ 
+       try{            
+            
+          
+           if(DTAI!=null&&DTAI!='')
+                {
+               var url="/apex/SiteLocationPopup?delaccid1="+DTAI+'&qlsize='+Qlinesize+'&a='+a+'&linenum='+res+'&qlineid='+Qlineid;
+               newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+               if (window.focus){
+                    newWin.focus();
+               }
+            }
+           else
+               {
+                   alert("Please Select Delivery to Account");
+                   }
+        }catch(e){
+                alert('Server Error: '+e);
+        }                   
+        return false;
+    } 
+   
+
+     function closeLookupPopup(){
+       if (null!=newWin)
+       {
+          newWin.close();
+       }  
+    }
+    </script>
+
+
+</apex:page>

@@ -1,0 +1,32 @@
+<!--
+*****************************************************************************************
+    Author : Sunil Kumar Sharma
+    Company : Hexaware Technologies
+    Description : Custom Search in communities
+
+    History:
+    <Date>         <Author Name>             <Brief Description of Change>   <Copa.do US#>
+ 	8/22/2018	   Sunil Kumar Sharma		  Initial Creation   			  US-0005633
+	12/20/2018     Sunil Sharma           	  Initial Creation                US-0006345
+******************************************************************************************
+-->
+<aura:component implements="forceCommunity:searchInterface,forceCommunity:availableForAllPageTypes" controller="CustomSearchController">
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="searchText" type="String" default=""/>
+    <aura:attribute name="placeHolderText" type="String" default="Global Search"/>
+    <aura:attribute name="searchType" type="String" default=""/>
+    <aura:attribute name="dataCategory" type="String" default=""/>
+    
+    <!-- Search Component -->
+    <div class="slds-form-element slds-lookup" data-select="single">
+        <div class="slds-form-element__control">
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <lightning:buttonIcon iconName="utility:search" variant="bare" 
+                    onclick="{! c.handleClick }" alternativeText="Search" class="slds-input__icon" />
+                <ui:inputText value="{!v.searchText}" class="slds-lookup__search-input slds-input" 
+                    placeholder="{!v.placeHolderText}" keyup="{!c.onKeyUp}"/>
+            </div>
+        </div>
+    </div>
+</aura:component>

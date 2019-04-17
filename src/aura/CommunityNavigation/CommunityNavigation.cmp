@@ -1,0 +1,441 @@
+<!--
+********************************************************************************************************************
+    Author       : Nikhil Mutyam
+    Company      : Hexaware Technologies
+    Created Date : 9/14/2018 6:27 AM
+ 	Description  : Community Navigation Component used in Quick Links as sidebar
+
+    History:
+    <Date>         <Author Name>            <Brief Description of Change>    <Copa.do US#>
+    9/14/2018	   Nikhil Mutyam			Initial Creation				  					US-0005633	
+  	02/11/2018	   Nomita Walke				Added Base/Site URL to all navigation.				US-0006062
+ 	11/20/2018	   Sunil Sharma				Defect fix business hours and text update for 
+           									Live Chat											US-0006172
+ 	03/12/2018	   Nikhil Mutyam			Code changes to close pop up after case creation    US-0006257 
+  	04/12/2018	   Nikhil Mutyam			Code changes to to display a larger Modal when
+            								case deflection is switched on     					US-0006257
+ 	12/20/2018     Sunil Sharma           	Initial Creation                					US-0006345
+ 	31/12/2018	   Vrushabh Katariya		Default the Priority for Submit an Issue to 'Sev 2'	US-0006454
+  	09/01/2018	   Vrushabh Katariya		Quicklinks for system detail Page					US-0006454	
+ 	09/01/2018     Sunil					Downloads & forums link fix							US-0006553
+  	01/21/2019	   Yogitha Malireddy		Code change for Disposable Product Issue			US-0006553
+    02/06/2019		Nomita Walke			Knowledge links display fix for Non-Contract		US-0006703
+********************************************************************************************************************
+-->
+<aura:component controller="CommunityNavigationController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+    
+    <!-- Attribute Declaration -->
+    <aura:attribute name="MenuType" type="String" default="PRODUCT INFORMATION"/>
+    <aura:attribute name="selectedItem" type="String" />
+    <aura:attribute name="currentContent" type="String" />
+    <aura:attribute name="updatedCount" type="Integer" />
+    <aura:attribute name="ReturnedRecords" type="list"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="comp" type="Aura.Component"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recorddetailId" type="Id" />
+    <aura:attribute name="MarginTop" type="boolean"/>
+    <aura:attribute name="CustomHeaderText" type="String" />    
+    <aura:attribute name="ShowCustomHeader" type="boolean"/>
+    <aura:attribute name="IsFooterMenu" type="boolean"/>
+    <aura:attribute name="IsHeaderMenu" type="boolean"/>   
+    <aura:attribute name="IsHeroMenu" type="boolean"/>  
+    <aura:attribute name="ShowQuickLinks" type="boolean" default="false"/> 
+    <!--<aura:attribute name="IsAssetDetailFooterView" type="boolean" default="false"/> -->
+    <aura:attribute name="configSetting" type="Object"/>
+    <aura:attribute name="userInfo" type="Object"/>
+    <aura:attribute name="recordIdParameter" type="String" />
+    <aura:attribute name="isAssetDetailPage" type="boolean" />
+    <!-- Quicklinks for system detail Page	US-0006454 -->
+    <aura:attribute name="ParameterLabel" type="String" />
+    <aura:attribute name="ParameterValue" type="String" />
+    <aura:attribute name="DataCategory" type="String" />
+    <aura:attribute name="PageType" type="String" />
+    <aura:attribute name="CaseListViewURL" type="String" />
+    <aura:attribute name="SAListViewURL" type="String" />
+    <aura:attribute name="downloadsCategoryUrl" type="String" />
+    <aura:attribute name="forumUrl" type="String" />
+    <aura:attribute name="navclassname" type="String" />
+    
+    <!-- Helps closing the model popup from child component -->
+    <lightning:overlayLibrary aura:id="overlayLib1"/>
+    
+    <!--Live Chat Attributes -->
+    <aura:attribute name="showLiveChat" type="Boolean" default="false"/>
+    <aura:attribute name="inptText" type="String"/>
+    <aura:attribute name="ifmsrc" type="String"/>
+    <aura:attribute name="selectedTechnicalSkill" type="String"/>
+    <aura:attribute name="selectedRelatedSkill" type="String"/>
+    <aura:attribute name="isTechnicalSupportSelected" type="Boolean" /> 
+    <aura:attribute name="isButtonVisible" type="Boolean" />
+    <aura:attribute name="isOnlineHours" type="Boolean"/>
+    <aura:attribute name="technicalSupportOptions" type="List"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <aura:handler name="closeModalEvent" event="c:CloseModal" action="{!c.handleComponentEvent}"/>
+    
+    <!-- UI -->
+    <aura:if isTrue="{!v.MarginTop}">
+        <div style="padding-top:4px;">&nbsp;</div>
+    </aura:if>
+    
+    <!--Flexible Quick Links Header-->
+    <aura:if isTrue="{!v.ShowQuickLinks}">
+        <div style="padding-left: 20px;">
+            <p class="ComponentHeader">Quick Links</p>
+        </div>
+    </aura:if>
+    
+    <!--
+  Actual code to display Quicklinks. The Menu Items are queried from Custom Metadata depending upon the 
+  selection made in design attribute. 
+ -->
+    <div>
+        <aura:if isTrue="{!$Browser.isPhone}">
+            <aura:if isTrue="{!or(equals(v.MenuType,'Breast Health'),equals(v.MenuType,'Skeletal Health'))}">   
+                <lightning:verticalNavigationSection label="{!v.MenuType}" class="{!v.navclassname+ ' slds-text-heading_small Header3Style'}">
+                    <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+                        <aura:if isTrue="{!menu.MenuItem_IsEmailType}">                           
+                            <lightning:verticalNavigationItem label="{!test+menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" 
+                                                              href="{!'mailto:'+ menu.MenuItem_Url}"/>
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!menu.MenuItem_IsNotHyperLink}">
+                                    <label class="not-link">{!menu.MenuItem_Title}</label>
+                                    <!--<lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" 
+                                                                      href="{!menu.MenuItem_Url}"/>-->
+                                    <aura:set attribute="else">
+                                        <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/> 
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if>
+                    </aura:iteration>
+                </lightning:verticalNavigationSection>
+                
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.IsHeaderMenu == True}">
+                        <lightning:verticalNavigationSection label="{!v.MenuType}" class="{!v.navclassname+ ' slds-text-heading_small Header3Style'}">
+                            <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+                                <aura:if isTrue="{!menu.MenuItem_displayComponent == False}">
+                                    <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                      name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!and(equals(menu.MenuItem_Title,'Disposable Product Issues'),!v.isAssetDetailPage)}"> 
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-size_1-of-1">
+                                                    <a onclick="{!c.InvokeDisposableProductComponent}" class="Header3Style" 
+                                                       data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                        <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                          name="{!menu.MenuItem_Title}"/>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!! equals(menu.MenuItem_Title,'Disposable Product Issues')}">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-size_1-of-1">
+                                                            <!-- Added menu.MenuItem_Title for Priority default to Sev 2 for Submit an Issue US-0006454 -->
+                                                            <a onclick="{!c.InvokeComponent}" class="Header3Style" 
+                                                               data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                                
+                                                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                                  name="{!menu.MenuItem_Title}"/>
+                                                            </a>
+                                                        </div>
+                                                    </div>  
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>    
+                            </aura:iteration>
+                        </lightning:verticalNavigationSection>
+                        
+                        <aura:set attribute="else">
+                            <lightning:verticalNavigationSection label="" class="{!v.navclassname+ ' slds-text-heading_small Header3Style'}">
+                                <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+                                    <aura:if isTrue="{!!and(equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c),equals(menu.MenuItem_Title,'Live Chat') )}">
+                                        <aura:if isTrue="{!menu.MenuItem_displayComponent == False}">
+                                            <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                              name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!and(equals(menu.MenuItem_Title,'Disposable Product Issues'),!v.isAssetDetailPage)}"> 
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-size_1-of-1">
+                                                            <a onclick="{!c.InvokeDisposableProductComponent}" class="Header3Style" 
+                                                               data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                                  name="{!menu.MenuItem_Title}"/>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!! equals(menu.MenuItem_Title,'Disposable Product Issues')}">
+                                                            <div class="slds-grid slds-wrap">
+                                                                <div class="slds-size_1-of-1">
+                                                                    <!-- Added menu.MenuItem_Title for Priority default to Sev 2 for Submit an Issue US-0006454 -->
+                                                                    <a onclick="{!c.InvokeComponent}" class="Header3Style" 
+                                                                       data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                                        
+                                                                        <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                                          name="{!menu.MenuItem_Title}"/>
+                                                                    </a>
+                                                                </div>
+                                                            </div>  
+                                                        </aura:if>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                       <!--<lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                          name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/>-->
+                                    </aura:if>
+                                </aura:iteration>
+                            </lightning:verticalNavigationSection> 
+                            
+                        </aura:set>
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+            <aura:set attribute="else"> 
+                <!-- Live chat Section - Starts -->
+                <aura:if isTrue="{!v.showLiveChat}">
+                    <div class="live-chat" >
+                        <section id= "live-chat-section" role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div id="live-chat-container" class="slds-modal__container livechatcontainer">
+                                <header class="slds-modal__header" style="right:0px !important;">
+                                    
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Live Chat Support</h2>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <aura:if isTrue="{!!v.isOnlineHours}">
+                                        <div class="slds-grid,slds-wrap">
+                                            <div class="livechat-header slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                                 style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                {!$Label.c.Live_Chat_Offline_Hours_Message}<br/>
+                                            </div>	
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <div class="slds-grid,slds-wrap" style="width:70%;margin:auto;">
+                                                <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                                     style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                    <div class="slds-grid">
+                                                        <div class="slds-col slds-size--1-of-12">
+                                                            <input type="radio" id="tokenRadioId" value="Technical Support" name="LiveChatRadio" 
+                                                                   onclick="{!c.handleRadioClick}" style="width:40% ;height:1.2em;margin:left"/> 
+                                                        </div>
+                                                        <div class="slds-col slds-size--11-of-12">
+                                                            <label  >Technical Support</label><br/>
+                                                            <aura:if isTrue="{!v.isTechnicalSupportSelected}">
+                                                                <div class="slds-grid,slds-wrap">
+                                                                    <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-8 slds-p-bottom--small" 
+                                                                         style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                                        <lightning:combobox aura:id="select1" class="option-list" name="select" value="" placeholder="Select Topics" options="{! v.technicalSupportOptions }" onchange="{! c.handleSelectChange }"/>            
+                                                                    </div>
+                                                                </div>
+                                                            </aura:if>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                                     style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                    <div class="slds-grid">
+                                                        <div class="slds-col slds-size--1-of-12">
+                                                            <input type="radio" id="tokenRadioId" value="Non Technical Queries" name="LiveChatRadio" onclick="{!c.handleRadioClick}" 
+                                                                   style="width:40% ;height:1.2em;margin:left"/>
+                                                        </div>
+                                                        <div class="slds-col slds-size--11-of-12">
+                                                            <label >Non-Technical Inquiries (e.g. Support Portal, Service Reports, Service Contracts Billing) </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="livechat-radio slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 slds-p-bottom--small" 
+                                                     style="font-family: ProximaNova-Semibold,sans-serif character: 0px;">
+                                                    <div class="slds-grid">
+                                                        <div class="slds-col slds-size--1-of-12">
+                                                            <input type="radio" id="tokenRadioId" value="Parts Inquiries" name="LiveChatRadio" onclick="{!c.handleRadioClick}" style="width:40% ;height:1.2em;margin:left"/> 
+                                                        </div>
+                                                        <div class="slds-col slds-size--11-of-12">
+                                                            <label>Parts Inquiries</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <aura:if isTrue="{!v.isButtonVisible}">
+                                                <div class="slds-grid,slds-wrap" style="width:100%;margin:auto;">
+                                                    <iframe width="700" height="200" style="border-width:0px;" src="{!v.ifmsrc}" />
+                                                </div>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning:button variant="neutral" label="Close" onclick="{!c.hideLiveChat}" />
+                                    <!--<button class="slds-button slds-button_neutral" Press="{!c.hideLiveChat}">Close</button>-->
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </div>
+                </aura:if>
+                <!-- Live chat Section - Ends -->
+                <lightning:verticalNavigationSection label="{!v.MenuType}" class="{!v.navclassname+ ' slds-text-heading_small Header3Style'}">
+                    <aura:iteration items="{!v.ReturnedRecords}" var="menu">
+                        <aura:if isTrue="{!menu.MenuItem_displayComponent == False}">
+                            <aura:if isTrue="{!menu.MenuItem_IsEmailType}">
+                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                  name="{!menu.MenuItem_Title}" href="{!'mailto:'+ menu.MenuItem_Url}"/>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!!and(equals(v.userInfo.ProfileId,v.configSetting.Guest_User_Profile_Id__c),equals(menu.MenuItem_Title,'Live Chat') )}">
+                                        <aura:if isTrue="{!menu.MenuItem_IsNotHyperLink}">
+                                            <label class="not-link">{!menu.MenuItem_Title}</label>
+                                            <!--<lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" 
+                                                                      href="{!menu.MenuItem_Url}"/>-->
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!and(equals(v.MenuType,'REPORTS'), v.isAssetDetailPage) }">
+                                                    <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!concat (menu.MenuItem_Url, v.recordIdParameter)}"/>
+                                                    <aura:set attribute="else">
+                                                        <aura:if isTrue="{!equals(menu.MenuItem_Title,'Live Chat')}">   
+                                                            <!--<lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/> -->
+                                                            <div style="padding-left:33px;padding-bottom:10px" class="live-chat-link">
+                                                                <a onclick="{!c.showLiveChat}">{!menu.MenuItem_Title}</a>
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <!-- Quicklinks for system detail Page	US-0006454 -->
+                                                                <aura:if isTrue="{!and(equals(v.MenuType,'Knowledgebase'), v.isAssetDetailPage) }">
+                                                                    <aura:if isTrue="{!!equals(menu.MenuItem_Title,'Downloads')}">
+                                                                        <aura:if isTrue="{!equals(menu.MenuItem_Title,'Forums')}" >
+                                                                            <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!v.forumUrl}"/>	
+                                                                            <aura:set attribute="else">
+                                                                                <aura:if isTrue="{!!equals(v.userInfo.Profile.Name,$Label.c.Community_Profile_Non_Contract)}" >
+                                                                                    <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!concat (menu.MenuItem_Url, v.DataCategory)}"/>
+                                                                                </aura:if>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        <aura:set attribute="else">
+                                                                            <aura:if isTrue="{!!equals(v.userInfo.Profile.Name,$Label.c.Community_Profile_Non_Contract)}" >
+                                                                            	<lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!concat (menu.MenuItem_Url, v.downloadsCategoryUrl)}"/> 
+                                                                            </aura:if>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                    
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if isTrue="{!and(equals(v.MenuType,'SERVICE REQUESTS'), v.isAssetDetailPage) }">
+                                                                            <aura:if isTrue="{!equals(menu.MenuItem_Title,'Track Your Issues')}">
+                                                                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!v.configSetting.SiteURL__c+v.CaseListViewURL}"/>	
+                                                                                <aura:set attribute="else">
+                                                                                    <aura:if isTrue="{!equals(menu.MenuItem_Title,'View Service Appointments')}">
+                                                                                        <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!concat (v.configSetting.SiteURL__c+v.configSetting.ServiceAppointment_ListView__c, v.recorddetailId)}"/>	
+                                                                                        <aura:set attribute="else">
+                                                                                            <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/> 
+                                                                                        </aura:set>
+                                                                                    </aura:if>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                            <aura:set attribute="else">
+                                                                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" name="{!menu.MenuItem_Title}" href="{!menu.MenuItem_Url}"/> 
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if> 
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>    
+                                        <aura:set attribute="else">
+                                            <lightning:verticalNavigationItem label="" 
+                                                                              name="" href=""/>   
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!and(equals(menu.MenuItem_Title,'Disposable Product Issues'),!v.isAssetDetailPage)}"> 
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-size_1-of-1">
+                                            <a onclick="{!c.InvokeDisposableProductComponent}" class="Header3Style" 
+                                               data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                  name="{!menu.MenuItem_Title}"/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!! equals(menu.MenuItem_Title,'Disposable Product Issues')}"> 
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-size_1-of-1">
+                                                    <!-- Added menu.MenuItem_Title for Priority default to Sev 2 for Submit an Issue US-0006454 -->
+                                                    <a onclick="{!c.InvokeComponent}" class="Header3Style" 
+                                                       data-value="{!menu.MenuItem_ComponentName + '#' + menu.MenuItem_Value1 + '#' + menu.MenuItem_Value2 + '#' + menu.MenuItem_Value3 + '#' + menu.MenuItem_Subject + '#' + menu.MenuItem_Title}">
+                                                        
+                                                        <lightning:verticalNavigationItem label="{!menu.MenuItem_Title}" 
+                                                                                          name="{!menu.MenuItem_Title}"/>
+                                                    </a>
+                                                </div>
+                                            </div> 
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if>      
+                    </aura:iteration>
+                </lightning:verticalNavigationSection> 
+                
+            </aura:set>
+        </aura:if>
+        
+        <!--
+   Popup code to be invoked when 'Invoke Component' is checked in Community Menu metadata.
+  -->
+        <aura:if isTrue="{!v.isOpen}">
+            <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+                         aria-describedby="modal-content-id-1"
+                         class="{! $Label.c.Community_Show_Deflection == 'Yes' ? 'slds-modal slds-fade-in-open slds-modal_large' : 'slds-modal slds-fade-in-open'}">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                  onclick="{!c.closeModel}"
+                                                  alternativeText="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            {!v.comp}
+                        </div>
+                    </div>    
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>   
+                <aura:set attribute="else">
+                    <div class="PHONE comm-panels-container uiContainerManager siteforcePanelsContainer" 
+                         data-aura-rendered-by="45:0" data-aura-class="uiContainerManager siteforcePanelsContainer">
+                        <div aria-labelledby="title_26:1314;a" tabindex="-1" role="dialog" data-aura-rendered-by="30:1314;a" 
+                             class="uiPanel--medium uiPanel forceMobileOverlay open active" 
+                             data-aura-class="uiPanel--medium uiPanel forceMobileOverlay" aria-hidden="false" 
+                             style="opacity: 1; z-index: 2; visibility: visible;">
+                            <div class="container">
+                                <div class="panel-header">
+                                    <h2 class="title slds-truncate" id="title_26:1314;a" data-aura-rendered-by="1:1321;a">
+                                        New Case: Support
+                                    </h2>
+                                    <lightning:button label="Close" title="Close" onclick="{!c.closeModel}"/>
+                                </div> 
+                                <div class="panel-content scrollable">
+                                    {!v.comp}
+                                </div>
+                                <div class="panel-footer" style="text-align:center">
+                                    
+                                </div>    
+                            </div>
+                        </div>
+                    </div> 
+                </aura:set>    
+            </aura:if>    
+        </aura:if>  
+        
+    </div>
+</aura:component>

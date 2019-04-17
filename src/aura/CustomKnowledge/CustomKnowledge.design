@@ -1,0 +1,12 @@
+<design:component>
+	<design:attribute name="articletype" label="Article Type" datasource="apex://GetArticleTypeList"/>
+    <design:attribute name="numofrecordsonpage" default="5" label="Number of Records" />
+    <design:attribute name="SearchBoxPlaceHolder" default="Search" label="Searchbox Placeholder Text" />
+    <design:attribute name="NoResultMessage" default="No Items" label="No Search Results Message" />
+    <design:attribute name="ArticlePageLink" default="" label="Article Page URL" />
+    <design:attribute name="ArticleSummaryChars" default="150" label="Article Summary Length" />
+    <design:attribute name="ArticleDetail" default="Default" datasource="Default,Custom" label="Article Detail Page" />
+    <design:attribute name="LimitNumOfRowsFirstLoad" default="200" label="Number Of Articles Shown First Time" />
+    <design:attribute name="ArticlePageBoxLink" default="" label="Article Page URL For Box Content" />
+    <design:attribute name="TypeOfArticles" default="Articles" label="Article Type" />
+</design:component>

@@ -1,0 +1,12 @@
+.THIS .inputFieldWidth {
+    width:55%;
+}
+
+@media (min-width: 48em){
+    .THIS .slds-modal__container {
+        margin: 0 auto;
+        width: 80%;
+        max-width: 80rem !important;
+        min-width: 20rem;
+    } 
+}

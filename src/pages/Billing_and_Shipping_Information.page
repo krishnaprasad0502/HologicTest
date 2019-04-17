@@ -1,0 +1,21 @@
+<apex:page standardController="Case">
+ <apex:form >
+ <apex:pageBlock title="">
+    <apex:pageBlockSection >
+        <apex:outputField value="{! Case.Bill_to_Customer__c }"/>
+        <apex:outputField value="{! Case.Bill_to_Site_Location__c }"/>
+        <apex:outputField value="{! Case.Ship_to_Customer__c }"/>
+        <apex:outputField value="{! Case.Ship_to_Site_Location__c }"/>     
+        <apex:outputField value="{! Case.Install_Customer__c }"/>
+        <apex:outputField value="{! Case.Install_Location__c }"/>
+    </apex:pageBlockSection>
+    <apex:inlineEditSupport event="ondblClick"
+                        showOnEdit="saveButton,cancelButton" hideOnEdit="editButton" />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit" action="{!save}" id="editButton" />
+                <apex:commandButton value="Save" action="{!save}" id="saveButton" />
+                <apex:commandButton value="Cancel" action="{!cancel}" id="cancelButton" />
+            </apex:pageBlockButtons>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

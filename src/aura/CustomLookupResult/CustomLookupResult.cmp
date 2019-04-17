@@ -1,0 +1,61 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+	<aura:attribute name="oRecord" type="sObject" />
+    <aura:attribute name="IconName" type="string"/>
+    <aura:attribute name="PatientName" type="string"/> 
+	<aura:attribute name="objectAPIName" type="string" default=""/>
+	
+	<!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     
+  	<!--Register the component level event-->
+    <aura:registerEvent name="oSelectedRecordEvent" type="c:selectedsObjectRecordEvent"/>
+    
+    <aura:if isTrue="{!(v.objectAPIName == 'Asset')}">
+        <div style="max-width:90%;margin:auto;">
+            <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}">
+                <span id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta " 
+                      role="option">
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.SerialNumber}
+                        </span>
+                    </span>
+                    
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.Community_Product_Description__c}
+                        </span>
+                    </span>
+                    
+                    <span class="slds-media__body slds-Search-text">  
+                        <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">
+                            {!v.oRecord.Install_Location_Label__c}
+                        </span>
+                    </span>
+                </span>
+            </li>
+        </div>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!(v.objectAPIName == 'Product2')}">
+                <div style="max-width:90%;margin:auto;">
+                    <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}">
+                        <span id="prodlistbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta " 
+                              role="option">
+                            <span class="slds-media__body slds-Search-text">  
+                               <!-- <span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">-->
+                                    {!v.oRecord.Name}
+                               <!-- </span>-->
+                            </span>
+                            
+                            <span class="slds-media__body slds-Search-text">  
+                                <!--<span class="slds-listbox__option-text slds-listbox__option-text_entity" style="align:left">-->
+                                    {!v.oRecord.Community_Product_Description__c}
+                              <!--  </span>-->
+                            </span>
+                        </span>
+                    </li>
+                </div>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

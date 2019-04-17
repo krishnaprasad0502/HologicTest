@@ -1,0 +1,74 @@
+.THIS {
+    font-family: 'Proxima Nova Lt',sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: .1px;
+}
+.THIS .live-chat-link{
+    padding-left:2px !important;
+    padding-top: 5px !important;
+}
+.THIS.footer-header {
+    color: #2B2967;
+    font-size: 25px;
+    padding: 40px 10px 8px;
+    text-transform: none;
+    font-weight: 600;
+}
+.THIS.slds-grid{
+	color: #2B2967;
+}
+
+.THIS a {
+    color: #2B2967 !important;
+    font-family: 'Proxima Nova Lt',sans-serif;
+}
+
+.THIS .live-chat-link>a {
+    color: #008aad !important;
+}
+.THIS body {
+    font-family: 'Proxima Nova Lt',sans-serif;
+}
+.THIS.container2 {
+	background-color: #ccc;
+}
+.THIS.container1 {
+	background-color: #ccc;
+    height: 70px;
+    padding-top: 20px;
+    border-bottom: solid 3px #F5F5F5;
+}
+
+.THIS .socialLinkDiv {
+    width: 20%;margin: auto;font-size: 20px;
+}
+.THIS .menuDiv {
+    width: 90%;margin: auto;max-width:1170px;
+}
+.THIS .copyRightDiv.slds-grid.slds-wrap {
+    width: 70%;
+    margin:auto;
+}
+@media screen and (max-width: 1350px) {
+  .THIS .copyRightDiv.slds-grid.slds-wrap {
+    	width: 90%;
+	}
+}
+@media screen and (max-width: 1100px) {
+  .THIS .copyRightDiv.slds-grid.slds-wrap {	width: 95%;	}
+  .THIS .menuDiv { width: 90%;margin: auto;}
+}
+@media screen and (max-width: 1024px) {
+  .THIS .copyRightDiv.slds-grid.slds-wrap {	width: 100%; text-align: center;	}
+  .THIS .menuDiv { width: 70%; }
+}
+@media screen and (max-width: 700px) {
+    .THIS .menuDiv { width: 80%; }
+}
+@media screen and (max-width: 700px) {
+    .THIS .socialLinkDiv  { width: 60%; }
+}
+@media screen and (max-width: 579px) {
+    .THIS .menuDiv { text-align:center; }
+}

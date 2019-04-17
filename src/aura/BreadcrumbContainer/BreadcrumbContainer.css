@@ -1,0 +1,16 @@
+.THIS.breadcrumb {
+    padding: 20px;
+    background-color: antiquewhite;
+    margin: 13px;
+    border-radius: 5px;
+    font-size:20px;
+}
+ 
+.THIS.container {
+    text-align: center;
+    font-size: 22px;
+    margin: 15px;
+    padding: 20px;
+    background-color: peru;
+    border-radius: 5px;
+}

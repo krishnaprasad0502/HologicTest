@@ -1,0 +1,49 @@
+<!--
+********************************************************************************************************************
+    Author       : Nikhil Mutyam
+    Company      : Hexaware Technologies
+    Created Date : 9/25/2018 7:01 AM
+	Description  : Community Navigation Component used in Quick Links as sidebar
+
+    History:
+    <Date>         <Author Name>            <Brief Description of Change>    <Copa.do US#>
+    9/25/2018	   Nikhil Mutyam			Initial Creation				  US-0005701	
+	01/11/2019     Nomita Walke           Added condition for restricting third party users. US-0006454
+********************************************************************************************************************
+-->
+<aura:component controller="SuggestedArticlesController" implements="lightning:actionOverride,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+	
+    <!-- Attribute Declaration -->
+    <aura:attribute name="Articles" type="list"/>
+    
+    <!-- Method gets invoked ny parent component -->
+    <aura:method name="sampleMethod" action="{!c.myAction}" description="Sample method with parameters"> 
+		<aura:attribute name="searchString" type="String" default=""/> 
+	</aura:method>
+    <aura:if isTrue="{!v.currentUser.Profile.Name != $Label.c.Community_Profile_Third_Party}">    
+    <div class="slds-grid slds-gutters slds-wrap slds-Search-text">
+		<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1">
+            <div class="slds-m-bottom_large slds-align_absolute-center">		
+                <h2 id="modal-heading-01" class="slds-text-align_center slds-text-heading_Medium ">
+                	NEED ANSWERS FAST?
+                </h2>
+            </div>
+        </div>
+        
+        <!-- Display knowledge articles search results -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1">
+        	<ul class="slds-has-dividers_bottom-space">
+                <aura:iteration items="{!v.Articles}" var="art">
+                    <li class="slds-item" data-value="{!art.Id}" onclick="{!c.navigateToArticleDetail}">
+                        <lightning:tile  label="{!art.Title}">
+                            <ul class="slds-list_horizontal slds-has-dividers_right">
+                                <li class="slds-item">{!art.Summary}</li>
+                            </ul>
+                        </lightning:tile>    
+                    </li> 
+                </aura:iteration>    
+            </ul>    
+        </div>
+    </div>
+    </aura:if>
+</aura:component>

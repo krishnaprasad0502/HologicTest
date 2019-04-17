@@ -1,0 +1,116 @@
+<apex:page standardController="ServiceContract" docType="html-5.0" extensions="ContractItemAndBilling" id="dfd">
+    <style>
+    $(function() { $( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' }); });
+    </style>
+     <apex:form id="form">
+         
+        <apex:sectionHeader title="ServiceContract" subtitle="{!ServiceContract.ContractNumber}"/>
+        <apex:messages />
+       <apex:pageBlock title="Service Contract Details" mode="edit" id="linedetails">
+              
+
+           <apex:pageBlockButtons >
+             <apex:commandButton action="{!backToServiceContract}" value="Back To Service Contract" />
+               <apex:commandButton id="SaveSC" value="Cascade to Lines" action="{!saveServiceContract}"   rerender="lineitems,ListOfServiceBilling,linedetails,LanguageLines" />
+
+               <apex:commandButton value="Cancel" action="{!Cancel}" />
+              <!-- <apex:commandButton value="Add Line" action="{!addLine}" />-->
+
+ 			</apex:pageBlockButtons>	
+           <apex:pageBlockSection collapsible="false" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Service Contract Name</apex:outputLabel>
+                    <apex:outputText value="{!ServiceContract.Name}"></apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Start Date</apex:outputLabel>
+                    <apex:outputText value="{!ServiceContract.StartDate}"></apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >End Date</apex:outputLabel>
+                    <apex:outputText value="{!ServiceContract.EndDate}"></apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Total Price</apex:outputLabel>
+                    <apex:outputText value="{!ServiceContract.TotalPrice}"></apex:outputText>
+                </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Number of Periods</apex:outputLabel>
+                    <apex:inputfield value="{!ServiceContract.BS_Number_of_Periods__c}"></apex:inputfield>
+                </apex:pageBlockSectionItem>
+                   <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Period</apex:outputLabel>
+                    <apex:inputfield value="{!ServiceContract.BS_Period__c}" required="true"></apex:inputfield>
+                       
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+         </apex:pageBlock>
+         <apex:pageBlock title="Service Billing Schedule" id="lineitems">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save Service Billing Schedules" action="{!saveSCBillingschedules}"/>
+                
+            </apex:pageBlockButtons>
+    <apex:pageMessages > </apex:pageMessages>
+             
+              <div style="overflow-y: auto; height: 300px; ">
+                <apex:pageBlockTable value="{!ListOfServiceContractBilling}" var="SBLine" columns="9"  id="LanguageLines"  rendered="{!(ListOfServiceContractBilling != null)}" >
+                    <apex:column >
+                            <apex:panelGrid columns="3" cellpadding="2px" cellspacing="2px" rules="cols" >
+                              <!--  <apex:commandLink action="{!Removebilling}" value="Remove" rerender="LanguageLines"  immediate="true">
+                              
+                                    <apex:param name="rItemkey" assignTo="{!RemoveItemKey}" value="{!SBLine.key}" />
+                                </apex:commandLink>-->
+                            </apex:panelGrid>
+                        </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Contract Line Number</apex:facet>
+                        <apex:inputField value="{!SBLine.clri.LineItemNumber}"/>
+                    </apex:column>
+                       <apex:column >
+                  
+                      <apex:facet name="header">Asset Name</apex:facet>
+                        <apex:outputField value="{!SBLine.clri.Assetid}" />
+                    </apex:column>
+                    <apex:column >
+                      <apex:facet name="header">Sequence</apex:facet>
+                        <apex:inputtext value="{!SBLine.sequence}" />
+                    </apex:column>
+                       <apex:column > 
+                        <apex:facet name="header">Number of Periods</apex:facet>
+                        <apex:inputtext value="{!SBLine.nPeriod}"  />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Period</apex:facet>
+                         <apex:selectList value="{!SBLine.Period}" size="1">
+        <apex:selectOptions value="{!options}"/>
+    </apex:selectList>
+                       
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Amount</apex:facet>
+                        <apex:inputtext value="{!SBLine.amount1}"  required="true"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Start Date</apex:facet>
+                        <apex:input type="date" value="{!SBLine.sdate}" required="true"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">End Date</apex:facet>
+                        <apex:input type="date" value="{!SBLine.edate}" required="true"/>
+                    </apex:column>
+                                    
+                    <!-- <apex:column >
+                        <apex:facet name="header">Start Date</apex:facet>
+                        <apex:inputField value="{!SBLine.fcoLang.Start_Date__c}" required="true"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">End Date</apex:facet>
+                        <apex:inputField value="{!SBLine.fcoLang.End_Date__c}" required="true"/>
+                    </apex:column>-->
+                    
+               </apex:pageBlockTable>   
+            </div>
+             </apex:pageBlock>
+         
+    </apex:form>
+</apex:page>

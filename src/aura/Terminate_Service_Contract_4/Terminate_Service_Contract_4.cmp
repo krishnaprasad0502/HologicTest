@@ -1,0 +1,7 @@
+<aura:component  implements="force:hasRecordId,flexipage:availableForAllPageTypes">
+    <lightning:button variant="destructive" 
+                      label="Terminate Contract" 
+                      title="Terminate Contract" 
+                      class="buttonTerminate" 
+                      onclick="{! c.handleClick }"/>
+</aura:component>

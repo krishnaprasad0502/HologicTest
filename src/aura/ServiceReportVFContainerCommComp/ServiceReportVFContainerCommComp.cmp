@@ -1,0 +1,24 @@
+<!--
+*********************************************************************************************************
+ Author       : Niraj Wani
+ Company      : Hexaware Technologies
+ Created Date : 9/23/2018
+ Description  : This lightning component is used to for Service Report and used as container. 
+
+ History:
+ <Date>              <Author Name>        	<Brief description of change >
+ 9/12/2018			Niraj Wani				Initial Creation 
+ 11/02/2018			Nomita Walke			Added Site URL to all navigation.	US-0006062
+ 01/11/2019			Nomita Walke			Fixed null frame load issue   		US-0006454 
+*********************************************************************************************************
+-->
+<aura:component controller="ServiceReportController" implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" >
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<aura:attribute name="link" type="String"/>
+<aura:attribute name="configSetting" type="Object"/>
+<aura:attribute name="communityURL" type="String"/>
+<aura:if isTrue="{!!empty(v.configSetting)}">
+ 	<iframe id="reportVFPage"  src="{!v.configSetting.SiteURL__c+v.link}" width="1170" height="400" frameborder="0" allowfullscreen="allowfullscreen">
+	</iframe>
+</aura:if>
+</aura:component>

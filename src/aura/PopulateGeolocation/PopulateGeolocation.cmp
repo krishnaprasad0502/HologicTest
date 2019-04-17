@@ -1,0 +1,30 @@
+<aura:component implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" controller="PopulateLocation">
+   <style>
+    .slds-text-color--error.cPopulateGeolocation {
+    color: darkslategrey;
+    font-size: large;
+   }
+       .modal-footer.slds-modal__footer {
+    visibility: hidden;
+} .modal-body.scrollable.slds-modal__content.slds-p-around--medium {
+   
+    overflow-y: hidden;
+} 
+       
+     </style>
+  
+    
+
+    
+    <aura:attribute name="Message" type="boolean" default="false"/>
+    <aura:attribute name="recordId" type="Id"/>
+    <div class="slds-text-color--error"> Are you sure to Populate GeoLocation?</div>
+<br/>
+    <br/>
+    <br/>
+    <br/>
+
+    <p align="right">
+        <lightning:button variant="brand" label="OK" onclick="{! c.okay }" />
+        <lightning:button variant="brand" label="Cancel" onclick="{!c.cancelmethod}" /></p>
+</aura:component>

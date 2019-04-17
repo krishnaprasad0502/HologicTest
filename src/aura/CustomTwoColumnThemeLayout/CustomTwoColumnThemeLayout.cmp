@@ -1,0 +1,43 @@
+<!--
+*********************************************************************************************************
+	Author       : Niraj Wani
+	Company      : Hexaware Technologies
+	Created Date : 8/14/2018
+	Description  : This lightning component is used to display custom grid columns on layout. 
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change > 		<Copa.do US#>
+	8/14/2018			Niraj Wani				Initial Creation 					US-0005634
+	12/20/2018     		Sunil Sharma           	Initial Creation                	US-0006345
+*********************************************************************************************************
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes,forceCommunity:layout" access="global" >
+	<!-- Attribute Declaration-->
+    <aura:attribute name="Column1" type="Aura.Component[]"/>
+    <aura:attribute name="Column2" type="Aura.Component[]"/>
+    <aura:attribute name="Column3" type="Aura.Component[]"/>
+    <aura:attribute name="Column5" type="Aura.Component[]"/>
+	
+    <div class="slds-grid">
+        <div class="slds-col slds-size--1-of-1">
+    		{!v.Column1}
+    	</div>
+    </div> 
+    
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-col slds-size--1-of-1 slds-medium-size--3-of-4 slds-large-size--5-of-7 slds-p-bottom--small recentArticles" >
+    		{!v.Column2}
+    	</div>
+    	
+    	<div class="slds-col content slds-size--1-of-1 slds-medium-size--1-of-4 slds-large-size--2-of-7 slds-p-bottom--small" >
+    		{!v.Column3}
+    	</div>
+    </div>
+    
+    <div class="slds-grid">
+    	<div class="slds-col slds-size--1-of-1 slds-p-bottom--small">
+    		{!v.Column5}
+    	</div>
+    </div>
+</aura:component>

@@ -1,0 +1,9 @@
+<design:component>
+	<design:attribute name="ListType" label="List Type" datasource="Case,Asset,Product2,Knowledge__kav,FeedItem,Topic,ServiceAppointment" default="Case" description="Select Object Type" />	
+    <design:attribute name="fieldName" label="Field Name" description="Field api name to show as current page on breadcrumbs for record detail pages." />
+    <design:attribute name="homeLabel" label="Home Label" default="Home" description="Home page label." />
+	<design:attribute name="homeUrl" label="Home Url"  description="Enter home page url." />
+	<design:attribute name="firstLevelNavLabel" label="Navigation Page1 Label" description="Enter name for the level 1 navigation item." />
+    <design:attribute name="firstLevelNavUrl" label="Navigation Page1 Url" description="Enter url for the level 1 navigation item." />
+    <design:attribute name="currentPageLabel" label="Current Page Label" description="Enter current page label." />
+</design:component>

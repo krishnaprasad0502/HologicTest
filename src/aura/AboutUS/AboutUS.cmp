@@ -1,0 +1,87 @@
+<!--
+*****************************************************************************************
+    Author : Nikhil Mutyam
+    Company : Hexaware Technologies
+    Description : Helptext component on AboutUs community page
+
+    History:
+    <Date>         <Author Name>         <Brief Description of Change>     <Copa.do US#> 
+    01/10/2018	   Nikhil Mutyam	     Initial Creation				   
+*****************************************************************************************
+-->
+
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--3-of-3 slds-p-bottom--small" 
+             style="background: #FFFFFF;padding-left:20px;">
+            
+            <div style="margin-top:10px;">
+                <h1 class="header1">Hologic Breast and Skeletal Services –About Us</h1>
+            </div>    
+			<div style="margin-top:10px;">
+                <header>
+                    <h1 class= "header2" >Hologic Service and Support is the sure choice</h1>
+                </header>
+                
+                <p class="content-text slds-p-bottom_small">
+                    Protect your high-performance Hologic system with the best service and support team in the industry.
+                </p>
+                
+                <p class="content-text">
+                    The value our service and support team brings is more than just “fixing a system.” We take a holistic 
+                    approach to helping you get the most from your system—from expert clinical applications training to 
+                    software upgrades to insightful planned maintenance. We work with you as partners, to optimize your 
+                    workflow, increase your productivity and maximize system uptime.
+                    <br/><br/>
+                    Hologic Service and Support delivers proven expertise to improve your business results and most 
+                    importantly, patient outcomes. Experience expert services that have made us the most highly ranked 
+                    provider in the industry, and the clear choice as your healthcare partner.
+                </p>
+            </div>    
+			<div style="margin-top:10px;">
+                <header>
+                    <h1 class= "header2" >Exceptional Service. “It’s what we do.”</h1>
+                </header>
+                
+                <p class="content-text slds-p-bottom_small">
+                    Achieving consistently high performance takes dedication, focus, and talent. It’s a crucial part of
+                    what makes our systems great and it’s how we distinguish ourselves as the industry’s high
+                    performance service leader in mammography. Our decision to focus exclusively on providing
+                    service and support for Hologic systems proves our point: The sharper our focus, the better your 
+                    results.
+                </p>
+                
+                <p class="content-text">
+                    Hologic Service experts know the meaning of personalized service and the importance of a
+                    customer relationship. Our US based team is your team and we are here to serve you with:
+                </p>
+                
+                <div>
+                    <ul class="slds-list_dotted content-text">
+                        <li>400 field service engineers and managers</li>
+                        <li>100 clinical applications specialists and managers</li>
+                        <li>40 remote technical support specialists</li>
+                    </ul>
+                </div>   
+            </div>
+            <div style="margin-top:10px;">    
+                <header>
+                    <h1 class= "header2" >#1 in Service and Support</h1>
+                </header>
+                
+                <p class="content-text slds-p-bottom_small">
+                    A dedicated focus is one of the reasons why Hologic Service is ranked #1 according to the 2017 IMV 
+                    ServiceTrak Survey of mammography imaging vendors.   In addition to #1 in overall service performance, 
+                    Hologic Service ranked #1 in Net Promoter Score category which is the measurement of customers that 
+                    would recommend Hologic to others. 
+                </p>  
+                
+                <p class="content-text">
+                    Hologic Service is the sure choice by delivering services with tangible economic value and operational 
+                    efficiency.  Let us partner with you to help achieve your goals with a network of highly skilled 
+                    professionals and comprehensive array of services and solutions. 
+                </p>    
+			</div>
+        </div>    
+    </div>    
+</aura:component>

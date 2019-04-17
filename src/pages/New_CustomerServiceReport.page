@@ -1,0 +1,295 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Displays the Customer Service Report
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+05/04/2017      Mani Sundaresan       Initial Creation (US2248)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page controller="CSRControllerMerge" id="page" renderAs="pdf" applyHtmlTag="false" showHeader="false">
+     
+    <head>
+        <style> 
+        body { font-size:13px;} 
+        table.print-friendly tr td, table.print-friendly tr th {
+        page-break-inside: avoid;
+        }
+        
+        table {
+            -fs-table-paginate: paginate;
+        }
+        
+   </style>
+    </head>
+    <apex:form id="form">
+        
+        <center>
+            <apex:image url="https://hologic--c.na34.content.force.com/servlet/servlet.ImageServer?id=01561000001N8S8&oid=00D61000000YX6X&lastMod=1469646160000"/><br/><br/>
+            <b><apex:outputLabel value="Customer Service Request Report" style="font-size:25px;"></apex:outputLabel></b>
+        </center><br/><br/><br/>
+        
+        <apex:repeat var="acc" value="{!accountList}">
+               
+               <table cellpadding="6" width="100%">
+                   <tr>
+                       <td>
+                           <b><apex:outputLabel value="Customer Name: " rendered="{!sObjectRT == 'Site'}"/></b>
+                           <apex:outputText value="{!acc.Parent.Name}" rendered="{!sObjectRT == 'Site'}" />
+                       </td>
+                   </tr>
+                   <tr>
+                       <td>
+                           <b><apex:outputLabel value="Party Name: "></apex:outputLabel></b>
+                           <apex:outputText value="{!acc.Name}"></apex:outputText>
+                       </td>
+                   </tr>
+                   <tr>
+                       <td>
+                           <b><apex:outputLabel value="Address: " ></apex:outputLabel></b>
+                           <apex:outputText value="{!accountAddress}" ></apex:outputText>
+                       </td>
+                   </tr>
+               </table>
+           
+        </apex:repeat><br/><br/>
+            
+            
+            <apex:variable var="cnt" value="{!0}" /> 
+            <apex:repeat value="{!finalAssetWrapper}" var="asset">
+            <div style="{!if(cnt < 1, 'page-break-before:avoid;','page-break-before:always;')}">
+            <apex:variable var="cnt" value="{!cnt+1}"/>
+                <table style="width:100%;border: 1px solid black;" class="print-friendly">
+                    <tr>
+                        <td>
+                            <b><label for="serial">Serial #: </label></b>
+                            <span id="serial">{!asset.asse.SerialNumber}</span>
+                        </td>
+                        <td>
+                            <apex:outputLabel rendered="{!sObjectRT == 'Customer'}">
+                            <b><label for="site">Site:</label></b>
+                            <span id="site">{!asset.asse.Account.Name}</span>
+                            </apex:outputLabel>  
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <b><label for="product">Product: </label></b>
+                            <span id="product">{!asset.asse.Product2.Name}</span>
+                        </td>
+                        <td width="60%">
+                            <b><label for="Description">Description: </label></b>
+                            <span id="Description">{!asset.asse.Description}</span>
+                        </td>
+                    </tr>
+                    
+        
+                    <apex:repeat value="{!asset.caseWrapper}" var="case">
+                    <tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <b><label for="case">Case #: </label></b>
+                            <span id="case">{!case.caseVal.CaseNumber}</span>
+                        </td>
+                        <td >
+                            <b><label for="DateCreated">Date/Time Opened: </label></b>
+                            <!--<apex:outputText value="{0, date, MMMM d','  yyyy}" id="DateCreated">-->
+                            <!--<apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a}" id="DateCreated">
+                            
+                                <apex:param value="{!case.caseVal.CreatedDate}" /> 
+                            </apex:outputText>-->
+                            <apex:outputField value="{!case.caseVal.CreatedDate}"/>
+                        </td>
+                                              
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><label for="rt">Type: </label></b>
+                            <span id="rt">{!case.caseVal.RecordType.Name}</span>
+                        </td>  
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <apex:outputPanel rendered="{!case.caseVal.PO_Number__c != null}">
+                                <b><label for="ponum">PO Number: </label></b>
+                                <span id="ponum">{!case.caseVal.PO_Number__c}</span>
+                            </apex:outputPanel>
+                        </td>
+                        <td>
+                            <apex:outputPanel rendered="{!case.caseVal.PO_Cap__c != null}">
+                                <b><label for="pocap">PO Cap: </label></b>
+                                <span id="pocap">{!case.caseVal.PO_Cap__c}</span>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                        <b><label for="Subject">Subject: </label></b>
+                        <span id="Subject">{!case.caseVal.Subject}</span>
+                        </td>
+                    </tr>
+                    <!--<apex:repeat value="{!case.caseTaskList}" var="task">
+                    <!--<tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>-->
+                    <!--<tr>
+                        <td colspan="2">
+                            <apex:outputPanel rendered="{!task.Note_Type__c == 'FE Resolution' && task.Description != null}">
+                            <!--<b><label for="NoteType">Note Type: </label></b>-->
+                               <!-- <span id="NoteType"><b>FE Resolution</b>: {!task.Description}</span>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!task.Note_Type__c != 'FE Resolution' && task.Description != null}">
+                                <span id="NoteType"><b>Resolution</b>: {!task.Description}</span>
+                            </apex:outputPanel>
+                        </td>
+                        <!--<td>
+                            <b><label for="TskDescription">Description: </label></b>
+                            <span id="TskDescription">{!task.Description}</span>
+                        </td>-->
+                    <!--</tr>    
+                    </apex:repeat>-->
+                    <tr>
+                        <td><br/></td>
+                    </tr>
+                     
+                    <tr>
+                        <td colspan="2">
+                        
+                   
+                    <apex:repeat value="{!case.woWrapper}" var="wo1">
+                    <i>
+                    <table style="width:100%;border: 1px solid black;" class="print-friendly">
+                    
+                    <tr>
+                        <td>
+                            <b><label for="wo">Work Order #: </label></b>
+                            <span id="wo">{!wo1.wo.WorkOrderNumber}</span>
+                        </td>
+                        <td>
+                            
+                            <b><label for="EndDate">Completed Date: </label></b>
+                            <!--<span id="EndDate">{!wo1.wo.EndDate}</span>-->
+                             <!--<apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a}" id="EndDate">
+                                <apex:param value="{!wo1.wo.Completed_Date__c}" /> 
+                            </apex:outputText>-->
+                            <apex:outputField value="{!wo1.wo.Completed_Date__c}"/>
+                        
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <b><label for="type">Type: </label></b>
+                            <span id="type">{!wo1.wo.Type__c}</span>
+                        </td>
+                        <td width="60%">
+                        <b><label for="owner">Field Engineer: </label></b>
+                            <span id="owner">{!wo1.wo.Owner.Name}</span>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><label for="woSubject">Description: </label></b>
+                            <span id="woSubject">{!wo1.wo.Description}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><label for="woSubject">FE Resolution: </label></b>
+                            <span id="woSubject">{!wo1.wo.FE_Resolution__c}</span>
+                        </td>
+                    </tr>
+                    
+                    
+                    
+                    <apex:variable value="{!1}" var="rowNum"/>
+                    <apex:repeat value="{!wo1.woliList}" var="woli">
+                    <!--<tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>-->
+                    <tr >
+                        <td colspan="2">
+                            <apex:outputPanel rendered="{!rowNum == 1}">
+                            <hr style="border-top: dotted 1px;" />
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><u><apex:outputText value="Work Order Details" rendered="{!rowNum == 1}"></apex:outputText></u></b>
+                            <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <apex:outputText rendered="{!woli.RecordType.Name == 'B&SH Add a Part'}"><b>Parts Used:</b> {!woli.Description}</apex:outputText>
+                            <apex:outputLabel rendered="{!woli.RecordType.Name != 'B&SH Add a Part'}">
+                            <span id="woDescription">{!woli.Description}</span>
+                            </apex:outputLabel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <apex:outputPanel rendered="{!includePricing && woli.TotalPrice != null}">
+                                <b><label for="ttlprice">Total Price: </label></b>
+                                <span id="ttlprice">{!woli.TotalPrice}</span>
+                            </apex:outputPanel>
+                        </td>
+                    </tr> 
+                    
+                    </apex:repeat>
+                    <!------->
+                        <apex:variable value="{!1}" var="rowNum1"/>
+                        <apex:repeat value="{!wo1.pcList}" var="pcli">
+                        <!--<tr>
+                            <td colspan="2"><hr/></td>
+                        </tr>-->
+                        <tr >
+                            <td colspan="2">
+                                <apex:outputPanel rendered="{!rowNum1 == 1}">
+                                <hr style="border-top: dotted 1px;" />
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b><u><apex:outputText value="Products Consumed Details" rendered="{!rowNum1 == 1}"></apex:outputText></u></b>
+                                <apex:variable var="rowNum1" value="{!rowNum1 + 1}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <b>Parts Used:</b> {!pcli.Product_Description__c}
+                                
+                            </td>
+                        </tr>
+
+                        </apex:repeat>
+                    <!------->
+                   </table><br/>
+                   </i>
+                    </apex:repeat>
+                   </td>
+                   </tr>
+                   
+                    </apex:repeat>
+                    
+                    
+                    
+                </table><br/>
+                <p style="page-break-after: auto;" />
+                </div>
+            </apex:repeat>
+            
+       
+        
+     </apex:form>
+    
+    
+     
+     
+</apex:page>

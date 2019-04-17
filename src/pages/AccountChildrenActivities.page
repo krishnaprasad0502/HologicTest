@@ -1,0 +1,323 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Raviraj Reddy
+Description:    Displays Tasks associated to Medical Aesthetics account
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+03/15/2018      Raviraj Reddy       Initial Creation (US3819)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Account" extensions="AccountChildrenActivities" showHeader="false" applyHtmlTag="false">
+    <apex:includeScript value="{!URLFOR($Resource.ActivityTable,'ActivityTable/js/jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.ActivityTable, 'ActivityTable/js/jquery.dataTables.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.ActivityTable, 'ActivityTable/js/moment.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.ActivityTable,'ActivityTable/css/tableStyle.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.ActivityTable,'ActivityTable/css/customTableStyle.css')}"/>
+    <style type="text/css">
+        .container-listview{
+            width: 100%;
+            padding: 15px 0px 15px;
+        }
+        td a{
+            text-decoration: underline;
+        }
+        
+    </style>
+    <apex:outputPanel id="Page">
+    <script>
+        var selected
+        
+        ;
+        var IdTOEmailMap = JSON.parse('{!mapIdToEmails}');
+        var IdTOAMPS = JSON.parse('{!mapIdToAMPSUser}');
+        console.log('===>>>>IdTOEmailMap' , IdTOEmailMap);
+        console.log('===>>>>IdTOAMPS' , IdTOAMPS);
+        function formatChildRow ( data ) {
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+                '<tr>'+
+                    '<td>Comments:</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td>' + ( typeof data.Description === 'undefined' ? '' : data.Description ) + '</td>'+
+                '</tr>'+
+            '</table>';
+        }
+        
+        function mouseDown(e, str) {
+          e = e || window.event;
+          switch (e.which) {
+             case 1: window.top.location.href = str; break;
+             case 3: var url = location.href; var baseURL = url.substring(0, url.indexOf('/', 14)); window.open(baseURL+str); break;
+          }
+        }
+    
+        function redirect (type) {
+            
+            if(type === 'task'){
+                if('{!strLaserSelect}' == 'All' || '{!strLaserSelect}' == 'None')
+                    window.top.location = '/00T/e?what_id='+'{!curRecordID}'+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}' 
+                else
+                    window.top.location = '/00T/e?what_id='+'{!strLaserSelect}'+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+            }if(type === 'score'){ 
+                 if('{!strLaserSelect}' !='All' && '{!isAccountCodeBtVisibile}' == 'true'){             
+                       window.open('/apex/CalculateScorePage?ParentID={!strLaserSelect}&AccountID={!curRecordID}', 'Popup Name','width=600, height=650, scrollbars=yes');
+                        //window.top.location = '/apex/CalculateScorePage?ParentID={!strLaserSelect}&AccountID={!curRecordID}';
+                    }else{
+                        alert('Please select a Sculpsure Asset');
+                    }
+            }else if(type === 'event'){
+                if('{!strLaserSelect}' == 'All' || '{!strLaserSelect}' == 'None')
+                    window.top.location = '/00U/e?what_id='+'{!curRecordID}'+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'   
+                else
+                    window.top.location = '/00U/e?what_id='+'{!strLaserSelect}'+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+            }else if(type === 'call'){
+                if('{!strLaserSelect}' == 'All' || '{!strLaserSelect}' == 'None')
+                    window.top.location = '/00T/e?what_id='+'{!curRecordID}'+'&title=Call&followup=1&tsk5=Call&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+                else
+                    window.top.location = '/00T/e?what_id='+'{!strLaserSelect}'+'&title=Call&followup=1&tsk5=Call&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+            }else if(type === 'email'){
+                if(IdTOEmailMap[selectedLaser] == undefined){
+                    window.top.location = '/_ui/core/email/author/EmailAuthor?p3_lkid='+selectedLaser+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'    
+                } else {
+                    window.top.location = '/_ui/core/email/author/EmailAuthor?p3_lkid='+selectedLaser+'&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}&p5=' + IdTOEmailMap[selectedLaser] 
+                }
+            }else if(type === 'courtesyCall'){
+                if('{!strLaserSelect}' == 'All' || '{!strLaserSelect}' == 'None')
+                    window.top.location = '/00T/e?what_id='+'{!curRecordID}'+'&00NL0000003YceY=Courtesy+Marketing+Call&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+                else
+                    window.top.location = '/00T/e?what_id='+'{!strLaserSelect}'+'&00NL0000003YceY=Courtesy+Marketing+Call&retURL=%2F{!curRecordID}&saveURL=%2F{!curRecordID}'
+            }
+        }
+    
+        /*jQuery( function ($) {*/
+            $(document).ready( function() { drawTable(null) });
+            
+            function drawTable(callback)
+            {
+                if(callback != null){
+                    callback();
+                }
+                
+                var activityTable;
+                var activities = {!activityRecordsJSON};
+                var activitiesData = [];
+                var fieldSet = {!listViewFieldSetJSON};
+                var columns = [];
+                var checked = "{!URLFOR($Resource.ActivityTable,'ActivityTable/resources/checkbox_checked.gif')}";
+                var unchecked = "{!URLFOR($Resource.ActivityTable,'ActivityTable/resources/checkbox_unchecked.gif')}";
+                var idMap = {!idMapJSON};
+                 var laserOptions = {!options};
+                   columns.push({
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "searchable":     false,
+                        "defaultContent": ''
+                    });
+                
+                console.log('laserOptions' , laserOptions);
+                console.log('activities-------  test---- ' , activities);
+                console.log('fieldSet' , fieldSet);
+                console.log('idMap' , idMap);
+                console.log('IdTOEmailMap' , IdTOEmailMap);
+                
+                for(var j = 0; j < fieldSet.length; j++){
+                    if(fieldSet[j].fieldPath == 'Complete__c'){
+                        columns.push({"data": fieldSet[j].fieldPath, "defaultContent": "", "searchable": false, "type": "html"});
+                    }else{
+                        columns.push({"data": fieldSet[j].fieldPath, "defaultContent": ""});
+                    }
+                }   
+                
+                for(var i = 0; i < activities.length; i++){
+                    
+                    var temp = {};
+                    for(var j = 0; j < fieldSet.length; j++){
+                        console.log('test-----------------------------       '+fieldSet[j].type+'  --  '+fieldSet[j].fieldPath);
+                        if(fieldSet[j].type == "currency"){
+                            var n = Number(activities[i][fieldSet[j].fieldPath]);
+                            temp[fieldSet[j].fieldPath] = "$" + n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+                        }else if((fieldSet[j].type == "datetime" || fieldSet[j].type == "date") && activities[i][fieldSet[j].fieldPath]!=null){
+                            var d = moment(activities[i][fieldSet[j].fieldPath]);
+                            temp[fieldSet[j].fieldPath] = (d.month() + 1) + '/' + d.date() + '/' + d.year();
+                        }else if(fieldSet[j].type == "reference"){
+                            console.log('fieldPath===>>reference--  ' , activities[i][fieldSet[j].fieldPath]);
+                            console.log('fieldPath===>>reference-2-  ' , idMap[activities[i][fieldSet[j].fieldPath]]);
+                            //idMap[activities[i][fieldSet[j].fieldPath]]
+                            temp[fieldSet[j].fieldPath] = idMap[activities[i][fieldSet[j].fieldPath]];
+                        }else if(fieldSet[j].type == "combobox"){
+                            console.log('in combobox');
+                            console.log('fieldPath===>>' , activities[i][fieldSet[j].fieldPath]);
+                            temp[fieldSet[j].fieldPath] = '<a href="#" onmousedown="mouseDown(event,\'/'+activities[i]['Id']+'\');">'+activities[i]['Subject']+'</a>';
+                        }else if(fieldSet[j].type == "boolean"){
+                            temp[fieldSet[j].fieldPath] = '<img alt='+(activities[i][fieldSet[j].fieldPath] ? 'checkbox-checked' : 'checkbox-unchecked')+
+                                ' src="'+(activities[i][fieldSet[j].fieldPath] ? checked : unchecked)+'" /><span style="display:none;">'+(activities[i][fieldSet[j].fieldPath] ? 0 : 1)+'</span>';
+                        }else{
+                            temp[fieldSet[j].fieldPath] = activities[i][fieldSet[j].fieldPath];
+                        }
+                    }
+                    temp['DT_RowId'] = activities[i]['Id'];
+                    temp['Description'] = activities[i]['Description'];
+                    console.log(temp);
+                    activitiesData.push(temp);
+                }
+                console.log('activitiesData---' , activitiesData);
+                //initialize datatables
+                activityTable = $('#activityList').DataTable( {
+                    "data": activitiesData,
+                    "columns" : columns,
+                    "order": [[1, 'desc'],[2, 'desc']],
+                    "fnDrawCallback": function( oSettings ) {
+                        //TODO: figure out resize here...
+                    }
+                } );
+                                
+                // Add event listener for opening and closing details
+                $('#activityList tbody').on('click', 'td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var row = activityTable.row( tr );
+             
+                    if ( row.child.isShown() ) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    }
+                    else {
+                        // Open this row
+                        row.child( formatChildRow(row.data()) ).show();
+                        tr.addClass('shown');
+                    }
+                } );
+                
+                // Add event listener for opening and closing details
+                $('#activityList thead ').on('click', 'th.details-control', function () {
+                    $(this).closest('th').toggleClass('shown')
+                    var toShow = $(this).hasClass('shown')
+                    activityTable.rows().every(function(){
+                        var tr = $(this.node());
+                        var row = this;
+                 
+                        if ( !toShow ) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        }
+                        else {
+                            // Open this row
+                            row.child( formatChildRow(row.data()) ).show();
+                            tr.addClass('shown');
+                        }
+                    })
+                } );
+                
+                var select = $('#sOwnedSelect')
+                select.on('change', function(){
+                    selectedLaser = $('#lasersOwnedSelect option:selected').attr('value')
+                })
+                
+                for(var prop in laserOptions){
+                    select.append('<option value="'+prop+'">'+laserOptions[prop]+'</option>')
+                }
+                
+                selectedLaser = $('#lasersOwnedSelect option:selected').attr('value')
+                
+                $('select[id$=laserSelect] , select[id$=roleSelect]').change(function(event){ /*select[id$=roleSelect]*/
+                    
+                    updatePageAF();                    
+                    showLaserFlag();
+                });
+            }
+        /*});*/
+        
+        function callAF()
+        {
+            updatePageAF();
+            ShowLaserFlag();
+        }
+        
+        function popupClosed() {
+           window.top.location.href = '/{!Account.id}';
+            window.location.reload();
+        }
+    </script>
+    <apex:form id="selectForm">
+        <apex:outputPanel id="msg">
+            <apex:pagemessages />
+        </apex:outputPanel>
+       <!-- <apex:selectRadio value="{!strFilterOpt}" onchange="callAF()">
+            <apex:selectOptions value="{!items}"/>
+        </apex:selectRadio>-->
+        
+        <!--Added for CYN-7-->
+        <!--<label for="{!$Component.laserSelect}">Asset:</label>
+        <apex:selectList value="{!strLaserSelect}" multiselect="false" size="1" style="vertical-align:top;" id="laserSelect" >
+            <apex:selectOptions value="{!lstLaserOwnedSelect}"/>
+        </apex:selectList>-->
+        
+        <!--
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Laser Score :  
+        <font color="red">    
+            
+            <apex:inputField value="{!laser.Laser_Score__c}" id="laserFlag" />
+</font>-->
+
+        <!-- Added for CYN-7-->
+        
+        <apex:actionFunction name="updatePageAF" action="{!updatePage}" rerender="Page,msg,laserFlag,accountCodeBt" oncomplete="drawTable(function(){activityTable.fnDestroy();})" status="loading"/>  
+        <apex:actionFunction name="showLaserFlag" action="{!assignLaser}" rerender="laserFlag" /> 
+
+    </apex:form>
+    <apex:outputPanel >
+    <div class="container container-listview">
+        <div>
+            
+            <input value="New Task" class="btn" name="task" onclick="redirect('task')" title="New Task" type="button"></input>
+            <input value="New Event" class="btn" name="task" onclick="redirect('event')" title="New Event" type="button"></input>
+            <input value="Log a Call" class="btn" name="task" onclick="redirect('call')" title="Log a Call" type="button"></input>
+            <!--<input value="Send Email" class="btn" name="task" onclick="redirect('email')" title="Send Email" type="button"></input>-->
+            <!--<input value="Account Code" class="btn" name="task" onclick="redirect('score')" title="Account Code" type="button" id="accountCodeBt" ></input>-->
+            <!--Modified by Nandish for CYN-7-->
+                <!-- <input value="Courtesy Marketing Call" class="btn" name="task" onclick="redirect('courtesyCall')" title="Courtesy Marketing Call" type="button"></input> -->
+            <!--Modified by Nandish for CYN-7-->
+        </div>
+<br/>
+        <table id="activityList" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class='details-control'></th>
+                    <apex:repeat value="{! listViewFieldSet }" var="a"> 
+                        <th>
+                            <apex:outputtext rendered="{!AND(a.Label != 'Assigned To ID' ,a.Label != 'Related To ID')}" value="{!a.Label}"></apex:outputtext>
+                            <apex:outputtext rendered="{!IF(a.Label == 'Assigned To ID','true','false')}" value="Assigned To"></apex:outputtext>
+                            <apex:outputtext rendered="{!IF(a.Label == 'Related To ID','true','false')}" value="Related To"></apex:outputtext>
+                        </th>
+                    </apex:repeat>
+                </tr>
+            </thead>
+            
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    </apex:outputPanel> 
+    </apex:outputPanel>
+
+    <apex:actionstatus id="loading" startText="Requesting...">
+         <apex:facet name="start">
+            <div id="salesforceSource_blurybackground" style="position:absolute; left:1px; top:1px; width:100%; height:100%; 
+                                                        text-align:center; vertical-align: middle; background-color: #dcdcdc; opacity:0.7;filter:alpha(opacity=60)"></div>
+            <div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 80%; display: ''; ">
+                <div style="width: 144px;vertical-align: middle;" class="waitingHolder">
+                <table align="center" valign="top" style="width: 100%; height: 30%">
+                <tr align="center" valign="top" style="width: 100%; height: 30%">
+                    <td valign="top"><img src="/img/loading.gif"/><span class="waitingDescription"><b>Loading...</b></span></td>
+                </tr>
+                </table>
+                </div>
+            </div>
+            <div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 100%; display: ''; "/>
+            <script>document.getElementById('ManageMembersViewport_loading').height = window.innerHeight * (3/4);</script>
+         </apex:facet>
+        <apex:facet name="stop"></apex:facet>
+    </apex:actionstatus>
+
+</apex:page>

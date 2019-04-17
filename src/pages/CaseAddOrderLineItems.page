@@ -1,0 +1,119 @@
+<!--------------------------------------------------------------------------------------------------------------
+Author:         Mani Sundaresan
+Description:    Displays Order Items associated to the B&SH Install case
+
+History:
+<Date>          <Authors Name>      <Brief Description of Change>
+08/01/2016      Mani Sundaresan       Initial Creation (US1362)
+08/04/2016      Mani Sundaresan       Updated to display Case Number (US1362)
+---------------------------------------------------------------------------------------------------------------->
+<apex:page standardController="Case" extensions="addOrderLineItems" showHeader="false" sidebar="false" id="Page">
+
+    <apex:pageMessages />
+
+    <apex:form id="form" rendered="{!noOrder == false}" >
+    
+        <apex:pageBlock id="pgBlk" >
+        <center>
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save" action="{!processSelected}" oncomplete="window.close();"/>
+                <apex:commandButton value="Cancel" oncomplete="window.close();"/>
+            </apex:pageBlockButtons>
+        </center>    
+            <apex:pageblockTable value="{!OrderItem}" var="o" id="table">
+            
+                <apex:column >
+                
+                    <apex:facet name="header">
+                       <apex:inputCheckbox onclick="cvCheckAllOrNone(this)" title="Toggle All Rows" id="MasterChkBox" selected="{!MasterChkBox}"/>
+                    </apex:facet>
+                
+                
+                    <apex:inputCheckbox value="{!o.selected}" id="checkedone" onclick="checkAll(this);">
+                        <apex:actionSupport event="onclick" action="{!setSelected}" reRender="false">
+                            <apex:param name="OrderItem" value="{!o.oi.Id}"/>
+                            <apex:param name="Selected" value="{!o.selected}"/>
+                        </apex:actionSupport>
+                    </apex:inputCheckbox>
+                  
+                </apex:column>
+                
+                    <apex:column headerValue="Case Number" value="{!o.oi.Case__c}"/>
+                    <apex:column headerValue="Product" value="{!o.oi.Product_Number__c}"/>
+                    <apex:column headerValue="Product Description" value="{!o.oi.PriceBookEntry.Product2.ShortDescription__c}"/>
+                    <apex:column headerValue="Customer" value="{!o.oi.Order.Account.Name}"/>
+                    <apex:column headerValue="Order Number" value="{!o.oi.Order.OrderNumber}"/>
+                    <apex:column headerValue="Opportunity" value="{!o.oi.Order.Opportunity.Name}" rendered="{!opptyName}"/>
+                    <apex:column headerValue="Status" value="{!o.oi.Order.Status}"/>
+                    <apex:column headerValue="Item" value="{!o.oi.OriginalOrderItem}" rendered="{!originalOrdrItem}"/>
+                    <apex:column headerValue="Quantity" value="{!o.oi.Quantity}"/>
+                    <apex:column headerValue="Unit of Measure" value="{!o.oi.Unit_of_Measure__c}" rendered="{!uom}"/>
+                    <apex:column headerValue="Ship To" value="{!o.oi.Ship_To_Site_Location__c}" rendered="{!shipTo}"/>
+                    <apex:column headerValue="Scheduled Ship Date" value="{!o.oi.Scheduled_Ship_Date__c}" rendered="{!scheduledShipDate}"/>
+                    <apex:column headerValue="Total Price" value="{!o.TotalPrice}"/>
+
+            </apex:pageblockTable>
+            
+           <b>
+            <apex:commandLink value="<-- Previous" action="{!Previous}" rerender="table,pgBlk,MasterChkBox" rendered="{!DisablePrevious}"/> &nbsp;
+            <apex:outputText value="||" rendered="{!AND(DisablePrevious,DisableNext)}"></apex:outputText> &nbsp;
+            <apex:commandLink value="Next -->" action="{!Next}" rerender="table,pgBlk,MasterChkBox" rendered="{!DisableNext}" />
+           </b>
+            
+           
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+    <script>
+    
+        function checkAll(cb){
+        
+            var inputElem = document.getElementsByTagName("input");
+            var count = 0;
+            
+            for(var i=0; i<inputElem.length; i++){
+               if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("checkedone") > -1 && inputElem.item(i).type == "checkbox")
+                    count++; 
+                if(inputElem.item(i).checked == true && inputElem.item(i).id.indexOf("MasterChkBox") > -1 && inputElem.item(i).type == "checkbox")
+                    count--;
+            }
+            
+                       
+            var leng = '{!size}';
+            if(count == leng)
+                document.getElementById('{!$Component.Page.form.pgBlk.table.MasterChkBox}').checked = cb;
+            else
+                document.getElementById('{!$Component.Page.form.pgBlk.table.MasterChkBox}').checked = false;
+        }
+        
+        function myRefresh(){
+            window.opener.location.href="/{!$CurrentPage.parameters.Id}";
+            window.top.close();
+      
+        }
+        
+        function cvCheckAllOrNone(allOrNoneCheckbox) {
+        
+        // Find parent table
+        var container = allOrNoneCheckbox;
+        while (container.tagName != "TABLE") {
+            container = container.parentNode;
+        }
+
+        // Switch all checkboxes
+        var inputs = container.getElementsByTagName("input");
+        var checked = allOrNoneCheckbox.checked;
+        for (var i = 0; i < inputs.length; i++) {
+            var input = inputs.item(i);
+            if (input.type == "checkbox") {
+                if (input != allOrNoneCheckbox && input.disabled == false) {
+                    input.checked = checked;
+                    }
+                }
+            }
+        }
+    
+    </script>
+  
+</apex:page>

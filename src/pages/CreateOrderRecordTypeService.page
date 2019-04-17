@@ -1,0 +1,5 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" standardController="Case" Showchat="False">
+    <flow:interview name="Create_Order_Record_Type_Service_Order" finishLocation="{!URLFOR('/home/home.jsp')}">
+    <apex:param name="var_case_id" value="{!Case.Id}"  />
+    </flow:interview>
+</apex:page>

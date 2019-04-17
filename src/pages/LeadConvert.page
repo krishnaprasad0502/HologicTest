@@ -1,0 +1,1228 @@
+<apex:page standardController="Lead" extensions="LeadConvert" docType="html-5.0" standardStylesheets="true" sidebar="true" showHeader="true">
+<style>
+input#combobox-unique-id {
+    width: 337px;
+}
+ input#soldToId {
+   width: 337px;
+}
+    input#opportunityName {
+     width: 337px;
+}
+    input#ConName {
+       width: 337px;
+}
+input#soldToName {
+       width: 337px;
+}
+input#LocationName {
+      width: 337px;
+}   
+    div#soldToId {
+     width: 337px;
+}
+</style>
+    <!-- Page section header -->
+    <apex:sectionHeader title="Convert Lead" subtitle="{!Lead.Name}"/>
+    
+        
+    <head>
+        <apex:slds />
+        <script src="{!URLFOR($Resource.jquery2, 'lib.js')}"></script>
+        <apex:includescript value="/soap/ajax/40.0/connection.js" />
+        <apex:includescript value="/soap/ajax/40.0/apex.js" />
+
+    </head>
+    <style type="text/css">
+    #soldToId input {
+        width: 100%;
+    }
+
+    span.twitter-typeahead {
+        width: 100%;
+    }
+
+    .slds-scope .slds-input.slds-is-disabled,
+    .slds-scope .slds-input[disabled] {
+        background-color: #e0e5ee !important;
+        cursor: not-allowed !important;
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+
+    .tt-menu {
+        width: 100%;
+        background: white;
+        z-index: 10000 !important;
+    }
+
+    .slds-scope .slds-combobox__input-entity-icon {
+        z-index: 2000;
+    }
+
+    label.slds-checkbox_toggle {
+        margin-top: 22px;
+    }
+
+    .borderErrorColor{
+        border-color : red !important;
+    }
+
+    </style>
+    <script>
+    
+         
+            var rootResUrl = "{!URLFOR($Asset.SLDS)}";
+            var leadId = "{!Lead.Id}";
+            var leadStreet = `{!Lead.Street}`;
+            
+            var userId = "{!$User.Id}";
+            var userName = "{!$User.FirstName} {!$User.LastName}";
+            var returnURL = "{!$CurrentPage.parameters.retUrl}";
+            var pageData = {};
+            var sold2Id, ship2Id;
+            var lookups = {};
+        
+            var selectors = ['#soldToName', '#soldToNew', '#locationNew', '#LocationName','#street', '#city', '#zip', '#opportunityNew', '#opportunityName', '#sendEmail'];
+            var checkboxes = ['#soldToNew', '#locationNew', '#opportunityNew', '#ConNew', '#sendEmail'];
+            var inputs = ['#soldToName','#LocationName', '#street', '#city', '#zip','#ShippingStateCode', '#ShippingCountryCode', '#opportunityName', '#ConName'];
+            var isSoldToYes = false;
+            var isShipToClicked = false;
+            var isOnLoad = true;
+            
+    vfOptions = {
+        buffer: false,
+        escape: true,
+        timeout: 120000
+    };
+
+    function cancelConvert() {
+        $("#LoadingvfDIV").show();
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.cancelLead}", leadId, function(result, event) {
+            if (event.type == 'exception') {
+                alert(event.message);
+            } else {
+                window.top.location.href = '/' + leadId;
+            }
+            $("#LoadingvfDIV").hide();
+        }, vfOptions);
+    }
+    
+    function init() {
+        $("#LoadingvfDIV").show();
+        for (i = 0; i < selectors.length; i++) {
+            pageData[selectors[i]] = $(selectors[i]);
+        }
+         if(pageData['#soldToNew']){
+             $('#shipToId').val(pageData['#street']);
+         }   
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.init}", leadId, function(result, event) {
+            if (result.Error) {
+                alert(result.Error);
+                window.top.location.href = '/' + leadId;
+            }
+            else{
+                initData(result);
+                sold2Id = new sfTypeahead('#soldToId', 'account', getSoldTo, 'Company');
+                ship2Id = new sfTypeahead('#shipToId', 'account', getShipTo, 'Location', ['ShippingStreet', 'ShippingCity', 'ShippingState', 'ShippingCountry', 'ShippingPostalCode']);
+                $('#soldToId input').focus();
+                var theCon = new sfTypeahead('#ConId', 'contact', getContacts, 'Contact');
+                var theUser = new sfTypeahead('#ownerId', 'user', getOwner, 'User');
+                bindlisteners();
+                isSoldToYes = pageData['#soldToNew'];
+                render();
+                isOnLoad = false;
+            }
+            $("#LoadingvfDIV").hide();
+        }, vfOptions);
+    }
+    
+    
+    function mapAddress(shipTo) {
+        pageData['#street'] = shipTo.ShippingStreet;
+        pageData['#city'] = shipTo.ShippingCity;
+        pageData['#zip'] = shipTo.ShippingPostalCode;
+        pageData['#state'] = shipTo.ShippingStateCode;
+        pageData['#country'] = shipTo.ShippingCountryCode;
+
+        $('#street').val(shipTo.ShippingStreet);
+        $('#city').val(shipTo.ShippingCity);
+        $('#zip').val(shipTo.ShippingPostalCode);
+        $('#ShippingCountryCode').val(shipTo.ShippingCountryCode).change();
+        $('#ShippingStateCode').val(shipTo.ShippingStateCode);
+    }
+    
+    
+    function initData(resp) {
+        // Showing default value to Lead.Company..as per CSSCIT-1137
+        pageData['#soldToName'] = "{!JSENCODE(Lead.Company)}";
+        
+        if(leadStreet.split("\n") != null){
+            var addLine1 = leadStreet.split("\n")[0];
+            pageData['#LocationName'] = leadStreet.split("\n")[0];
+        }
+        else
+            pageData['#LocationName'] = leadStreet;
+        
+        // Setting the OpportunityNew Value by default to Lead.company..
+        $('#opportunityName').val("{!Lead.Company}");
+
+        if (resp.soldTo) {
+            //alert(resp.soldTo);
+            pageData['#soldToId'] = resp.soldTo;
+            $('#opportunityName').val(pageData['#soldToId'].Name);
+        }
+        
+        if (resp.shipTo) {
+            pageData['#shipToId'] = resp.shipTo;
+            mapAddress(resp.shipTo);
+        }
+        pageData['#ownerId'] = {
+            'Id': userId,
+            'Name': userName
+        };
+
+        if (resp.ConRec) {
+            pageData['#ConId'] =  resp.ConRec;
+        }
+
+        _.forEach(checkboxes, function(c) {
+            //AAB uncoment the code to default to creating new Accounts/Contacts
+            if(c == '#soldToNew')
+                pageData[c] = (!pageData['#soldToId'] || pageData['#soldToId'].Id == null) ? true : false;
+            else if(c == '#locationNew')
+                pageData[c] = (!pageData['#shipToId'] || pageData['#shipToId'].Id == null ) ? true : false;
+            else if(c == '#ConNew')
+                pageData[c] = (!pageData['#ConId'] || pageData['#ConId'].Id == null) ? true : false;
+            else
+                pageData[c] = true;
+        
+            // Added to click the toggler to show Yes on Load if the value is true...
+            if(pageData[c])
+                $(c).trigger('click');
+        });
+    }
+
+     //Function to toggle the checkbox state, provided a jquery selector
+    function setCheckBox(selector, value)
+    {
+      if(value)
+      {
+        $(selector).prev("input[type=checkbox]").prop("checked", true);
+      }
+      else {
+        $(selector).prev("input[type=checkbox]").prop("checked", false);
+      }
+    }
+
+    function bindlisteners() {
+        _.forEach(checkboxes, function(c) {
+            $(document).on('click', c, function(event, data) {
+                pageData[c] = ((c == '#locationNew' && pageData['#soldToNew']) || (c == '#ConNew' && (pageData['#soldToNew'] || pageData['#locationNew']))) ? pageData[c] :  !pageData[c];
+                
+                // Added as per CSSCIT-1152..
+                isSoldToYes = (c == '#soldToNew' && pageData['#soldToNew']); // Sold to validation..
+                isShipToClicked = (c == '#locationNew'); // Ship To validation...
+                
+                if((c != '#opportunityNew' && c != '#ConNew' ) || (!pageData['#locationNew'] && !pageData['#soldToNew'] && c == '#ConNew') ) // calling when the Id is not '#opportunityNew'
+                    render();
+            })
+        })
+        _.forEach(inputs, function(c) {
+            $(c).change(function() {
+                pageData[c] = $(this).val();
+            })
+        })
+    }
+
+    // Removing the red border color...
+    function removeBorderColor(){
+        $('#street').removeClass('borderErrorColor');
+        $('#city').removeClass('borderErrorColor');
+        $('#zip').removeClass('borderErrorColor');
+        $('#ShippingCountryCode').removeClass("borderErrorColor");
+        $('#ShippingStateCode').removeClass("borderErrorColor");
+    }
+
+    // removing the disabled attribute from the elements..
+    function removeDisabled(){
+        $('#street').removeAttr('disabled');
+        $('#city').removeAttr('disabled');
+        $('#ShippingCountryCode').removeAttr('disabled');
+        $('#ShippingStateCode').removeAttr('disabled');
+        $('#zip').removeAttr('disabled');
+    }
+
+    // Adding the disabled attribute from the elements..
+    function addDisabledAttr(){
+        // Disabling the values...
+        $('#street').attr('disabled','disabled');
+        $('#city').attr('disabled','disabled');
+        $('#zip').attr('disabled','disabled');
+        $('#ShippingCountryCode').attr('disabled','disabled');
+        $('#ShippingStateCode').attr('disabled','disabled');
+    }
+
+    // Adding the Populating the Lead Value from the Lead object
+    function populateLeadVal(){
+        // Populating value...
+        $('#street').val(`{!Lead.Street}`);
+        $('#city').val(`{!Lead.City}`);
+        $('#zip').val("{!Lead.PostalCode}");
+        $('#ShippingCountryCode').val("{!Lead.CountryCode}").change();
+        $('#ShippingStateCode').val("{!Lead.StateCode}");
+    }
+
+    // Toggling fucntionality for Contact Toggle
+    function renderCon(){
+        function toggleOn(){
+            $('#ConId').html(['<label class="slds-form-element__label" for="input-04"></label>',
+                '<input type="text" id="ConName" class="slds-input" placeholder="New Contact Name" value="'+"{!Lead.Name}"+'"></input>'
+            ].join('\n'));
+            $('#ConName').change(function() {
+                pageData['#ConName'] = $(this).val();
+            })
+
+        }
+
+        function toggleOff(){
+            $('#ConId').html(['<label class="slds-form-element__label slds-text-title_caps" for="ConId"></label>',
+                '<div class="slds-form-element__control"></div>'
+            ].join('\n'));
+            sfTypeahead('#ConId', 'contact', getContacts, 'Contact');
+        }
+
+        $('#ConId #removeicon').show();
+
+        if(pageData['#ConNew']){
+            toggleOn();
+        }else{
+            toggleOff();
+        }
+
+        if(pageData['#soldToNew']){
+            if(pageData['#ConNew'])
+            {
+                //$('#ConNew').trigger('click');
+                setCheckBox('#ConNew', true);
+            }
+            else {
+              setCheckBox('#ConNew', false);
+            }
+
+            $('#ConName').attr('disabled', '');
+            $('#ConName').val("{!Lead.Company}");
+            $('#ConId #removeicon').hide();
+
+            $('#ConId input').val('');
+            $('#ConId input').attr('disabled', '');
+            $('#conFieldSet input').attr('disabled', '');
+
+            $('#ConName').attr('disabled', '');
+            //Default Contact Name to Lead.Name
+            $('#ConName').val(decodeURI("{!Lead.Name}"));
+            toggleOn();
+        }
+
+        if(pageData['#locationNew']){
+            if(pageData['#ConNew']){
+                setCheckBox('#ConNew', true);
+            }
+            else {
+              setCheckBox('#ConNew', false);
+            }
+
+            $('#ConName').removeAttr('disabled');
+            $('#conFieldSet input').attr('disabled', '');
+            toggleOn();
+        }
+
+
+    }
+
+
+    function render() {
+        function toggleOn(selector) {
+            $(selector).html(['<label class="slds-form-element__label slds-text-title_caps" for="soldToId"></label>',
+                '<div class="slds-form-element__control"></div>'
+            ].join('\n'));
+            $('#soldToIdFieldset input').removeAttr('disabled');
+            sfTypeahead('#soldToId', 'account', getSoldTo, 'Sold to Company', []);
+            
+            if(!isOnLoad  || (!pageData['#soldToId'] && pageData['#soldToId'].Id == Null))
+                toggleOnLocation('#shipToId');
+        }
+
+        function toggleOff(selector) {
+            $(selector).html(['<label class="slds-form-element__label" for="input-04"></label>',
+                '<input type="text" id="soldToName" class="slds-input" placeholder="New Company Name"></input>'
+            ].join('\n'));
+            
+            $('#shipToId input').attr('disabled', '');
+            $('#soldToIdFieldset input').attr('disabled', '');
+            
+            $('#soldToName').val(pageData['#soldToName']);
+            $('#soldToName').change(function() {
+                //alert($(this).val());
+                pageData['#soldToName'] = $(this).val();
+            })
+            
+            if(!isOnLoad || (pageData['#soldToId'] && pageData['#soldToId'].Id == null))
+                toggleOffLocation('#shipToId');
+        }
+        
+        // Added as per CSSCIT-1157 ticket..
+        function toggleOnLocation(selector) {
+            $(selector).html(['<label class="slds-form-element__label slds-text-title_caps" for="shipToId"></label>',
+                '<div class="slds-form-element__control"></div>'
+            ].join('\n'));
+            sfTypeahead('#shipToId', 'account', getShipTo, 'Location', ['ShippingStreet', 'ShippingCity', 'ShippingState', 'ShippingCountry', 'ShippingPostalCode']);
+        }
+
+        function toggleOffLocation(selector) {
+            $(selector).html(['<label class="slds-form-element__label" for="input-04"></label>',
+                '<input type="text" id="LocationName" class="slds-input" placeholder="New Location Name"></input>'
+            ].join('\n'));
+
+            $('#LocationName').val(pageData['#LocationName']);
+            $('#LocationName').change(function() {
+                pageData['#LocationName'] = $(this).val();
+            })
+        }
+        
+        if (pageData['#soldToNew']) {
+            pageData['#ConNew'] = true;
+            $('#soldToId input').focus();
+            toggleOff('#soldToId');
+            $('#LocationName').attr('disabled', '');
+            
+            $('#opportunityName').val("{!Lead.Company}");
+            $($($('#shipToId').children()[1]).children()[0]).removeClass('borderErrorColor');
+
+            // Removing the diabled attributes....
+            removeDisabled();
+            removeBorderColor();
+            populateLeadVal();
+        } else {
+            $('#shipToId #removeicon').show();
+            $('#soldToId input').focus();
+            toggleOn('#soldToId');
+            $('#LocationName').removeAttr('disabled');
+            if(pageData['#locationNew']) {
+                pageData['#ConNew'] = true;
+                $('#shipToId input').val('');
+                $('#shipToId input').attr('disabled', '');
+                $('#shipToId #removeicon').hide();
+                
+                // if(!isOnLoad)
+                    toggleOffLocation('#shipToId');
+                
+                removeDisabled();
+                removeBorderColor();
+                populateLeadVal();
+                
+            } else {
+                if(!isOnLoad)
+                    toggleOnLocation('#shipToId');
+                    
+                $('#shipToId #removeicon').show();
+                $('#conFieldSet input').removeAttr('disabled');
+                removeBorderColor();
+            }
+        }
+        
+        
+        if(isSoldToYes && (isOnLoad || !isShipToClicked)){
+            setCheckBox('#locationNew', true);
+            pageData['#locationNew'] = true;
+            toggleOff('#soldToId');
+            $('#LocationName').attr('disabled', '');
+        }
+            
+        renderCon();    //CAlling the Contact functionality here..
+    }
+    
+    
+    function convertLead() {
+        $("#LoadingvfDIV").show();
+        //validation to-do
+        var formData = {};
+        _.forEach(inputs, function(i) {
+            formData[i.substring(1)] = pageData[i];
+        })
+        _.forEach(checkboxes, function(i) {
+            formData[i.substring(1)] = pageData[i];
+        })
+
+        if (!pageData['#soldToNew']) {
+            formData['soldToId'] = pageData['#soldToId'].Id
+            formData['soldToName'] = pageData['#soldToId'].Name;
+        }
+
+        if (!pageData['#ConNew']) {
+            formData['ConId'] = pageData['#ConId'].Id
+            formData['ConName'] = pageData['#ConId'].Name;
+        }
+        else {
+          formData['ConName'] = $('#ConName').val();
+        }
+
+        if (!pageData['#locationNew'])
+            formData['shipToId'] = pageData['#shipToId'].Id
+        formData.leadId = leadId;
+        formData.ownerId = pageData['#ownerId'].Id;
+
+        // putting validation if fields are blank...
+        var isError=false;
+
+        formData['city'] = $('#city').val();
+        formData['street'] = $('#street').val();
+        formData['zip'] = $('#zip').val();
+        formData['state'] = $('#ShippingStateCode').val();
+        formData['country'] = $('#ShippingCountryCode').val();
+        formData['opportunityName'] = $('#opportunityName').val();
+        formData['phone'] = "{!Lead.Phone}";
+        
+        // Removing all the required classes
+        removeBorderColor();
+        $($($('#soldToId').children()[1]).children()[0]).removeClass('borderErrorColor');
+        $('#soldToName').removeClass('borderErrorColor');
+        $($($('#shipToId').children()[1]).children()[0]).removeClass('borderErrorColor');
+        $('#opportunityName').removeClass('borderErrorColor');
+        $($($('#ownerId').children()[1]).children()[0]).removeClass('borderErrorColor');
+        $('#ConName').removeClass('borderErrorColor');
+        $($($('#ConId').children()[1]).children()[0]).removeClass('borderErrorColor');
+
+        // Showing error for SoldTo Not filled...
+        if(!formData['soldToNew']){
+            if(formData['soldToId'] == null){
+                isError = true;
+                $($($('#soldToId').children()[1]).children()[0]).addClass('borderErrorColor');
+            }
+        }else{
+            if(formData['soldToName'] == null){
+                isError = true;
+                $('#soldToName').addClass('borderErrorColor');
+            }
+        }
+        
+        // Showing error for Location Not filled...
+        if(formData['locationNew'] || formData['soldToNew']){
+             
+             if(formData['LocationName'] == ''){
+                isError = true;
+                $('#LocationName').addClass('borderErrorColor');
+            }
+            
+             // Checking City
+             if(formData['city'] == '') {
+                 isError = true; $('#city').addClass('borderErrorColor');
+             }
+
+             // Checking State
+             if(formData['state'] == null && $('#ShippingStateCode').val() != null){
+                 isError = true;
+                 $('#ShippingStateCode').addClass('borderErrorColor');
+             }
+
+            // Checking Country..
+             if(formData['country'] == null){
+                 isError = true;
+                 $('#ShippingCountryCode').addClass('borderErrorColor');
+             }
+
+             // Checking Street
+             if(formData['street'] == ''){
+                 isError = true;
+                 $('#street').addClass('borderErrorColor');
+             }
+
+             // Checking zip
+             if(formData['zip'] == ''){
+                 isError = true;
+                 $('#zip').addClass('borderErrorColor');
+             }
+        }
+        else {
+             if(formData['shipToId'] == null && !$('#shipToId input').prop('disabled')){
+                isError = true;
+                $($($('#shipToId').children()[1]).children()[0]).addClass('borderErrorColor');
+             }
+        }
+
+        // Showing error for Opportunity Not filled...
+        if(formData['opportunityNew'] ){
+            // Opportunity Name Blank check..
+            if(formData['opportunityName'] == ''){
+                isError = true;
+                $('#opportunityName').addClass('borderErrorColor');;
+            }
+            // Owner ID Blank check..
+            if(formData['ownerId'] == null){
+                isError = true;
+                $($($('#ownerId').children()[1]).children()[0]).addClass('borderErrorColor');
+            }
+        }
+
+        // Contact Validation..
+        if(formData['ConNew'] ){
+            // Opportunity Name Blank check..
+            if(formData['ConName'] == null){
+                isError = true;
+                $('#ConName').addClass('borderErrorColor');
+            }
+        }else if(formData['ConId'] == null && formData['shipToId'] != null && !$('#shipToId input').prop('disabled')){
+             isError = true;
+             $($($('#ConId').children()[1]).children()[0]).addClass('borderErrorColor');
+        }
+
+        if(!isError){
+            Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.convertLead}", formData,statuses, function(result, event) {
+                if (event.type == 'exception') {
+                    alert('In  IF Conditio');
+                    alert(event.message);
+                    $("#LoadingvfDIV").hide();
+                } else {
+                    $("#LoadingvfDIV").hide();
+                    if(result.ParentId != null){
+                         window.top.location.href  = '/' + result.ParentId;
+                    
+                    }else{
+                        $('html, body').animate({ scrollTop: 0 }, 'slow', function () {});
+                        alert(result.Error);
+                    }
+                }
+            }, vfOptions);
+        }else{
+            $('html, body').animate({ scrollTop: 0 }, 'slow', function () {});
+            $("#LoadingvfDIV").hide();
+        }
+
+    }
+
+    function getSoldTo(query, syncResults, asyncResults) {
+        //alert('getSoldTo');
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.searchAccounts}", query,true,function(result, event) {
+            if (event.type == 'exception') {
+                alert(event.message);
+            } else {
+                //alert(event.type);
+                //var result = ["{amarendra}", "{nagireddy}", "{Pushpa}"];
+                // alert(Object.values(result[0]));
+                //conlose.log(Object.values(result[0]));
+                 asyncResults(result);
+                //alert(asyncResults);
+            }
+        }, vfOptions);
+    }
+
+    function getShipTo(query, syncResults, asyncResults) {
+
+        var account = {
+            Id: null,
+            Name: null
+        };
+        if (pageData['#soldToId'] && pageData['#soldToId'].Id) {
+            account.Id = pageData['#soldToId'].Id;
+        }
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.searchLocations}", query, leadStreet,account, function(result, event) {
+            if (event.type == 'exception') {
+                alert(event.message);
+            } else {
+                asyncResults(result);
+            }
+        }, vfOptions);
+
+    }
+
+    function getOwner(query, syncResults, asyncResults) {
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.searchOwners}", query, function(result, event) {
+            if (event.type == 'exception') {
+                alert(event.message);
+            } else {
+                asyncResults(result);
+            }
+        }, vfOptions);
+    }
+
+    function getContacts(query, syncResults, asyncResults) {
+        var shiToId = pageData['#shipToId'] ? pageData['#shipToId'].Id : null;
+        Visualforce.remoting.Manager.invokeAction("{!$RemoteAction.LeadConvert.searchContacts}", query, shiToId, function(result, event) {
+            if (event.type == 'exception') {
+                alert(event.message);
+            } else {
+                asyncResults(result);
+            }
+        }, vfOptions);
+    }
+
+    function sfTypeahead(selector, sObject, callback, label, subfields) {
+        this.renderMe = function() {
+            var data = pageData[selector];
+            if (data && data.Id) {
+                selection(null, data);
+            } else {
+                removeItem(null, data);
+            }
+
+        }
+        this.renderMe();
+        this.selection = selection;
+        this.removeItem = removeItem;
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function bindTypeahead(selector) {
+            $(selector + ' input').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 0
+            }, {
+                classNames: {
+                    menu: 'slds-listbox'
+                },
+                displayKey: 'Id',
+                limit: 100,
+                source: callback,
+                templates: {
+
+                    suggestion: function(d) {
+                        // alert(d.Name);
+                        //alert(d.BillingState);
+                        subContent = [];
+                        var name=d.Name;
+                        var city_state;
+                         
+                        if(d.BillingState==undefined&&d.BillingCity==undefined)
+                            {
+                                city_state='';
+                               
+                                }
+                        else if(d.BillingState==undefined)
+                            {
+                                city_state=d.BillingCity;
+                                }
+                        else if(d.BillingCity==undefined)
+                            {
+                                 city_state=d.BillingState;
+                                }
+                        else
+                            {
+                                city_state=d.BillingState+','+d.BillingCity;
+                                }
+                                
+                        
+                        var footerStr = '';
+                        if (subfields) {
+                            for (i = 0; i < subfields.length; i++) {
+                                subContent.push(d[subfields[i]]);
+                                
+                            }
+                            var footerStr = $.grep(subContent, Boolean).join(", ");
+                        }
+
+
+                        return [
+                           
+                            
+                            '<span id="listbox-option-unique-id-02" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">',
+                            '<span class="slds-media__figure">',
+                            '<span class="slds-icon_container slds-icon-standard-account" title="Description of icon when needed">',
+                            '<svg class="slds-icon slds-icon_small" aria-hidden="true">',
+                            '<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="' + rootResUrl + '/assets/icons/standard-sprite/svg/symbols.svg#' + sObject + '">', '</use>',
+                            '</svg>',
+                            '<span class="slds-assistive-text"> Description of icon </span>',
+                            '</span>',
+                            '</span>',
+                            '<span class="slds-media__body">',
+                            '<span class="slds-listbox__option-text slds-listbox__option-text_entity">',
+                            (d.LastName ? ((d.FirstName ? d.FirstName : '') +' '+d.LastName) : name+' | '+city_state),
+                            '</span>',
+                            '<span class="slds-listbox__option-meta slds-listbox__option-meta_entity"> ',
+                            footerStr,
+                            '</span>',
+                            '</span>',
+                            '</span>',
+                            '</span>'
+                        ].join('\n');
+                    }
+                }
+            }).bind('typeahead:select', function(ev, suggestion) {
+                selection(ev, suggestion);
+            })
+            $(selector + ' #removeicon').on("click", removeItem);
+            $(selector + ' .tt-dataset').addClass('slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid');
+        }
+
+        function selectedDom(ev, data) {
+            var output = "<div class='slds-combobox_container slds-has-inline-listbox'>" +
+                "<div class='slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' aria-expanded='false' aria-haspopup='listbox' role='combobox'>" +
+                "<div class='slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right'>" +
+                "<span class='slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon' title='account'>" +
+                "<svg class='slds-icon slds-icon_small' aria-hidden='true'>" +
+                "<use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='" + rootResUrl + "/assets/icons/standard-sprite/svg/symbols.svg#" + sObject + "'></use>" +
+                "</svg>" +
+                "<span class='slds-assistive-text'>account Salesforce.com, Inc.</span>" +
+                "</span>" +
+                "<input type='text' class='slds-input slds-combobox__input' id='combobox-unique-id' aria-autocomplete='list' aria-controls='listbox-unique-id' autocomplete='off' role='textbox' placeholder='Search Salesforce' readonly='' value='" + (data.LastName ? ((data.FirstName ? data.FirstName : '') +' '+data.LastName) : data.Name) + "'>" +
+                "<button id='removeicon' class='slds-button slds-button_icon slds-input__icon slds-input__icon_right' title='Remove selected option'>" +
+                "<svg class='slds-button__icon' aria-hidden='true'>" +
+                "<use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='" + rootResUrl + "/assets/icons/utility-sprite/svg/symbols.svg#close'></use>" +
+                "</svg>" +
+                "<span class='slds-assistive-text'>Remove selected option</span>" +
+                "</button>" +
+                "</div></div></div>";
+            $(selector + ' .slds-form-element__control').html(output);
+            bindTypeahead(selector);
+        }
+
+        function searchDom(sel) {
+            label = (sel == '#shipToId') ? 'Search for a Ship to Location' : (sel == '#ownerId') ? 'Select Opportunity Owner': (sel == '#ConId') ? 'Select Contact' : 'Search for a Sold to Company';
+            var output = "<div class='slds-combobox_container slds-has-inline-listbox slds-has-input-focus'>" +
+                "<div class='slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open' aria-expanded='true' aria-haspopup='listbox' role='combobox'>" +
+                "<div class='slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right'>" +
+                "<input type='text' class='slds-input slds-combobox__input' id='combobox-unique-id' aria-autocomplete='list' aria-controls='listbox-unique-id' autocomplete='off' role='textbox' placeholder='" + label + "'>" +
+                "<span class='slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right' title='Description of icon when needed'>" +
+                "<svg class='slds-icon slds-icon slds-icon_x-small slds-icon-text-default' aria-hidden='true'>" +
+                "<use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#search'></use>" +
+                "</svg>" +
+                "<span class='slds-assistive-text'>Description of icon</span>" +
+                "</span>" +
+                "</div>" +
+                "</div>" +
+                "</div>";
+            $(sel + ' .slds-form-element__control').html(output);
+            bindTypeahead(selector);
+            $(sel + ' input').focus();
+        }
+
+        function removeItem() {
+            pageData[selector] = {
+                Id: null,
+                Name: null
+            };
+            if (selector == '#soldToId') {
+                if(!pageData['#locationNew'])
+                    searchDom('#shipToId');
+                    
+                $('#opportunityName').val("{!Lead.Company}");
+            }
+            if(selector != '#ConId' && selector != '#ownerId'){
+                // Populating value...
+                populateLeadVal();
+                removeDisabled();
+
+                if(selector == '#shipToId')
+                    searchDom('#ConId');
+            }
+
+            searchDom(selector);
+        }
+
+        function selection(ev, data) {
+            pageData[selector] = data;
+            selectedDom(ev, data, selector);
+
+            if (selector == '#soldToId' && !data.recursion) {
+                $('#opportunityName').val(data.Name);
+                $('#shipToId').typeahead('destroy');
+                
+                $('#ConId').typeahead('destroy');
+                if(!pageData['#locationNew'])
+                    sfTypeahead('#shipToId', 'account', getShipTo, 'Location', ['ShippingStreet', 'ShippingCity', 'ShippingState', 'ShippingCountry', 'ShippingPostalCode']);
+            }
+            else if(selector == '#shipToId'){
+                $("#LoadingvfDIV").show();
+                mapAddress(data);  // Populating value...
+                addDisabledAttr();
+
+                $('#ConId').typeahead('destroy');
+                sfTypeahead('#ConId', 'contact', getContacts, 'Contact');
+        
+                $("#LoadingvfDIV").hide();
+            }
+        }
+
+        function getRecords(query, syncResults, asyncResults) {
+            Visualforce.remoting.Manager.invokeAction(vfFunction, query, function(result, event) {
+                if (event.type == 'exception') {
+                    alert(event.message);
+                } else {
+                    
+                    asyncResults(result);
+                }
+            });
+        }
+    }
+    ////////
+    ////////dependent picklist
+    ////////
+    //get a session id token to use the js libs
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+
+    //describe the object we are dealing with. You'll need to change this to whatever object you are working with. Use the API name of the object.'
+    var describeResults = sforce.connection.describeSObject('Account'); // the object we want picklists from
+
+    // function to get the picklist values of a field. Finds all potential options. Simple pass it in a field id. Will return object with data in the values key.
+    function getPicklistValues(field) {
+        //create return object
+        var returnObj = new returnObject();
+
+        try {
+            var validField = false;
+            for (var i = 0; i < describeResults.fields.length; i++) {
+                var fieldList = describeResults.fields[i];
+                var fieldName = fieldList.name;
+
+                if (fieldName.toLowerCase() == field.toLowerCase()) {
+                    validField = true;
+                    for (var j = 0; j < fieldList.picklistValues.length; j++) {
+
+                        var newValue = new Object();
+                        newValue.label = fieldList.picklistValues[j].label;
+                        newValue.value = fieldList.picklistValues[j].value;
+                        newValue.default = fieldList.picklistValues[j].defaultValue;
+                        if (fieldList.picklistValues[j].hasOwnProperty('validFor')) {
+                            newValue.validFor = fieldList.picklistValues[j].validFor;
+                        }
+                        returnObj.values.push(newValue);
+                    }
+                    break;
+                }
+            }
+            if (!validField) {
+                throw 'Invalid field ' + field + ' specified for object ' + params.object;
+            }
+        } catch (exception) {
+            returnObj.message = exception;
+            returnObj.success = false;
+        }
+
+        return returnObj;
+    }
+
+
+    function getDependentValues(field, value) {
+        var returnObj = new returnObject();
+        try {
+            var dependencyCode = new Array();
+            var getValues = getPicklistValues(field);
+            if (!getValues.success) {
+                throw getValues.message;
+            }
+            var picklistValues = getValues.values;
+            var getController = getControllerName(field);
+
+            if (!getController.success) {
+                throw getController.message;
+            }
+            var controller = getController.values;
+
+            // sub function to do the validFor test
+            function isDependentValue(index, validFor) {
+                var base64 = new sforce.Base64Binary("");
+                var decoded = base64.decode(validFor);
+                var bits = decoded.charCodeAt(index >> 3);
+
+                return ((bits & (0x80 >> (index % 8))) != 0);
+            }
+            var controllerFields = getPicklistValues(controller);
+
+            for (var item = 0; item < controllerFields.values.length; item++) {
+                if (controllerFields.values[item].value.toLowerCase() == value.toLowerCase()) {
+                    for (var i = 0; i < picklistValues.length; i++) {
+                        if (isDependentValue(item, picklistValues[i].validFor)) {
+                            var newValue = new Object();
+                            newValue.label = picklistValues[i].label;
+                            newValue.value = picklistValues[i].value;
+                            newValue.default = picklistValues[i].defaultValue;
+                            newValue.validFor = picklistValues[i].validFor;
+                            newValue.validForName = controllerFields.values[item].value;
+                            returnObj.values.push(newValue);
+                        }
+                    }
+                }
+            }
+        } catch (exception) {
+            returnObj.success = false;
+            returnObj.message = exception;
+        }
+        return returnObj;
+    }
+
+
+    // get the controller field name
+    function getControllerName(field) {
+        var returnObj = new returnObject();
+
+        try {
+            var isValid = false;
+
+            for (var i = 0; i < describeResults.fields.length; i++) {
+                var fieldList = describeResults.fields[i];
+                var fieldName = fieldList.name;
+
+                if (fieldName.toLowerCase() == field.toLowerCase()) {
+                    if (fieldList.controllerName == undefined) {
+                        throw 'Field has no controller';
+                    } else {
+                        returnObj.values = fieldList.controllerName;
+                        isValid = true;
+                    }
+                    break;
+                }
+            }
+
+            if (!isValid) {
+                throw 'Invalid field ' + field + ' specified';
+            }
+        } catch (exception) {
+            returnObj.success = false;
+            returnObj.message = exception;
+        }
+        return returnObj;
+    }
+
+
+    function returnObject() {
+        this.success = true;
+        this.message = 'Operation Ran Successfully';
+        this.values = new Array();
+    }
+
+    function setPickVals(field, optionsArray) {
+        var options = '';
+        for (var i = 0; i < optionsArray.length; i++) {
+            options += '<option value="' + optionsArray[i].value + '">' + optionsArray[i].label + '</option>';
+        }
+        $(field).html(options);
+    }
+
+    $(document).ready(function() {
+
+        $('.select').each(function(i) {
+            var thisFieldId = $(this).attr('id');
+            var controller = getControllerName(thisFieldId);
+            //if this field is a controlled field (has a controller, then find an onchange handler to its parent)
+            if (controller.success) {
+                var currValues = getDependentValues(thisFieldId, $('#' + controller.values).val());
+                setPickVals('#' + thisFieldId, currValues.values);
+
+                $('#' + controller.values).change(function(data) {
+                    var values = getDependentValues(thisFieldId, this.value);
+                    setPickVals('#' + thisFieldId, values.values);
+                });
+            } else {
+                values = getPicklistValues(thisFieldId);
+                setPickVals('#' + thisFieldId, values.values);
+            }
+        });
+
+    });
+        ////////
+    ////////dependent picklist
+    ////////
+
+    //handle lead stuff
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+    var layout, recordTypeMap;
+    FinalResult = new Array();
+    layout = sforce.connection.describeLayout('Lead');
+    recordTypeMap = layout.recordTypeMappings;
+
+    //To remove the extra record type mapping for Master, not useful for usual case.
+    recordTypeMap.pop();
+
+    recordTypeMap.forEach(function(obj) {
+        var recordTypeObj = {};
+        recordTypeObj.name = obj.name.substring(0, obj.name.indexOf(':'));
+
+        obj.picklistsForRecordType.forEach(function(pl) {
+
+            recordTypeObj[pl.picklistName] = pl.picklistValues;
+
+        });
+
+        FinalResult.push(recordTypeObj);
+    });
+    var statuses =_.map(_.filter(FinalResult[0].Status,'active'),'value')
+
+    jQuery(document).ready(function() {
+        init();
+    })
+    
+    
+    
+    </script>
+
+    <div class="slds-grid  slds-grid_align-center">
+        <div class="slds-form slds-form_compound">
+
+            <div  id="LoadingvfDIV" class="slds-spinner_container" style="display:None;">
+                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                 </div>
+            </div>
+
+            <div class="slds-form-element__row slds-grid_align-center slds-grid slds-m-top_large">
+                <div class="slds-button-group" role="group">
+                    <button class="slds-button slds-button_neutral slds-button_brand" onClick="convertLead()">Convert</button>
+                </div>
+            </div>
+            
+            <fieldset class="slds-form-element">
+                <!-- Placing the opportunity Name to the top as per CSSCIT-1168 -->
+                <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-3" id="opportunityNewSectionid">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Create Opportunity</span>
+                            <input type="checkbox" name="checkbox" aria-describedby="toggle-desc"></input>
+                            <span class="slds-checkbox_faux_container" aria-live="assertive" id="opportunityNew" >
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on">Yes</span>
+                                <span class="slds-checkbox_off">No</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="slds-form-element" >
+                        <label class="slds-form-element__label" for="opportunityName"></label>
+                        <input type="text" id="opportunityName" placeholder="Opportunity Name" class="slds-input "></input>
+                    </div>
+                </div>
+            </fieldset>
+            
+            
+            <fieldset class="slds-form-element">
+                <label class="slds-form-element__label slds-text-title_caps slds-m-top_x-large" for="soldToId">Prospect Company</label>
+                <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-3">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Create New?</span>
+                            <input type="checkbox" name="checkbox" aria-describedby="toggle-desc"></input>
+                            <span class="slds-checkbox_faux_container" aria-live="assertive" id="soldToNew">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on">Yes</span>
+                                <span class="slds-checkbox_off">No</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="slds-form-element" id="soldToId">
+                        <label class="slds-form-element__label slds-text-title_caps" for="soldToId"></label>
+                        <div class="slds-form-element__control">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <!--  address -->
+            <fieldset class="slds-form-element" >
+                <label class="slds-form-element__label slds-text-title_caps slds-m-top_xx-large" for="soldToId">Site</label>
+                <div class="slds-form-element__row" >
+                    <div class="slds-size_1-of-3" id="soldToIdFieldset">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Create New?</span>
+                            <input type="checkbox" name="checkbox" aria-describedby="toggle-desc"></input>
+                            <span class="slds-checkbox_faux_container" aria-live="assertive" id="locationNew">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on">Yes</span>
+                                <span class="slds-checkbox_off">No</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="slds-form-element" id="shipToId">
+                        <label class="slds-form-element__label slds-text-title_caps" for="shipToId"></label>
+                        <div class="slds-form-element__control">
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form-element__group">
+                     <div class="slds-form-element__row">
+                         <label class="slds-form-element__label slds-text-title_caps slds-m-top_xx-large" >Site Location</label>
+                     </div>
+                    <div class="slds-form-element__row">
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="input-03">Street</label>
+                            <textarea id="street" class="slds-textarea" placeholder="" rows="3"></textarea>
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2">
+                            <label class="slds-form-element__label" for="city">City</label>
+                            <textarea id="city" class="slds-textarea" placeholder="" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <apex:form Id="form1">
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <div class="slds-form-element ">
+                                    <label class="slds-form-element__label" for="input-04">Country</label>
+                                    <!-- <apex:inputField value="{!Lead.CountryCode}" Id="country" styleClass="slds-select slds-input slds-input--small"/> -->
+                                    <select id="ShippingCountryCode" class="select slds-select slds-input slds-input--small"/>
+                                    <!--<input type="text" id="city" class="slds-input "></input>-->
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-3">
+                                <div class="slds-form-element slds-size_1-of-2" style="padding-left:8px;">
+                                    <label class="slds-form-element__label" for="input-05">State</label>
+                                    <select id="ShippingStateCode" class="select slds-select slds-input slds-input--small" />
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-3" style="padding-left:8px;">
+                                <div class="slds-form-element slds-size_1-of-2">
+                                    <label class="slds-form-element__label" for="input-06">ZIP Code</label>
+                                    <input type="text" id="zip" class="slds-input"></input>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:form>
+                </div>
+            </fieldset>
+
+            <fieldset class="slds-form-element slds-m-top_xx-large">
+                <legend class="slds-form-element__label slds-text-title_caps">Conversion Details</legend>
+
+                <!-- Contact Details -->
+                <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-3" Id="conFieldSet">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Create New Contact?</span>
+                            <input type="checkbox" name="checkbox" aria-describedby="toggle-desc"></input>
+                            <span class="slds-checkbox_faux_container" aria-live="assertive" id="ConNew">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on">Yes</span>
+                                <span class="slds-checkbox_off">No</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="slds-form-element" id="ConId">
+                        <label class="slds-form-element__label slds-text-title_caps" for="ConId"></label>
+                        <div class="slds-form-element__control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opportunity Details -->
+                <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-3">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Opportunity Owner</span>
+                        </label>
+                    </div>
+                    <div class="slds-form-element" id="ownerId">
+                        <label class="slds-form-element__label slds-text-title_caps" for="ownerId"></label>
+                        <div class="slds-form-element__control">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="slds-form-element__row slds-grid_align-center slds-grid slds-m-top_large">
+                <div class="slds-button-group" role="group">
+                    <button class="slds-button slds-button_neutral" onClick="cancelConvert()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

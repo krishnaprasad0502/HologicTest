@@ -1,0 +1,120 @@
+<!--
+*********************************************************************************************************
+    Author       : Sunil Kumar Sharma
+    Company      : Hexaware Technologies
+    Created Date : 11/05/2018
+    Description  : This Vf page is used to show the web chat form. 
+
+    Controller:WebChatController
+
+    History:
+    <Date>              <Author Name>           <Brief description of change >          <Copa.do US#>
+    11/05/2018          Sunil Kumar Sharma      Initial Creation                        US-0006077
+    11/21/2018          Sunil Kumar Sharma      Replaced static values using custom     US-0006172
+                                                labels. Added text when chat is not 
+                                                avialable to submit a case. 
+	12/10/2018			Sunil Kumar Sharma		Fix to show offline hours message. 		US-0006257
+*********************************************************************************************************
+-->
+<apex:page showHeader="false" controller="WebChatController" >
+<style> body { margin: 25px 0 0 25px; } </style>
+<style>
+
+    @font-face {
+    font-family: samplefont;
+    src: url({!URLFOR($Resource.ProximaNova)});
+}
+</style>
+<apex:form id="formpage">
+<div id="{!chatButtonId}_Online" style="display: none;">
+    <div style="width:30%;margin:auto">
+        <button  href="javascript://Chat" style="height:40px;width:150px;font-size:15px;background: #008aad;color:white" onclick="liveagent.startChat('{!chatButtonId}')">Chat Now</button>
+    </div>
+</div>
+<div id="{!chatButtonId}_Offline" style="display: none;">
+    <div style="width:40%;margin:auto">
+        <button  style="height:40px;width:200px;font-size:15px;background: #008aad;color:white" disabled="true">Chat Unavailable</button><br/><br/>
+    </div>
+    <div style="width:80%;margin:auto;font-size:15px;font-weight:bold;font-family: samplefont,sans-serif !important;color:#008aad">
+        Our Support Specialists are currently assisting other customers. <br/>
+        To submit a new request <a href="{!submitCaseUrl}" target="_blank" >Click here</a>
+    </div>
+    
+</div>
+    
+
+</apex:form>
+<!-- END Button code -->
+
+<!-- Live Agent Deployment Code, replace with your org's values -->
+<script type='text/javascript' src='{!JSENCODE($Label.Live_Agent_Script)}'></script>
+
+<!-- Deployment Code API examples -->
+<script type='text/javascript'>
+
+    function initiateLiveAgent(){
+    try{
+        /* Adds a custom detail called Contact Email and sets it value to current user email. */ 
+        liveagent.addCustomDetail('Contact E-mail', '{!currentUserContact.Email}');
+        /*Creates a custom detail called First Name and sets the value to current user first name */
+        liveagent.addCustomDetail('First Name', '{!currentUserContact.firstName}');
+        
+        /*Creates a custom detail called Last Name and sets the value to current user last name. */
+        liveagent.addCustomDetail('Last Name', '{!currentUserContact.lastName}');
+        
+        /*Creates a custom detail called Phone Number and sets the value to current user phone number. */
+        liveagent.addCustomDetail('Phone Number', '{!currentUserContact.phone}');
+        
+        /*An auto-query that searches Contacts whose Email field exactly matches current user email. If no result is found, it will create a Contact record with the email, first name, last name, and phone number fields set to the custom detail values.*/ 
+        liveagent.findOrCreate('Contact').map('Email','Contact E-mail',true,true,true).map('FirstName','First Name',false,false,true).map('LastName','Last Name',false,false,true).map('Phone','Phone Number',false,false,true);
+        
+        /* The contact that's found or created will be saved or associated to the chat transcript. The contact will be opened for the agent in the Console and the case is linked to the contact record*/
+        liveagent.findOrCreate('Contact').saveToTranscript('ContactId').showOnCreate().linkToEntity('Case','ContactId');
+        
+        /* Creates a custom detail called Case Subject and sets the value to 'Refund policy for products' 
+    and will perform a knowledge search when the chat is accepted for the agent */
+    liveagent.addCustomDetail('Case Subject','Live Chat Request from {!currentUserContact.firstName} {!currentUserContact.lastName} of {!currentUserContact.Customer_Account__c}');
+    
+    /*Creates a custom detail called Case Status and sets the value to 'New'*/
+    liveagent.addCustomDetail('Case Status','Open');
+    
+    /*Creates a custom detail called Case Priority and sets the value to 'Sev 2'*/
+    liveagent.addCustomDetail('Case Priority','Sev 2');
+    liveagent.addCustomDetail('Account Name','{!currentUserContact.AccountId}');
+	liveagent.addCustomDetail('Contact Name','{!currentUserContact.Id}');
+    liveagent.addCustomDetail('Customer Name','{!currentUserContact.Account.ParentId}');
+    liveagent.addCustomDetail('Case Type','Web');  
+    liveagent.addCustomDetail('Case Origin','Live Chat');  
+    /*This does a non-exact search on cases by the value of the 'Case Subject' custom detail If no results are found, it will create a case and set the case's subject and status.
+    The case that's found or created will be associated to the chat and the case will open in the Console for the agent when the chat is accepted */
+    liveagent.findOrCreate('Case').map('Customer_Name__c','Customer Name',false,false,true).map('Type','Case Type',false,false,true).map('Origin','Case Origin',false,false,true).map('AccountId','Account Name',false,false,true).map('ContactId','Contact Name',false,false,true).map('Priority','Case Priority',false,false,true).map('Subject','Case Subject',false,false,true).map('Status','Case Status',false,false,true).saveToTranscript('CaseId').showOnCreate();
+    
+    /*Saves the custom detail to a custom field on LiveChatTranscript at the end of a chat.  
+    Assumes a custom field called Company__c was added to the Live Chat Transcript object*/
+    //liveagent.addCustomDetail('Company', 'Acme').saveToTranscript('Company__c');
+    
+    /* For internal or technical details that don't concern the agent, set showToAgent to false to hide them from the display. */
+    liveagent.addCustomDetail('VisitorHash', 'c6f440178d478e4326a1', false);
+    
+    /* Sets the display name of the visitor in the agent console when engaged in a chat */
+    liveagent.setName('{!currentUserContact.firstName}');
+    
+    /* Sets the width of the chat window to 500px */
+    liveagent.setChatWindowWidth(500);
+    
+    /* Sets the height of the chat window to 500px */
+    liveagent.setChatWindowHeight(500);
+    if (!window._laq) { window._laq = []; }
+    window._laq.push(function(){
+        liveagent.showWhenOnline('{!chatButtonId}', document.getElementById('{!chatButtonId}_Online'));
+        liveagent.showWhenOffline('{!chatButtonId}', document.getElementById('{!chatButtonId}_Offline'));
+    });
+    <!-- Live Agent Deployment Code to initialize, replace with your org's values -->
+    liveagent.init('{!JSENCODE($Label.Live_Chat_Deployment_URL)}', '{!JSENCODE($Label.Deployment_Id)}', '{!JSENCODE($Label.Organisation_Id)}');
+                   }catch(e){
+        console.log(e);
+    }
+    }
+    initiateLiveAgent();
+</script>
+</apex:page>

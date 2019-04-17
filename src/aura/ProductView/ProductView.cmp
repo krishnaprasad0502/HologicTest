@@ -1,0 +1,183 @@
+<!--
+*********************************************************************************************************
+	Author       : Sunil Kumar Sharma
+	Company      : Hexaware Technologies
+	Created Date : 8/22/2018
+	Description  : This lightning component is used to show the product summary based on the product family. 
+
+	Controller:ProductViewController
+
+	History:
+	<Date>              <Author Name>        	<Brief description of change >   		<Copa.do US#>
+	8/22/2018			Sunil Kumar Sharma		Initial Creation 						US-0005699 
+	11/23/2018			Sunil Kumar Sharma		Fix to show all product family 	  		US-0006169 
+												product records. 
+	12/02/2018			Sunil Kumar Sharma		Product Load performance issue	  		US-0006260 
+												fixed
+ 	12/11/2018			Vrushabh Katariya		Adding Product Family Icon 				US-0006345
+    12/20/2018			Sunil					UI fixes								US-0006345
+*********************************************************************************************************
+-->
+<aura:component controller="ProductViewController" implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <!-- Attribute Declarations-->
+    <aura:attribute name="productFamilyList" type="List" />
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'All Products', 'value': 'All Products'},
+    {'label': 'My Products', 'value': 'My Products'}
+    ]"/>
+    <aura:attribute name="listViewName" type="String" default="All Products"/>
+    <aura:attribute name="colors" type="String[]" default="All Products"/>
+    <aura:attribute name="configSetting" type="Object"/>
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div style="height:112px;background-color:#EEEFF0;">
+        <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">        
+            <div class="slds-grid slds-wrap" style="width:50% !important;margin:auto !important;padding-top: 29px;">
+                <c:CustomSearch placeHolderText="Search Knowledgebase" searchType="Global"/>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-grid slds-wrap" style="padding-top: 29px;">
+                    <c:CustomSearch placeHolderText="Search Knowledgebase" searchType="Global"/>
+                </div>
+            </aura:set>           
+        </aura:if>
+    </div>
+    <div>
+    	<c:BreadCrumbsList homeLabel="Home" homeUrl="/s" firstLevelNavLabel="Products" />
+    </div>
+    <div class="slds-grid slds-wrap" >
+        <div class="slds-col slds-size--1-of-1" >
+        	<label style="Font-size:30px;font-family: ProximaNova-bold,sans-serif;font-weight:bold;color:#131f6b;" >
+                Products
+            </label>
+        </div>   	
+    </div>
+    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-1" style="height:3px;opacity: 0.5;background-color: #E3E4E6;">
+    </div>
+    <div class="slds-grid slds-wrap" >
+        <div class="slds-col slds-size--1-of-1 slds-large-size--2-of-12" >
+        	<lightning:combobox 
+            	style="Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;" 
+                aura:id="select1" name="select" class="option-list" value="All Products" options="{! v.options }" 
+				onchange="{! c.onProductViewChange }"/>
+        </div>   	
+    </div>  
+    <aura:if isTrue="{!!($Browser.isPhone || $Browser.isTablet || $Browser.isIPad)}">
+        <div class="slds-grid slds-wrap" style="padding-left:60px;padding-top:40px;">
+            <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2 column1" style="border-left:1px solid #eeeeee">
+                <!-- Adding Product Family Icon START US-0006345-->
+                <!-- Added Image Tag to display Product Family Icon-->
+                <aura:iteration items="{!v.productFamilyList}" var="item" indexVar="indx">
+                    <aura:if isTrue="{!equals(indx,0)}">
+                        <div >
+                            <aura:if isTrue="{!!empty(item.prodFamilyRow1.strProductFamilyIconURL)}">
+                                <div>
+                                    <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow1.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                    <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                        {!item.prodFamilyRow1.strProductFamilyName}
+                                    </label>
+                                </div> 
+                            </aura:if>
+                            <!-- Adding Product Family Icon END-->
+                            <c:ProductList products="{!item.prodFamilyRow1.lstProducts}" listViewName="{!v.listViewName}"/>
+                        </div>
+                        <aura:set attribute="else">
+                            <div style="padding-top:40px;">
+                                <aura:if isTrue="{!!empty(item.prodFamilyRow1.strProductFamilyIconURL)}">
+                                    <div>
+                                        <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow1.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                        <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                            {!item.prodFamilyRow1.strProductFamilyName}
+                                        </label>
+                                    </div> 
+                                </aura:if>
+                                <!-- Adding Product Family Icon END-->
+                                <c:ProductList products="{!item.prodFamilyRow1.lstProducts}" listViewName="{!v.listViewName}"/>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                    
+                </aura:iteration>
+            </div>
+            <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2 column1" style="border-left:1px solid #eeeeee">
+                <!-- Adding Product Family Icon START US-0006345-->
+                <!-- Added Image Tag to display Product Family Icon-->
+                <aura:iteration items="{!v.productFamilyList}" var="item" indexVar="indx">
+                    <aura:if isTrue="{!equals(indx,0)}">
+                        <div>
+                            <aura:if isTrue="{!!empty(item.prodFamilyRow2.strProductFamilyIconURL)}">
+                                <div>
+                                    <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow2.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                    <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                        {!item.prodFamilyRow2.strProductFamilyName}
+                                    </label>
+                                </div>
+                            </aura:if>
+                            <!-- Adding Product Family Icon END-->
+                            <aura:if isTrue="{!!empty(item.prodFamilyRow2.lstProducts)}">
+                                <c:ProductList products="{!item.prodFamilyRow2.lstProducts}" listViewName="{!v.listViewName}"/>
+                            </aura:if>
+                        </div>
+                        <aura:set attribute="else">
+                            <div style="padding-top:40px;">
+                                <aura:if isTrue="{!!empty(item.prodFamilyRow2.strProductFamilyIconURL)}">
+                                    <div>
+                                        <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow2.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                        <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                            {!item.prodFamilyRow2.strProductFamilyName}
+                                        </label>
+                                    </div>
+                                </aura:if>
+                                <!-- Adding Product Family Icon END-->
+                                <aura:if isTrue="{!!empty(item.prodFamilyRow2.lstProducts)}">
+                                    <c:ProductList products="{!item.prodFamilyRow2.lstProducts}" listViewName="{!v.listViewName}"/>
+                                </aura:if>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                    
+                </aura:iteration>
+            </div>
+        </div>  
+        <aura:set attribute="else">
+            <aura:iteration items="{!v.productFamilyList}" var="item" indexVar="indx">
+                <div class="slds-grid slds-wrap" >
+                    <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2 column1" >
+                        <!-- Adding Product Family Icon START US-0006345-->
+                        <!-- Added Image Tag to display Product Family Icon-->
+                        <aura:if isTrue="{!!empty(item.prodFamilyRow1.strProductFamilyIconURL)}">
+                            <div>
+                                <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow1.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                    {!item.prodFamilyRow1.strProductFamilyName}
+                                </label>
+                            </div> 
+                        </aura:if>
+                        <!-- Adding Product Family Icon END-->
+                        <c:ProductList products="{!item.prodFamilyRow1.lstProducts}" listViewName="{!v.listViewName}"/>
+                        
+                        
+                        
+                    </div>
+                    <div class="slds-col slds-size--1-of-1 slds-large-size--1-of-2 column1" >
+                        <!-- Adding Product Family Icon START US-0006345-->
+                        <!-- Added Image Tag to display Product Family Icon-->
+                        <aura:if isTrue="{!!empty(item.prodFamilyRow2.strProductFamilyIconURL)}">
+                            <div>
+                                <img src="{!v.configSetting.SiteURL__c+item.prodFamilyRow2.strProductFamilyIconURL}" style ="height:60px;width:60px;" />
+                                <label style="vertical-align:middle;Font-size:15px;font-family: ProximaNova-Semibold,sans-serif; font-weight:bold;color:#131f6b;">
+                                    {!item.prodFamilyRow2.strProductFamilyName}
+                                </label>
+                            </div>
+                        </aura:if>
+                        <!-- Adding Product Family Icon END-->
+                        <aura:if isTrue="{!!empty(item.prodFamilyRow2.lstProducts)}">
+                            <c:ProductList products="{!item.prodFamilyRow2.lstProducts}" listViewName="{!v.listViewName}"/>
+                        </aura:if>
+                    </div>
+                </div>
+            </aura:iteration>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

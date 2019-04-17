@@ -1,0 +1,42 @@
+<aura:component controller="AgreedPricesController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId">
+    
+    <aura:attribute name="agreedPrices" type="List" />
+    <aura:attribute name="accountId" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!--
+    Use a data table from the Lightning Design System:
+    https://www.lightningdesignsystem.com/components/data-tables/
+  -->  
+    
+    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+        <thead>
+            <tr class="slds-text-heading--label">
+                <!-- <th scope="col"><div class="slds-truncate slds-is-resizable" title="Index"></div></th> -->
+                <th scope="col"><div class="slds-is-resizable" title="ProductName">PRODUCT</div></th>
+                <th scope="col"><div class="slds-is-resizable" title="AgreedPrice">PRICE</div></th>
+                <th scope="col"><div class="slds-is-resizable" title="ProductDescription">DESCRIPTION</div></th>
+                <th scope="col"><div class="slds-is-resizable" title="AgreedPriceStartDate">START DATE</div></th>
+                <th scope="col"><div class="slds-is-resizable" title="AgreedPriceEndDate">END DATE</div></th>
+                <th scope="col"><div class="slds-is-resizable" title="ContractName">CONTRACT</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Use the Apex model and controller to fetch server side data -->
+            <aura:iteration items="{!v.agreedPrices}" var="agreedPrice" indexVar="index">
+                
+                <tr>
+                    <!-- <th scope="row"><div class="slds-cell-shrink slds-truncate" title="{!agreedPrice.Contract__r.ContractNumber}">{!index+1}</div></th> -->
+                    <th scope="row"><div class="slds-is-resizable" title="{!agreedPrice.Product__r.Name}">{!agreedPrice.Product__r.Name}</div></th>
+                    <td><div class="slds-is-resizable" title="{!agreedPrice.Price__c}"><ui:outputCurrency aura:id="curr" value="{!agreedPrice.Price__c}"/></div></td>
+                    <td><div class="slds-is-resizable" title="{!agreedPrice.Product__r.ShortDescription__c}">{!agreedPrice.Product__r.ShortDescription__c}</div></td>
+                    <td><div class="slds-is-resizable" title="{!agreedPrice.Start_Date__c}">{!agreedPrice.Start_Date__c}</div></td>
+                    <td><div class="slds-is-resizable" title="{!agreedPrice.End_Date__c}">{!agreedPrice.End_Date__c}</div></td>
+                    <td><div class="slds-is-resizable" title="{!agreedPrice.Contract__r.ContractNumber}"><a href="{!'/one/one.app?#/sObject/'+ agreedPrice.Contract__r.Id + '/view'}">{!agreedPrice.Contract__r.ContractNumber}</a></div></td>
+                </tr>
+            </aura:iteration>
+            
+        </tbody>
+    </table>
+</aura:component>

@@ -1,0 +1,99 @@
+.THIS .customRadioCls .slds-form-element__control .slds-radio{
+    display : inline-block !important;
+}
+.THIS .TextErrorMessage{
+    color:#c62721;
+    font-weight: 300;
+    font-size: 12px
+}
+.THIS .leftAlign{
+	padding-left: 25px;
+}
+.THIS .rightAlign{
+    padding-right: 25px;
+}
+.THIS .helptext a span {
+    display: none;
+}
+.THIS .helptext a:hover span {
+    display: block;
+    position:absolute;
+    left:-9em;
+    z-index:100;
+    border:1px solid;
+    background-color:#FFFFFF;
+    color:black;
+    overflow-wrap: break-word;
+}
+.THIS .slds-text-heading_Medium{
+    color: #131F6B !important;
+    opacity: 100%;
+    font-size: 15px ;
+    font-family: ProximaNova-semibold,sans-serif ;
+    line-height: 21px;
+    font-weight:bold;
+}
+.THIS .slds-text-heading_Small{
+    color: #131F6B !important;
+    opacity: 100%;
+    font-size: 12px ;
+    font-family: ProximaNova-semibold,sans-serif ;
+    line-height: 18px;
+    font-weight:bold;
+}
+.THIS .customIcon div{
+    vertical-align: top !important;
+}
+ 
+.THIS.customIcon div{
+    vertical-align: top !important;
+}
+.THIS .hideLabel .slds-form-element__label{
+	display : none;
+} 
+.THIS button.sfdc_page_button {
+	background-color: #008aad;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: ProximaNova-Semibold,sans-serif ;
+    color: #ffffff;
+    border: solid 1px;
+    display: inline-block;
+    text-align: center;
+    height:30px !important;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.THIS button.sfdc_page_button_disable{
+    background-color: #ADABAB;
+    pointer-events: none;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+.THIS button:hover {
+    background-color:transparent;
+    color:#008aad;
+    border-color:#285e8e;
+    cursor:pointer;
+}
+.THIS .case-form-style{
+	font-family: ProximaNova-Semibold,sans-serif !important;
+}
+.THIS .TextFormat{
+    color: #008AAD !important;
+    font-size: 13px !important;
+    font-family: ProximaNova-Semibold,sans-serif;
+    font-weight: 600;
+}
+.THIS .tallTextArea textarea{
+    height: 120px;
+}
+.THIS .outputTextFormat{
+	color: #008AAD !important;
+    opacity: 100%;
+    font-size: 13px ;
+    font-family: ProximaNova-semibold,sans-serif ;
+    line-height: 19px;
+    font-weight:bold;    
+}

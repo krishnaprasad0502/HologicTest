@@ -1,0 +1,11 @@
+<aura:documentation>
+	<aura:description>
+    	The component is used to show below links in the footer.
+        Contact Us
+        Privacy Policy
+        Patent Information
+        Terms and Conditions
+        Copy Right Text
+    </aura:description>
+	
+</aura:documentation>
